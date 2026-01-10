@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class StoreManager extends Model
+{
+    protected $fillable = [
+        'mid',
+        'sid',
+    ];
+}
