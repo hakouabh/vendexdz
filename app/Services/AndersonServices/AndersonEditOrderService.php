@@ -2,20 +2,21 @@
 
 namespace App\Services\AndersonServices;
 
-use App\Models\Order;
-use App\Models\installedApps;
 use Illuminate\Support\Facades\Http;
 
 class AndersonEditOrderService
 {
     protected string $baseUrl = 'https://anderson-ecommerce.ecotrack.dz';
+    protected string $apiKey;
 
-    
+    public function __construct()
+    {
+        $this->apiKey = config('services.eco.anderson_token');
+    }
+
     public function updateOrder(string $tracking, $updatedData)
     {   
     // 1. Préparer les données avec les bons noms de champs
-        $order = Order::where('tracking',$tracking)->first();
-        $apikey = installedApps::where('sid',$order->sid)->where('app_id', 1001)->first()->token;
         $queryParams = $this->formatOrder($tracking, $updatedData);
       
     // 2. Construire l'URL avec les paramètres (Query String)
@@ -24,7 +25,7 @@ class AndersonEditOrderService
 
         $response = Http::withHeaders([
             'Accept' => 'application/json',
-            'Authorization' => 'Bearer ' . $apiKey,
+            'Authorization' => 'Bearer ' . $this->apiKey,
         ])->post($url);
      
         return $response->json();

@@ -21,16 +21,16 @@
             <x-responsive-sidebar-link href="{{ route('admin-dashboard') }}" :active="request()->routeIs('admin-dashboard')">
                 <i class="ri-home-4-line text-sm"></i> dashboard
             </x-responsive-sidebar-link>
-            <x-responsive-sidebar-link href="{{ route('admin-dashboard') }}" :active="request()->routeIs('admin-dashboard')">
-                <i class="ri-pulse-line text-sm"></i> statistics
+            <x-responsive-sidebar-link href="{{ route('admin.link') }}" :active="request()->routeIs('admin.link')">
+                <i class="ri-pulse-line text-sm"></i> Links
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('admin.users') }}" :active="request()->routeIs('admin.users')">
                 <i class="ri-group-line text-sm"></i> Users
             </x-responsive-sidebar-link>
-            <x-responsive-sidebar-link href="{{ route('admin-dashboard') }}" :active="request()->routeIs('admin-dashboard')">
-                <i class="ri-store-2-line text-sm"></i> Stores
+            <x-responsive-sidebar-link href="{{ route('admin.status') }}" :active="request()->routeIs('admin.status')">
+                <i class="ri-store-2-line text-sm"></i> Status
             </x-responsive-sidebar-link>
-            <x-responsive-sidebar-link href="{{ route('admin-dashboard') }}" :active="request()->routeIs('admin-dashboard')">
+            <x-responsive-sidebar-link href="{{ route('admin.orders') }}" :active="request()->routeIs('admin.orders')">
                 <i class="ri-box-3-line text-sm"></i> Orders
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('admin-dashboard') }}" :active="request()->routeIs('admin-dashboard')">

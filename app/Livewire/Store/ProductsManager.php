@@ -4,6 +4,7 @@ namespace App\Livewire\Store;
 
 use Livewire\Component;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
 
@@ -122,7 +123,8 @@ class ProductsManager extends Component
     {
         $this->sid = Auth::user()->id;
         return view('livewire.store.products-manager', [
-            'products' => Product::with('variants')->where('sid',$this->sid)->latest()->paginate(10)
+            'products' => Product::with('variants')->where('sid',$this->sid)->latest()->paginate(10),
+            'categories' => Category::orderBy('name')->get()
         ]);
     }
 }

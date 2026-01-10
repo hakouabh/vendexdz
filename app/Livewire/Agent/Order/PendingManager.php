@@ -17,8 +17,6 @@ use App\Models\User;
 use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\TerritoryServices\AndersonTerritoryService;
 use App\Services\EditeOrderSwitcher;
-use App\Services\RemoveOrderSwitcher;
-use App\Services\ShipOrderSwitcher;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule;     
@@ -126,13 +124,12 @@ class PendingManager extends Component
         case 1001: 
             $service = new \App\Services\TerritoryServices\AndersonTerritoryService();
             $data = $service->getEverythingCached();
-             $this->dispatch('notify', message: 'Anderson Selected' , type: 'info');
+            
             
             $this->communes = $data['communes'][$value] ?? [];
             break;
         case 1010:
             $service = new \App\Services\TerritoryServices\ZRTerritoryService();
-             $this->dispatch('notify', message: 'ZRexpress Selected' , type: 'info');
             $data = $service->getEverythingCached();
             
             $zrWilaya = $data['wilayas'][$value] ?? null;
@@ -212,17 +209,14 @@ class PendingManager extends Component
     //fillter
     public function Storefilter($id){
         $this->storefilter=$id;
-        $this->dispatch('notify', message: 'Filter Changed' , type: 'success');
     }
     public function Productfilter($id){
        
         $this->productfilter=$id;
-        $this->dispatch('notify', message: 'Filter Changed' , type: 'success');
          
     }
     public function Statufilter($id){
         $this->statufilter=$id;
-        $this->dispatch('notify', message: 'Filter Changed' , type: 'success');
     }
 
     public function toggleExpand($id)
@@ -302,7 +296,6 @@ class PendingManager extends Component
        } else {
         // Otherwise, update immediately
            $this->updateStatus($orderId, $statusId);
-           $this->dispatch('notify', message: 'Statu Changed' , type: 'success');
     }
    }
     public function confirmStatusWithTimer()
@@ -341,8 +334,8 @@ class PendingManager extends Component
         $this->activeOrder = $order->load(['Waiting.AcceptStepStatu', 'logs.user']);
         $this->showTimerModal = false;
         $this->selectedStatu = $this->tempStatusId;
-        $this->dispatch('notify', message: 'Status updated and follow-up scheduled for ' . $formattedTime , type: 'success');
-
+        
+        session()->flash('success', 'Status updated and follow-up scheduled for ' . $formattedTime);
     }
 }
 public function updateStatus($orderId, $statusId)
@@ -414,8 +407,6 @@ public function updateStatus($orderId, $statusId)
             'product_name' => 'New Product',
             'variant_info' => 'Select Variant',
         ];
-        $this->dispatch('notify', message: 'Add item'  , type: 'success');
-
     }
     public function updatedItems($value, $key)
     {
@@ -450,7 +441,6 @@ public function updateStatus($orderId, $statusId)
         OrderItems::where('id', $itemId)->delete();
         unset($this->items[$index]);
         $this->items = array_values($this->items);
-        $this->dispatch('notify', message: 'Delete item'  , type: 'success');
     }
 
     
@@ -606,10 +596,9 @@ public function updateStatus($orderId, $statusId)
         $result = $switcher->validate($id, 2);
         if (isset($result['success']) && $result['success']) {
            $order->update(['status' => 'Removed']);
-           $this->dispatch('notify', message: 'Delete Order'  , type: 'success');
+            session()->flash('success', 'Order is Removed !');
         } else {
-           $this->dispatch('notify', message: 'faild Delete Order'.$result['message']  , type: 'error');
-            
+            session()->flash('error', $result['message'] ?? 'Carrier refused validation.');
         }
     }
     public function updateOrder(){
@@ -619,19 +608,18 @@ public function updateStatus($orderId, $statusId)
    
     try {
         $switcher = new EditeOrderSwitcher();
-        
-        $result = $switcher->dispatch($this->activeOrder->tracking,$standardOrder, $this->app_id);
-         dd($this->app_id);
+       
+        $result = $switcher->dispatch($this->activeOrder->tracking,$standardOrder, 1001);
+           dd($result);
                 if ($result['success']) {
-                    $this->saveOrder();
-                    $this->dispatch('notify', message: 'Dispatched!:' . $result['message'] , type: 'success');
+                     $this->saveOrder();
+                    session()->flash('success', "Dispatched! Tracking: " . $result['tracking']);
                     $this->resetActiveOrder();
                 } else {
-                    $this->dispatch('notify', message: 'error' . $result['message'] , type: 'error');
+                    session()->flash('error', $result['message']);
                 }
         } catch (\Exception $e) {
-                $this->dispatch('notify', message: 'Error:' . $e->getMessage() , type: 'error');
-
+                session()->flash('error', "Error: " . $e->getMessage());
          }
     }
    
@@ -641,10 +629,9 @@ public function updateStatus($orderId, $statusId)
         $result = $switcher->validate($tracking, 2);
         if (isset($result['success']) && $result['success']) {
            $order->update(['status' => 'shipped']);
-           $this->dispatch('notify', message: 'Order is ready for pickup!', type: 'success');
             session()->flash('success', 'Order is ready for pickup!');
         } else {
-            $this->dispatch('notify', message: ''.$result['message'] ?? 'Carrier refused validation.', type: 'error');
+            session()->flash('error', $result['message'] ?? 'Carrier refused validation.');
         }
     }
 
