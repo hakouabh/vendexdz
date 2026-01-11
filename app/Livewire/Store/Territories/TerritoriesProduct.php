@@ -65,6 +65,7 @@ class TerritoriesProduct extends Component
         $sid = auth()->id();
 
         foreach ($this->feesData as $wid => $data) {
+            if(!empty($data['app_id']))
             fees::updateOrCreate(
                 ['sid' => $sid, 'wid' => $wid, 'pid' => $this->sku],
                 [

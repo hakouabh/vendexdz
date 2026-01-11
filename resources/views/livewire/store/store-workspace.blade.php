@@ -4,7 +4,7 @@
         <div class="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
             <div>
                 <div class="flex items-center gap-3 mb-1">
-                    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">My Workspace</h1>
+                    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Performance Dashboard</h1>
                     <span
                         class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full border border-green-200 flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Online
@@ -20,8 +20,6 @@
                     {{ \Carbon\Carbon::parse($selectedDate)->format('l, d M') }} • <span
                         class="text-indigo-600 font-bold"></span>
                     @endif
-
-
                 </p>
             </div>
 
@@ -124,41 +122,6 @@
                             </div>
                         </div>
                     </div>
-                    <x-dropdown align="left" width="48">
-                        <x-slot name="trigger">
-                            <button type="button"
-                                class="inline-flex  items-center px-3 py-1.5 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                                <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
-                                    </path>
-                                </svg>
-                                @if($selectedStore)
-                                {{ $stores->firstWhere('id', $selectedStore)->name ?? __('Filter Store') }}
-                                @else
-                                {{ __('Filter Store') }}
-                                @endif
-                                <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </button>
-                        </x-slot>
-                        <x-slot name="content">
-                            <div class="block px-4 py-2 text-xs text-gray-400 uppercase tracking-widest">
-                                 {{ __('Filter Store') }}
-                            </div>
-                            <x-dropdown-link wire:click="$set('selectedStore', null)" class="text-[]">
-                                <i class=""></i> All
-                            </x-dropdown-link>
-                            @foreach($stores as $store)
-                            <x-dropdown-link  wire:click="$set('selectedStore', {{ $store->id }})" class="text-[]">
-                                <i class=""></i> {{$store->name}}
-                            </x-dropdown-link>
-                            @endforeach
-                        </x-slot>
-                    </x-dropdown>
                     <!-- Quick Date Selection Buttons -->
                     <div class="flex items-end gap-2">
                         <button wire:click="$set('selectedDate', '{{ \Carbon\Carbon::today()->format('Y-m-d') }}')"
@@ -310,7 +273,361 @@
             </div>
         </div>
 
-        <!-- Performance Cycles Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    <div x-data="{
+    chart: null,
+    combinedData: {
+        labels: ['Dec 01', 'Dec 10', 'Dec 15', 'Dec 20', 'Dec 26'],
+        datasets: [
+            {
+                label: 'Revenue',
+                data: [420, 580, 690, 750, 820],
+                borderColor: '#4f46e5',
+                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#4f46e5',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointHoverBackgroundColor: '#4f46e5',
+                pointHoverBorderColor: '#ffffff',
+                pointHoverBorderWidth: 2,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Orders',
+                data: [120, 190, 150, 250, 220],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#10b981',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointHoverBackgroundColor: '#10b981',
+                pointHoverBorderColor: '#ffffff',
+                pointHoverBorderWidth: 2,
+                yAxisID: 'y1'
+            }
+        ]
+    },
+    
+    init() {
+        this.$nextTick(() => {
+            const ctx = this.$refs.chartCanvas.getContext('2d');
+            this.chart = new Chart(ctx, {
+                type: 'line',
+                data: this.combinedData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                padding: 20,
+                                font: {
+                                    family: 'sans-serif',
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                color: '#475569'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            titleFont: {
+                                family: 'sans-serif',
+                                weight: 'bold',
+                                size: 12
+                            },
+                            bodyFont: {
+                                family: 'sans-serif',
+                                weight: 'bold',
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed.y;
+                                    label += context.dataset.label === 'Revenue' ? value + 'k' : value;
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'sans-serif',
+                                    size: 10,
+                                    weight: 'bold'
+                                },
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            grid: {
+                                borderDash: [5, 5],
+                                color: '#f1f5f9'
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'sans-serif',
+                                    size: 10,
+                                    weight: 'bold'
+                                },
+                                color: '#4f46e5',
+                                callback: function(value) {
+                                    return value + 'k';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Revenue (k)',
+                                color: '#4f46e5',
+                                font: {
+                                    family: 'sans-serif',
+                                    size: 10,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            grid: {
+                                drawOnChartArea: false, // only show the grid for the left axis
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'sans-serif',
+                                    size: 10,
+                                    weight: 'bold'
+                                },
+                                color: '#10b981'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Orders',
+                                color: '#10b981',
+                                font: {
+                                    family: 'sans-serif',
+                                    size: 10,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+            
+            // Simulate data updates every 5 seconds
+            setInterval(() => {
+                this.updateData();
+            }, 5000);
+        });
+    },
+    
+    updateData() {
+        // Update Revenue Data
+        const newRevenueData = this.combinedData.datasets[0].data.map(() => 
+            Math.floor(Math.random() * 500) + 400
+        );
+        this.chart.data.datasets[0].data = newRevenueData;
+        
+        // Update Orders Data
+        const newOrdersData = this.combinedData.datasets[1].data.map(() => 
+            Math.floor(Math.random() * 200) + 100
+        );
+        this.chart.data.datasets[1].data = newOrdersData;
+        
+        // Update chart with animation
+        this.chart.update('active');
+        
+        // Update stats
+        this.updateStats();
+    },
+    
+    updateStats() {
+        // Update Revenue Stats
+        const revenueData = this.chart.data.datasets[0].data;
+        this.$refs.revenueTotal.textContent = revenueData.reduce((sum, value) => sum + value, 0) + 'k';
+        this.$refs.revenueAverage.textContent = Math.round(revenueData.reduce((sum, value) => sum + value, 0) / revenueData.length) + 'k';
+        this.$refs.revenuePeak.textContent = Math.max(...revenueData) + 'k';
+        
+        // Update Orders Stats
+        const ordersData = this.chart.data.datasets[1].data;
+        this.$refs.ordersTotal.textContent = ordersData.reduce((sum, value) => sum + value, 0);
+        this.$refs.ordersAverage.textContent = Math.round(ordersData.reduce((sum, value) => sum + value, 0) / ordersData.length);
+        this.$refs.ordersPeak.textContent = Math.max(...ordersData);
+    },
+    
+    refreshData() {
+        this.updateData();
+    }
+}" class="bg-white col-span-2 p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-slate-900 text-lg">Revenue & Orders Overview</h3>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-xs font-bold text-slate-500">Live Data</span>
+                </div>
+                <button @click="refreshData()"
+                    class="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-indigo-500 transition-all duration-300">
+                    <i class="ri-refresh-line text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="relative h-64 w-full">
+            <canvas x-ref="chartCanvas"></canvas>
+        </div>
+
+        <!-- Combined Stats -->
+        <div class="grid grid-cols-2 gap-6 mt-6">
+            <!-- Revenue Stats -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
+                    <span class="text-xs font-bold text-slate-600 uppercase">Revenue Metrics</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div
+                        class="text-center p-2 rounded-lg bg-indigo-50 transition-all duration-300 hover:bg-indigo-100">
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Total</span>
+                        <span class="block text-sm font-black text-indigo-700 mt-1" x-ref="revenueTotal"
+                            x-text="combinedData.datasets[0].data.reduce((sum, item) => sum + item, 0) + 'k'"></span>
+                    </div>
+                    <div
+                        class="text-center p-2 rounded-lg bg-indigo-50 transition-all duration-300 hover:bg-indigo-100">
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Average</span>
+                        <span class="block text-sm font-black text-indigo-700 mt-1" x-ref="revenueAverage"
+                            x-text="Math.round(combinedData.datasets[0].data.reduce((sum, item) => sum + item, 0) / combinedData.datasets[0].data.length) + 'k'"></span>
+                    </div>
+                    <div
+                        class="text-center p-2 rounded-lg bg-indigo-50 transition-all duration-300 hover:bg-indigo-100">
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Peak</span>
+                        <span class="block text-sm font-black text-indigo-700 mt-1" x-ref="revenuePeak"
+                            x-text="Math.max(...combinedData.datasets[0].data) + 'k'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Stats -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                    <span class="text-xs font-bold text-slate-600 uppercase">Orders Metrics</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div
+                        class="text-center p-2 rounded-lg bg-emerald-50 transition-all duration-300 hover:bg-emerald-100">
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Total</span>
+                        <span class="block text-sm font-black text-emerald-700 mt-1" x-ref="ordersTotal"
+                            x-text="combinedData.datasets[1].data.reduce((sum, item) => sum + item, 0)"></span>
+                    </div>
+                    <div
+                        class="text-center p-2 rounded-lg bg-emerald-50 transition-all duration-300 hover:bg-emerald-100">
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Average</span>
+                        <span class="block text-sm font-black text-emerald-700 mt-1" x-ref="ordersAverage"
+                            x-text="Math.round(combinedData.datasets[1].data.reduce((sum, item) => sum + item, 0) / combinedData.datasets[1].data.length)"></span>
+                    </div>
+                    <div
+                        class="text-center p-2 rounded-lg bg-emerald-50 transition-all duration-300 hover:bg-emerald-100">
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Peak</span>
+                        <span class="block text-sm font-black text-emerald-700 mt-1" x-ref="ordersPeak"
+                            x-text="Math.max(...combinedData.datasets[1].data)"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col">
+        <h3 class="font-bold text-slate-900 text-lg mb-6 flex items-center gap-2">
+            <i class="ri-map-pin-line text-indigo-500"></i> Top Wilayas
+        </h3>
+        <div class="flex-1 space-y-5 overflow-y-auto pr-2">
+            <div>
+                <div class="flex justify-between text-sm font-bold text-slate-700 mb-1">
+                    <span>16 - Alger</span>
+                    <span>45%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5">
+                    <div class="bg-slate-900 h-2.5 rounded-full" style="width: 45%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-sm font-bold text-slate-700 mb-1">
+                    <span>31 - Oran</span>
+                    <span>25%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5">
+                    <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 25%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-sm font-bold text-slate-700 mb-1">
+                    <span>25 - Constantine</span>
+                    <span>15%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5">
+                    <div class="bg-indigo-400 h-2.5 rounded-full" style="width: 15%"></div>
+                </div>
+            </div>
+        </div>
+        <button
+            class="mt-4 w-full py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition">View
+            Map</button>
+    </div>
+</div>
+
+<!-- Performance Cycles Section -->
         <div class="mb-8">
             <h3 class="text-lg font-bold text-slate-900 mb-4 ml-1">Performance Cycles</h3>
 
@@ -507,12 +824,118 @@
                 </div>
             </div>
         </div>
-        <script>
-            window.performanceData = @json($performanceData);
-        </script>
 
-        <!-- Add this script to define the reusable Alpine.js function -->
-        <script>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+    <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">
+        <h3 class="font-bold text-slate-900 text-lg mb-6">Pipeline Flow</h3>
+        <div class="space-y-1">
+            <div class="relative group">
+                <div
+                    class="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-lg border-l-4 border-blue-600 z-10 relative">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm">
+                            <i class="ri-shopping-cart-2-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase">Confirmed</p>
+                            <p class="text-sm font-bold text-slate-900">1,500 Orders</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400">100%</span>
+                </div>
+            </div>
+            <div class="flex justify-center -my-2 relative z-0"><i class="ri-arrow-down-line text-slate-300"></i></div>
+            <div class="relative group">
+                <div
+                    class="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-lg border-l-4 border-indigo-500 z-10 relative w-[95%] mx-auto">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-indigo-500 shadow-sm">
+                            <i class="ri-truck-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase">Shipped</p>
+                            <p class="text-sm font-bold text-slate-900">1,420 Orders</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400">94%</span>
+                </div>
+            </div>
+            <div class="flex justify-center -my-2 relative z-0"><i class="ri-arrow-down-line text-slate-300"></i></div>
+            <div class="relative group">
+                <div
+                    class="flex items-center justify-between px-4 py-3 bg-green-50 rounded-lg border-l-4 border-green-500 z-10 relative w-[90%] mx-auto">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-green-600 shadow-sm">
+                            <i class="ri-home-smile-fill"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-green-700 uppercase">Delivered</p>
+                            <p class="text-sm font-bold text-slate-900">1,200 Orders</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-green-700">80%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-slate-900 text-lg">Inventory Movers</h3>
+            <a href="#" class="text-xs font-bold text-indigo-600 hover:underline">View All</a>
+        </div>
+
+        <div class="space-y-4">
+            <div
+                class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-2xl transition group cursor-pointer border border-transparent hover:border-slate-100">
+                <div class="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden relative">
+                    <div class="w-full h-full bg-slate-200 flex items-center justify-center text-xl">👟</div>
+                    <div class="absolute top-0 right-0 bg-yellow-400 text-[8px] font-bold px-1.5 py-0.5 rounded-bl-lg">
+                        #1</div>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">Nike Air Force 1</h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">SKU:
+                            NK-001</span>
+                        <span class="text-[10px] text-green-600 font-bold">In Stock</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-black text-slate-900">450</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Sold</p>
+                </div>
+            </div>
+
+            <div
+                class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-2xl transition group cursor-pointer border border-transparent hover:border-slate-100">
+                <div class="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden relative">
+                    <div class="w-full h-full bg-slate-200 flex items-center justify-center text-xl">⌚</div>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">Smart Watch Ultra</h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">SKU:
+                            SW-99</span>
+                        <span class="text-[10px] text-orange-500 font-bold">Low Stock</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-black text-slate-900">210</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Sold</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        window.performanceData = @json($performanceData);
+    </script>
+    <script>
         function performanceChart(initialData) {
             return {
                 confirmed: {
