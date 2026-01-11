@@ -34,7 +34,7 @@
                             <select wire:model="feesData.{{ $wid }}.app_id" class="text-[11px] font-bold w-full rounded-lg border-slate-200 focus:ring-indigo-500">
                                 <option value="">Select App</option>
                                 @foreach($installedApps as $app)
-                                    <option value="{{ $app->app_id }}">App #{{ $app->app_id }}</option>
+                                    <option value="{{ $app->app_id }}">{{ $app->supportedApp->name }}</option>
                                 @endforeach
                             </select>
                         </td>

@@ -107,7 +107,7 @@
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Parent SKU</label>
-                            <input type="text" wire:model="sku" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <input type="number" wire:model="sku" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Base Price (DA)</label>

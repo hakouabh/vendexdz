@@ -13,5 +13,8 @@ class installedApps extends Model
         'token',
         'is_active',
     ];
-
+    public function supportedApp()
+    {
+        return $this->belongsTo(SupportedApps::class, 'app_id', 'app_id');
+    }
 }

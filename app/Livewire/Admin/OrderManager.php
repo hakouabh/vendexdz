@@ -301,7 +301,7 @@ class OrderManager extends Component
         $order = Order::create([
             'oid' => time() . mt_rand(1000, 9999),
             'cid' => $client->id,
-            'sid' => 1, 
+            'sid' => Auth::User()->id, 
             'app_id' => $app_id,
         ]);
         

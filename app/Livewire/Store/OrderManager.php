@@ -105,7 +105,7 @@ class OrderManager extends Component
     private function loadAvailableProducts()
     {
         // For demo purposes, get all products. In real app, you might filter by user permissions
-        $this->availableProducts = Product::with(['variants'])->get();
+        $this->availableProducts = Product::where('sid', Auth::user()->id)->with(['variants'])->get();
     }
 
     public function updatedCity($value)
@@ -301,7 +301,7 @@ class OrderManager extends Component
         $order = Order::create([
             'oid' => time() . mt_rand(1000, 9999),
             'cid' => $client->id,
-            'sid' => 1, 
+            'sid' => Auth::User()->id, 
             'app_id' => $app_id,
         ]);
         

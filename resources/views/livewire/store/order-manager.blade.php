@@ -25,6 +25,93 @@
           </div>
 
           <form wire:submit.prevent="createOrder" class="space-y-6">
+                <!-- Order Items -->
+                <div class="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                <i class="ri-archive-line text-emerald-600"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-800">Order Items</h3>
+                        </div>
+                        <button type="button" wire:click="addItem"
+                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-all">
+                            <i class="ri-add-line text-sm"></i>
+                            <span class="text-[11px] font-bold">Add Item</span>
+                        </button>
+                    </div>
+
+                    <div class="p-6 space-y-4">
+                        @foreach($items as $index => $item)
+                        <div
+                            class="group relative p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-emerald-200 transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-xs font-bold text-slate-700">Item {{ $index + 1 }}</h4>
+                                @if(count($items) > 1)
+                                <button type="button" wire:click="deleteItem({{ $index }})"
+                                    class="h-6 w-6 flex items-center justify-center rounded-lg text-slate-300 hover:bg-rose-50 hover:text-rose-500 transition-all">
+                                    <i class="ri-delete-bin-line text-sm"></i>
+                                </button>
+                                @endif
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <div>
+                                    <label
+                                        class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Product</label>
+                                    <select wire:model.live="items.{{ $index }}.sku"
+                                        class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
+                                        <option value="">-- Select Product --</option>
+                                        @foreach($this->availableProducts as $prod)
+                                        <option value="{{ $prod->sku }}">{{ $prod->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Variant</label>
+                                    <select wire:model.live="items.{{ $index }}.vid"
+                                        {{ empty($item['sku']) ? 'disabled' : '' }}
+                                        class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold {{ empty($item['sku']) ? 'text-slate-300' : 'text-slate-700' }} focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
+                                        <option value="">-- Select Variant --</option>
+                                        @if(!empty($item['sku']))
+                                        @foreach($this->getVariants($item['sku']) as $v)
+                                        <option value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }})</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Quantity</label>
+                                    <div class="flex items-center bg-slate-900 rounded-lg px-2 py-1">
+                                        <span class="text-[9px] font-black text-slate-400 uppercase mr-1">Q:</span>
+                                        <input type="number" wire:model.live="items.{{ $index }}.quantity"
+                                            class="w-16 border-none bg-transparent text-center text-[11px] font-black text-white focus:ring-0 p-0"
+                                            min="1">
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+
+                            @if(!empty($item['sku']))
+                            <div class="mt-2 flex items-center gap-2 px-2">
+                                <span
+                                    class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                                    {{ $item['product_name'] }}
+                                </span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase italic truncate">
+                                    {{ $item['variant_info'] }}
+                                </span>
+                            </div>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
               <!-- Customer Information -->
               <div class="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
                   <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-100 bg-slate-50/50">
@@ -158,94 +245,6 @@
                               </div>
                           </div>
                       </div>
-                  </div>
-              </div>
-
-              <!-- Order Items -->
-              <div class="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
-                  <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-                      <div class="flex items-center gap-3">
-                          <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                              <i class="ri-archive-line text-emerald-600"></i>
-                          </div>
-                          <h3 class="text-sm font-bold text-slate-800">Order Items</h3>
-                      </div>
-                      <button type="button" wire:click="addItem"
-                          class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-all">
-                          <i class="ri-add-line text-sm"></i>
-                          <span class="text-[11px] font-bold">Add Item</span>
-                      </button>
-                  </div>
-
-                  <div class="p-6 space-y-4">
-                      @foreach($items as $index => $item)
-                      <div
-                          class="group relative p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-emerald-200 transition-all duration-300">
-                          <div class="flex items-center justify-between mb-3">
-                              <h4 class="text-xs font-bold text-slate-700">Item {{ $index + 1 }}</h4>
-                              @if(count($items) > 1)
-                              <button type="button" wire:click="deleteItem({{ $index }})"
-                                  class="h-6 w-6 flex items-center justify-center rounded-lg text-slate-300 hover:bg-rose-50 hover:text-rose-500 transition-all">
-                                  <i class="ri-delete-bin-line text-sm"></i>
-                              </button>
-                              @endif
-                          </div>
-
-                          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                              <div>
-                                  <label
-                                      class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Product</label>
-                                  <select wire:model.live="items.{{ $index }}.sku"
-                                      class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
-                                      <option value="">-- Select Product --</option>
-                                      @foreach($this->availableProducts as $prod)
-                                      <option value="{{ $prod->sku }}">{{ $prod->name }}</option>
-                                      @endforeach
-                                  </select>
-                              </div>
-
-                              <div>
-                                  <label
-                                      class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Variant</label>
-                                  <select wire:model.live="items.{{ $index }}.vid"
-                                      {{ empty($item['sku']) ? 'disabled' : '' }}
-                                      class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold {{ empty($item['sku']) ? 'text-slate-300' : 'text-slate-700' }} focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
-                                      <option value="">-- Select Variant --</option>
-                                      @if(!empty($item['sku']))
-                                      @foreach($this->getVariants($item['sku']) as $v)
-                                      <option value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }})</option>
-                                      @endforeach
-                                      @endif
-                                  </select>
-                              </div>
-
-                              <div>
-                                  <label
-                                      class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Quantity</label>
-                                  <div class="flex items-center bg-slate-900 rounded-lg px-2 py-1">
-                                      <span class="text-[9px] font-black text-slate-400 uppercase mr-1">Q:</span>
-                                      <input type="number" wire:model.live="items.{{ $index }}.quantity"
-                                          class="w-16 border-none bg-transparent text-center text-[11px] font-black text-white focus:ring-0 p-0"
-                                          min="1">
-                                  </div>
-                              </div>
-
-                              
-                          </div>
-
-                          @if(!empty($item['sku']))
-                          <div class="mt-2 flex items-center gap-2 px-2">
-                              <span
-                                  class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">
-                                  {{ $item['product_name'] }}
-                              </span>
-                              <span class="text-[9px] font-bold text-slate-400 uppercase italic truncate">
-                                  {{ $item['variant_info'] }}
-                              </span>
-                          </div>
-                          @endif
-                      </div>
-                      @endforeach
                   </div>
               </div>
 
