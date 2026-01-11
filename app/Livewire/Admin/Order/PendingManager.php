@@ -237,7 +237,7 @@ class PendingManager extends Component
             'Notes.user', 
             'chats.user', 
             'histories'
-        ])->find($id);
+        ])->where('oid',$id)->first();
         
         if ($this->activeOrder) {
       
