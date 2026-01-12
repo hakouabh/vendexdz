@@ -200,7 +200,7 @@ class ReportedManager extends Component
         'items'
     ])
     ->latest()
-    ->paginate(1, ['*'], 'inPage');
+    ->paginate(10, ['*'], 'inPage');
     $orders->withQueryString();
         $willayas = Willaya::all();
       

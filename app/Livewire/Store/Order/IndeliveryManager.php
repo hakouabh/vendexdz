@@ -188,7 +188,8 @@ class IndeliveryManager extends Component
         'items'
     ])
     ->latest()
-    ->get();
+    ->paginate(10, ['*'], 'inPage');
+    $orders->withQueryString();
         $willayas = Willaya::all();
       
         return view('livewire.store.order.indelivery-manager', ['orders' => $orders,'wilayas'=>$willayas, 'SecondStepStatus'=>$SecondStepStatus ,'products'=>$products]);

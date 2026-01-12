@@ -185,7 +185,8 @@ class PendingManager extends Component
         'items'
     ])
     ->latest()
-    ->get();
+    ->paginate(10, ['*'], 'inPage');
+    $orders->withQueryString();
         $willayas = Willaya::all();
       
         return view('livewire.store.order.pending-manager', ['orders' => $orders,'wilayas'=>$willayas, 'AcceptStepStatus'=>$AcceptStepStatus ,'products'=>$products]);

@@ -189,7 +189,8 @@ class InconfermationManager extends Component
         'items'
     ])
     ->latest()
-    ->get();
+    ->paginate(10, ['*'], 'inPage');
+    $orders->withQueryString();
         $willayas = Willaya::all();
       
         return view('livewire.store.order.inconfermation-manager', ['orders' => $orders,'wilayas'=>$willayas, 'firstStepStatus'=>$firstStepStatus ,'products'=>$products]);

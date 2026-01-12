@@ -867,6 +867,9 @@
         </div>
     </div>
     @endforeach
+    <div class="mt-4">
+      {{ $orders->links(data: ['pageName' => 'inPage']) }}
+    </div>
     @if($showTimerModal)
     <div class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
