@@ -362,7 +362,7 @@
               <div class="flex justify-end">
                   <button type="submit"
                       class="flex items-center gap-2 rounded-lg bg-blue-600 px-8 py-3 text-sm font-bold text-white shadow-md shadow-blue-100 transition-all hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                      :disabled="$isSubmitting">
+                      :disabled="{{$isSubmitting}}">
                       <i class="ri-save-3-line"></i>
 
                   </button>

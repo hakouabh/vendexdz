@@ -57,7 +57,7 @@
 
         </div>
 
-        <div class="fixed bottom-6 right-6 z-50">
+        <!-- <div class="fixed bottom-6 right-6 z-50">
             <div
                 class="w-14 h-14 bg-[#111827] rounded-full shadow-lg shadow-indigo-900/20 flex items-center justify-center cursor-pointer hover:scale-110 transition duration-300 border-2 border-indigo-500/30">
                 <div class="relative">
@@ -65,7 +65,7 @@
                         class="ri-robot-2-fill text-2xl bg-gradient-to-tr from-indigo-400 to-cyan-300 bg-clip-text text-transparent"></i>
                 </div>
             </div>
-        </div>
+        </div> -->
 
     </div>
     @stack('modals')
