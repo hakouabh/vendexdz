@@ -16,8 +16,18 @@ class Product extends Model
         'price',
         
     ];
+
+    public static $rules = [
+        'name' => 'required|string|max:255',
+        'sku' => 'required|numeric',
+        'price' => 'required|numeric|min:0',
+        'variants.*.quantity' => 'required|integer|min:0',
+        'variants.*.discount' => 'required|integer|min:0',
+        'variants.*.sku' => 'nullable|string',
+    ];
+
     public function variants() {
-          return $this->hasMany(ProductVariant::class, 'sku', 'sku');
+          return $this->hasMany(ProductVariant::class, 'product_id', 'id');
     }
     public function agents()
     {

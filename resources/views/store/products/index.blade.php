@@ -3,6 +3,5 @@
 @section('title', 'Products - Vendex')
 
 @section('content')
-
-    @livewire('Store.products-manager')
+    @livewire('v2.products')
 @endsection

@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductVariant extends Model
 {
     protected $fillable = [
-
-        'sku',
+        'product_id',
         'var_1',
         'var_2',
         'var_3',
