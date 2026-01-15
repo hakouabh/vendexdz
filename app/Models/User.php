@@ -89,33 +89,42 @@ class User extends Authenticatable
     // Check if any role associated with this user matches the given 'rid'
     return $this->roles()->where('roles.rid', $roleId)->exists();
     }
-    public function Store()
+
+    public function store()
     {
-        return $this->belongsToMany(
-            Role::class,      // 1. المودل المرتبط
-            'user_roles',     // 2. اسم الجدول الوسيط
-            'uid',            // 3. مفتاح المستخدم في الوسيط (Foreign Key for User)
-            'rid',            // 4. مفتاح الرتبة في الوسيط (Foreign Key for Role)
-            'id',             // 5. المفتاح الأصلي للمستخدم (User Primary Key)
-            'rid'             // 6. المفتاح الأصلي للرتبة (Role Primary Key) <--- هذا هو الأهم!
-        );
+        return $this->belongsTo(Store::class, 'store_id', 'id');
     }
+
+    // public function Store()
+    // {
+    //     return $this->belongsToMany(
+    //         Role::class,      // 1. المودل المرتبط
+    //         'user_roles',     // 2. اسم الجدول الوسيط
+    //         'uid',            // 3. مفتاح المستخدم في الوسيط (Foreign Key for User)
+    //         'rid',            // 4. مفتاح الرتبة في الوسيط (Foreign Key for Role)
+    //         'id',             // 5. المفتاح الأصلي للمستخدم (User Primary Key)
+    //         'rid'             // 6. المفتاح الأصلي للرتبة (Role Primary Key) <--- هذا هو الأهم!
+    //     );
+    // }
     //manager
     public function managedStores()
     {
         return $this->belongsToMany(User::class, 'store_managers', 'mid', 'sid');
     }
+
     public function managers()
     {
-         return $this->belongsToMany(User::class, 'store_managers', 'sid', 'mid');
+        return $this->belongsToMany(User::class, 'store_managers', 'sid', 'mid');
     }
+
     //agent
     public function AgentStores()
     {
         return $this->belongsToMany(User::class, 'store_agents', 'aid', 'sid');
     }
+
     public function Agents()
     {
-         return $this->belongsToMany(User::class, 'store_agents', 'sid', 'aid');
+        return $this->belongsToMany(User::class, 'store_agents', 'sid', 'aid');
     }
 }
