@@ -121,7 +121,7 @@
                     <div class="space-y-4">
                         <div class="space-y-1.5">
                             <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Category</label>
-                            <select wire:model="cid" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none appearance-none">
+                            <select wire:model="category_id" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none appearance-none">
                                 <option value="">Select Category</option>
                                 @foreach($categories as $c)
                                     <option value="{{ $c->id }}">{{ $c->name }}</option>

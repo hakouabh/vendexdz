@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
-        'sid',
+        'created_by',
+        'store_id',
         'name',
         'nickname',
         'url',
         'sku',
-        'cid',
+        'category_id',
         'price',
-        
     ];
 
     public static $rules = [

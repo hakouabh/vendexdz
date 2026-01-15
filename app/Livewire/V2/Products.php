@@ -26,7 +26,7 @@ class Products extends Component
     public $sku;
     public $price;
     public $url;
-    public $cid;
+    public $category_id;
 
     // Variants
     public $variants = [];
@@ -59,7 +59,7 @@ class Products extends Component
         $this->sku = $product->sku;
         $this->price = $product->price;
         $this->url = $product->url;
-        $this->cid = $product->cid;
+        $this->category_id = $product->category_id;
 
         $this->variants = $product->variants->map(fn($v) => [
             'id' => $v->id,
@@ -90,14 +90,16 @@ class Products extends Component
     {
         $validated = $this->validate();
         $productRepository = app(ProductRepository::class);
+        $user = Auth::user();
 
         $data = [
-            'sid' => Auth::id(),
+            'created_by' => $user->id,
+            'store_id' => $user->store_id,
             'name' => $this->name,
             'sku' => $this->sku,
             'price' => $this->price,
             'url' => $this->url,
-            'cid' => $this->cid,
+            'category_id' => $this->category_id,
         ];
 
         if ($this->isEditMode) {
@@ -115,14 +117,14 @@ class Products extends Component
     public function resetFields()
     {
         $this->reset([
-            'productId', 'name', 'sku', 'price', 'url', 'cid', 'variants', 'isEditMode', 'showForm'
+            'productId', 'name', 'sku', 'price', 'url', 'category_id', 'variants', 'isEditMode', 'showForm'
         ]);
     }
 
     public function render()
     {
         return view('livewire.v2.products', [
-            'products' => app(ProductRepository::class)->paginateByStore(Auth::id(), 10),
+            'products' => app(ProductRepository::class)->paginateByStore(Auth::user()->store_id, 10),
             'categories' => Category::orderBy('name')->get(),
         ]);
     }

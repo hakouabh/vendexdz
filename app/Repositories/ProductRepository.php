@@ -45,7 +45,7 @@ class ProductRepository extends BaseRepository
     {
         return $this->model
             ->with('variants')
-            ->where('sid', $storeId)
+            ->where('store_id', $storeId)
             ->latest()
             ->paginate($perPage);
     }
