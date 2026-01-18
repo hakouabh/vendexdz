@@ -148,7 +148,7 @@ class InconfermationManager extends Component
         
         $this->calculateTotal();
         $firstStepStatus = firstStepStatu::all(); 
-        $products = Product::where('sid', Auth::user()->id)->latest()
+        $products = Product::where('store_id', Auth::user()->store_id)->latest()
        ->get();
       
 
@@ -444,34 +444,33 @@ public function updateStatus($orderId, $statusId)
 
     public function calculateTotal()
     {
-    $computedPrice = 0; 
-    $delivery=null;
-    foreach ($this->items as $item) {
-        
-        $price = (float) ($item['original'] ?? 0);
-        $qty = (int) ($item['quantity'] ?? 1);
-        $computedPrice += ($price * $qty); 
-        if($delivery===null){
-          if($this->delivery_type==1){
-            $this->delivery_price = fees::where('pid',$item['sku'])->where('wid',$this->wilaya)->first()->c_s_p;
-          }else{
-            $this->delivery_price = fees::where('pid',$item['sku'])->where('wid',$this->wilaya)->first()->c_d_p  ?? 0;
-          }
-         
-          $delivery=$this->delivery_price;
+        $computedPrice = 0; 
+        $delivery=null;
+        foreach ($this->items as $item) {
+            
+            $price = (float) ($item['original'] ?? 0);
+            $qty = (int) ($item['quantity'] ?? 1);
+            $computedPrice += ($price * $qty); 
+            if($delivery===null){
+            if($this->delivery_type==1){
+                $this->delivery_price = fees::where('pid',$item['sku'])->where('wid',$this->wilaya)->first()->c_s_p;
+            }else{
+                $this->delivery_price = fees::where('pid',$item['sku'])->where('wid',$this->wilaya)->first()->c_d_p  ?? 0;
+            }
+            
+            $delivery=$this->delivery_price;
+            }
+
         }
 
-    }
-
-    $this->price = $computedPrice;
+        $this->price = $computedPrice;
 
    
-    $d = (float) ($this->delivery_price ?? 0);
-    $dis = (float) ($this->discount ?? 0);
+        $d = (float) ($this->delivery_price ?? 0);
+        $dis = (float) ($this->discount ?? 0);
 
-    
-    $this->total = ($this->price + $d) - $dis;
-}
+        $this->total = ($this->price + $d) - $dis;
+    }
 
     
 

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductVariant;
-// TODO  : OrderItems to OrderItem model
 use App\Models\OrderItems;
 
 class Products extends Component
@@ -64,6 +63,9 @@ class Products extends Component
         $this->variants = $product->variants->map(fn($v) => [
             'id' => $v->id,
             'product_id' => $product->id,
+            'var_1' => $v->var_1,
+            'var_2' => $v->var_2,
+            'var_3' => $v->var_3,
             'quantity' => $v->quantity,
             'discount' => $v->discount,
         ])->toArray();
@@ -75,8 +77,9 @@ class Products extends Component
     public function addVariant()
     {
         $this->variants[] = [
-            'quantity' => 0,
-            'discount' => 0,
+            'var_1' => null, 'var_2' => null, 'var_3' => null,
+            'product_id' => $this->productId ?? null,
+            'discount' => 0, 'quantity' => 0
         ];
     }
 
@@ -84,6 +87,22 @@ class Products extends Component
     {
         unset($this->variants[$index]);
         $this->variants = array_values($this->variants);
+    }
+
+    public function destroyVariant(ProductVariant $variant, $index)
+    {
+        $Models = [
+            OrderItems::class
+        ];
+        $result = canDelete($Models, 'vid', $variant->id);
+        if ($result) {
+            $this->dispatch('notify', message: __('Cannot delete variant because it is associated with existing orders.'), type: 'error');
+            return;
+        }
+        unset($this->variants[$index]);
+        $this->variants = array_values($this->variants);
+        $variant->delete();
+        $this->dispatch('notify', message: __('Variant deleted successfully') , type: 'success');
     }
 
     public function save()
@@ -132,7 +151,7 @@ class Products extends Component
     public function delete(Product $product)
     {
         $Models = [
-            // OrderItems::class
+            OrderItems::class
         ];
         $result = canDelete($Models, 'product_id', $product->id);
         if ($result) {
@@ -140,7 +159,6 @@ class Products extends Component
             return;
         }
         $product->delete();
-
         $this->dispatch('notify', message: __('Product deleted successfully') , type: 'success');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Repositories\BaseRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
@@ -100,11 +101,11 @@ class ProductRepository extends BaseRepository
         try{
             DB::beginTransaction();
             $product->update($data);
-
-            $product->variants()->delete();
-
             foreach ($data['variants'] as $variant) {
-                $product->variants()->create($variant);
+                ProductVariant::updateOrCreate(
+                    ['id' => $variant['id'] ?? null],
+                    array_merge($variant, ['product_id' => $product->id])
+                );
             }
             DB::commit();
             return $product;

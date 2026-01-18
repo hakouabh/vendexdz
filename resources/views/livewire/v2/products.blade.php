@@ -141,49 +141,61 @@
                             <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
                                 <i class="ri-stack-line"></i>
                             </div>
-                            <h4 class="text-sm font-extrabold text-slate-800 uppercase tracking-tight">Product Variants</h4>
+                            <h4 class="text-sm font-extrabold text-slate-800 uppercase tracking-tight">@lang('Product Variants')</h4>
                         </div>
                         <button type="button" wire:click="addVariant" class="px-4 py-2 rounded-lg bg-white border border-indigo-200 text-xs font-bold text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                            + Add Variant
+                            + @lang('Add Variant')
                         </button>
                     </div>
 
                     <div class="space-y-3">
                         @foreach($variants as $index => $v)
-                        <div class="grid grid-cols-2 md:grid-cols-6 gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm relative items-end">
-                            <div class="space-y-1">
-                                <label class="text-[9px] font-black text-slate-400 uppercase">Color/Var 1</label>
-                                <input type="text" wire:model="variants.{{$index}}.var_1" class="w-full rounded-lg border-none bg-slate-50 p-2.5 text-xs font-bold outline-none">
+                            <div class="grid grid-cols-2 md:grid-cols-6 gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm relative items-end">
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase">@lang('Color/Var 1')</label>
+                                    <input type="text" wire:model="variants.{{$index}}.var_1" class="w-full rounded-lg border-none bg-slate-50 p-2.5 text-xs font-bold outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase">@lang('Size/Var 2')</label>
+                                    <input type="text" wire:model="variants.{{$index}}.var_2" class="w-full rounded-lg border-none bg-slate-50 p-2.5 text-xs font-bold outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase">@lang('Other/Var 3')</label>
+                                    <input type="text" wire:model="variants.{{$index}}.var_3" class="w-full rounded-lg border-none bg-slate-50 p-2.5 text-xs font-bold outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-rose-400 uppercase">@lang('Discount')</label>
+                                    <input type="number" wire:model="variants.{{$index}}.discount" class="w-full rounded-lg border-none bg-rose-50 p-2.5 text-xs font-black text-rose-600 outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-emerald-400 uppercase">@lang('Qty')</label>
+                                    <input type="number" wire:model="variants.{{$index}}.quantity" class="w-full rounded-lg border-none bg-emerald-50 p-2.5 text-xs font-black text-emerald-600 outline-none">
+                                </div>
+                                <div class="flex justify-end">
+                                    @if(isset($v['id']))
+                                        <button
+                                            type="button"
+                                            wire:click="destroyVariant({{ $v['id'] }}, {{ $index }})"
+                                            class="h-9 w-9 rounded-lg bg-slate-50 text-slate-300 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
+                                            <i class="ri-delete-bin-line text-base"></i>
+                                        </button>
+                                    @else
+                                        <button
+                                            type="button"
+                                            wire:click="removeVariant({{ $index }})"
+                                            class="h-9 w-9 rounded-lg bg-slate-50 text-slate-300 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
+                                            <i class="ri-delete-bin-line text-base"></i>
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="space-y-1">
-                                <label class="text-[9px] font-black text-slate-400 uppercase">Size/Var 2</label>
-                                <input type="text" wire:model="variants.{{$index}}.var_2" class="w-full rounded-lg border-none bg-slate-50 p-2.5 text-xs font-bold outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[9px] font-black text-slate-400 uppercase">Other/Var 3</label>
-                                <input type="text" wire:model="variants.{{$index}}.var_3" class="w-full rounded-lg border-none bg-slate-50 p-2.5 text-xs font-bold outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[9px] font-black text-rose-400 uppercase">Discount</label>
-                                <input type="number" wire:model="variants.{{$index}}.discount" class="w-full rounded-lg border-none bg-rose-50 p-2.5 text-xs font-black text-rose-600 outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[9px] font-black text-emerald-400 uppercase">Qty</label>
-                                <input type="number" wire:model="variants.{{$index}}.quantity" class="w-full rounded-lg border-none bg-emerald-50 p-2.5 text-xs font-black text-emerald-600 outline-none">
-                            </div>
-                            <div class="flex justify-end">
-                                <button type="button" wire:click="removeVariant({{$index}})" class="h-9 w-9 rounded-lg bg-slate-50 text-slate-300 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
-                                    <i class="ri-delete-bin-line text-base"></i>
-                                </button>
-                            </div>
-                        </div>
                         @endforeach
                     </div>
                 </div>
 
                 <div class="mt-8">
                     <button type="submit" class="w-full bg-slate-900 py-4 rounded-2xl text-white font-bold uppercase tracking-widest text-sm shadow-xl hover:bg-indigo-600 transition-all duration-300">
-                        {{ $isEditMode ? 'Update Product Information' : 'Confirm & Save Product' }}
+                        {{ $isEditMode ? __('Update Product Information') : __('Confirm & Save Product') }}
                     </button>
                 </div>
             </form>

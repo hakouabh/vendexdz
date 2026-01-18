@@ -12,5 +12,10 @@ class order_Comments extends Model
         'text',
         
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'uid');
+    }
     
 }

@@ -818,11 +818,11 @@
 
                         <div class="p-3 bg-slate-50 border-t border-slate-100">
                             <div class="relative flex items-center">
-                                <input type="text" wire:model.defer="internal_message"
-                                    wire:keydown.enter="addInternalNote" placeholder="Type an internal note..."
+                                <input type="text" wire:model.defer="newMessage"
+                                    wire:keydown.enter="sendMessage" placeholder="Type an internal note..."
                                     class="w-full rounded-xl border border-slate-200 bg-white pl-4 pr-12 py-2 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all">
 
-                                <button wire:click="addInternalNote"
+                                <button wire:click="sendMessage"
                                     class="absolute right-1.5 p-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm">
                                     <i class="ri-send-plane-2-fill text-sm"></i>
                                 </button>

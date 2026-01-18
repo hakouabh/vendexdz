@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Store;
+namespace App\Livewire\V2\Order;
 
 use Livewire\Component;
 use Livewire\Attributes\Url; 
@@ -17,7 +17,7 @@ use App\Services\TerritoryServices\AndersonTerritoryService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
-class OrderManager extends Component
+class Orders extends Component
 {
 
      #[Url(keep: true)] 
@@ -92,7 +92,7 @@ class OrderManager extends Component
             [
                 'id' => null,
                 'vid' => '',
-                'product_id' => '',
+                'product_id' => null,
                 'sku' => '',
                 'quantity' => 1,
                 'original' => 0,
@@ -104,7 +104,6 @@ class OrderManager extends Component
 
     private function loadAvailableProducts()
     {
-        // For demo purposes, get all products. In real app, you might filter by user permissions
         $this->availableProducts = Product::where('store_id', Auth::user()->store_id)->with(['variants'])->get();
     }
 
@@ -137,10 +136,9 @@ class OrderManager extends Component
             return;
         }
 
-        $firstItemSku = $this->items[0]['sku'] ?? null;
-        
+        $firstItemSku = $this->items[0]['product_id'] ?? null;
         if ($firstItemSku) {
-            $fee = fees::where('pid', $firstItemSku)
+            $fee = fees::where('product_id', $firstItemSku)
                 ->where('wid', $value)
                 ->first();
             
@@ -190,6 +188,7 @@ class OrderManager extends Component
                 $this->items[$index]['original'] = $variant->product->price;
                 $this->items[$index]['vid'] = $variant->id;
                 $this->items[$index]['sku'] = $variant->sku;
+                $this->items[$index]['product_id'] = $variant->product_id;
                 $this->items[$index]['product_name'] = $variant->product->name;
                 $this->items[$index]['variant_info'] = $variant->var_1 . ' ' . $variant->var_2;
                 
@@ -202,9 +201,10 @@ class OrderManager extends Component
         }
     }
 
-    public function getVariants($sku)
+    public function getVariants($productId)
     {
-        return ProductVariant::where('sku', $sku)->get();
+        $product = Product::find($productId);
+        return $product ? $product->variants : collect();
     }
 
     public function addItem()
@@ -212,7 +212,7 @@ class OrderManager extends Component
         $this->items[] = [
             'id' => null,
             'vid' => '',
-            'product_id' => '',
+            'product_id' => null,
             'sku' => '',
             'quantity' => 1,
             'original' => 0,
@@ -220,7 +220,6 @@ class OrderManager extends Component
             'variant_info' => 'Select Variant',
         ];
     }
-
     public function deleteItem($index)
     {
         if (count($this->items) > 1) {
@@ -242,8 +241,8 @@ class OrderManager extends Component
             $qty = (int) ($item['quantity'] ?? 1);
             $computedPrice += ($price * $qty);
 
-            if ($delivery === null && !empty($item['sku']) && !empty($this->wilaya)) {
-                $fee = fees::where('pid', $item['sku'])
+            if ($delivery === null && !empty($item['product_id']) && !empty($this->wilaya)) {
+                $fee = fees::where('product_id', $item['product_id'])
                     ->where('wid', $this->wilaya)
                     ->first();
                 
@@ -257,7 +256,6 @@ class OrderManager extends Component
                 }
             }
         }
-
         $this->price = $computedPrice;
         $d = (float) ($this->delivery_price ?? 0);
         $dis = (float) ($this->discount ?? 0);
@@ -265,90 +263,87 @@ class OrderManager extends Component
     }
 
     public function createOrder()
-{           
-    $this->validate();
- 
-    \DB::beginTransaction();
-
-    try {
-       
-        $client = Client::updateOrCreate(
-            ['phone_number_1' => $this->phone1],
-            [
-                'full_name' => $this->client_name,
-                'phone_number_2' => $this->phone2,
-                'wilaya' => $this->wilaya,
-                'town' => $this->city,
-                'address' => $this->address,
-            ]
-        );
-         
+    {           
+        $this->validate();
     
-        $firstItemSku = $this->items[0]['sku'] ?? null;
-        $app_id = 0;
+        \DB::beginTransaction();
+
+        try {
         
-        if ($firstItemSku) {
-            $fee = fees::where('pid', $firstItemSku)
-                ->where('wid', $this->wilaya)
-                ->first();
+            $client = Client::updateOrCreate(
+                ['phone_number_1' => $this->phone1],
+                [
+                    'full_name' => $this->client_name,
+                    'phone_number_2' => $this->phone2,
+                    'wilaya' => $this->wilaya,
+                    'town' => $this->city,
+                    'address' => $this->address,
+                ]
+            );
             
-            if ($fee) {
-                $app_id = $fee->app_id;
+        
+            $firstItemSku = $this->items[0]['product_id'] ?? null;
+            $app_id = 0;
+            
+            if ($firstItemSku) {
+                $fee = fees::where('product_id', $firstItemSku)
+                    ->where('wid', $this->wilaya)
+                    ->first();
+                
+                if ($fee) {
+                    $app_id = $fee->app_id;
+                }
             }
-        }
-      
-     
-        $order = Order::create([
-            'oid' => time() . mt_rand(1000, 9999),
-            'cid' => $client->id,
-            'sid' => Auth::User()->id, 
-            'app_id' => $app_id,
-        ]);
         
-        $details = $order->details()->create([
-            'oid' => $order->oid,
-            'price' => $this->total,
-            'total' => $this->total,
-            'delivery_price' => $this->delivery_price,
-            'commenter' => $this->comment,
-            'stopdesk' => $this->delivery_type,
-        ]);
-       
-     
-        foreach ($this->items as $item) {
-            OrderItems::create([
-                'oid' => $order->oid,
-                'sku' => $item['sku'],
-                'vid' => $item['vid'],
-                'quantity' => $item['quantity'],
+        
+            $order = Order::create([
+                'oid' => time() . mt_rand(1000, 9999),
+                'cid' => $client->id,
+                'sid' => Auth::User()->id, 
+                'app_id' => $app_id,
             ]);
-        }
-
-       
-        $Inconfirmationd = $order->Inconfirmation()->create([
-            'fsid' => 1,
-            'aid' => Auth::id(),
-        ]);
-         
-       
+            
+            $details = $order->details()->create([
+                'oid' => $order->oid,
+                'price' => $this->total,
+                'total' => $this->total,
+                'delivery_price' => $this->delivery_price,
+                'commenter' => $this->comment,
+                'stopdesk' => $this->delivery_type,
+            ]);
     
-       
-        \DB::commit();
+            foreach ($this->items as $item) {
+                OrderItems::create([
+                    'oid' => $order->oid,
+                    'product_id' => $item['product_id'],
+                    'vid' => $item['vid'],
+                    'quantity' => $item['quantity'],
+                ]);
+            }
         
-        $this->createdOrder = $order;
-        $this->showSuccessModal = true;
-        $this->resetForm();
-        $this->dispatch('showSuccessToast', 'Order created successfully!');
-      
-    } catch (\Exception $e) {
-   
-        \DB::rollBack();
+            $Inconfirmationd = $order->Inconfirmation()->create([
+                'fsid' => 1,
+                'aid' => Auth::id(),
+            ]);
+            
+        
+        
+        
+            \DB::commit();
+            
+            $this->createdOrder = $order;
+            $this->showSuccessModal = true;
+            $this->resetForm();
+            $this->dispatch('showSuccessToast', 'Order created successfully!');
+        
+        } catch (\Exception $e) {
+    
+            \DB::rollBack();
 
-        Log::error('Order creation failed and rolled back: ' . $e->getMessage());
-        $this->dispatch('showErrorToast', 'Failed to create order. All changes reverted.');
+            Log::error('Order creation failed and rolled back: ' . $e->getMessage());
+            $this->dispatch('showErrorToast', 'Failed to create order. All changes reverted.');
+        }
     }
-}
-
     public function resetForm()
     {
         $this->reset([
@@ -364,9 +359,6 @@ class OrderManager extends Component
         $this->showSuccessModal = false;
         $this->createdOrder = null;
     }
-
-   
-
        
     public function setTab($tab)
     {
@@ -379,19 +371,18 @@ class OrderManager extends Component
         $willayas = willaya::all();
         $firstStepStatus = firstStepStatu::all();
 
-        return view('livewire.store.order-manager', [
+        return view('livewire.v2.order.orders', [
             'willayas' => $willayas,
             'firstStepStatus' => $firstStepStatus
         ]);
     }
-   public function updatedPhone1($value)
-{
-    
-    $cleanValue = str_replace([' ', '-', '.', '(', ')'], '', $value);
-    if (str_starts_with($cleanValue, '+213')) {
-        $cleanValue = '0' . substr($cleanValue, 4);
-    }
-    $this->phone1 = $cleanValue;
+    public function updatedPhone1($value)
+    {
+        $cleanValue = str_replace([' ', '-', '.', '(', ')'], '', $value);
+        if (str_starts_with($cleanValue, '+213')) {
+            $cleanValue = '0' . substr($cleanValue, 4);
+        }
+        $this->phone1 = $cleanValue;
 
-}
+    }
 }

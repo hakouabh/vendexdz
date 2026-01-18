@@ -17,6 +17,6 @@ class ProductVariant extends Model
     ];
     public function product()
     {
-        return $this->belongsTo(Product::class, 'sku','sku');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

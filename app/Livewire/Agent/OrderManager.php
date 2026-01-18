@@ -111,9 +111,7 @@ class OrderManager extends Component
 
     private function loadAvailableProducts()
     { 
-        
-        // For demo purposes, get all products. In real app, you might filter by user permissions
-        $this->availableProducts = Product::with(['variants'])->where('sid',$this->store_id)->get();
+        $this->availableProducts = Product::with(['variants'])->where('store_id',$this->store_id)->get();
        
     }
     public function updatedStoreId($value){

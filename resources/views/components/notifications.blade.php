@@ -10,14 +10,10 @@
                 icon: this.getIcon(data.type || 'info'),
                 show: false
             });
-
-            // أنيميشن الظهور
             setTimeout(() => {
                 const index = this.notifications.findIndex(n => n.id === id);
                 if (index !== -1) this.notifications[index].show = true;
             }, 50);
-
-            // الحذف التلقائي بعد 5 ثوانٍ
             setTimeout(() => { this.remove(id) }, 5000);
         },
         remove(id) {
@@ -43,7 +39,7 @@
         }
     }"
     @notify.window="add($event.detail)"
-    class="fixed bottom-4 right-4 z-[9999] flex flex-col-reverse gap-3 items-end pointer-events-none"
+    class="fixed top-4 right-4 z-[9999] flex flex-col-reverse gap-3 items-end pointer-events-none"
 >
     <template x-for="n in notifications" :key="n.id">
         <div

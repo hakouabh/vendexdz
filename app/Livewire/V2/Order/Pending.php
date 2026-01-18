@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Store\Order;
+namespace App\Livewire\V2\Order;
 
 use Carbon\Carbon;
 use Livewire\Component;
@@ -10,7 +10,7 @@ use App\Models\OrderNots;
 use App\Models\order_Comments;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\SecondStepStatu;
+use App\Models\AcceptStepStatu;
 use App\Models\willaya;
 use App\Models\fees;
 use App\Models\User;
@@ -20,8 +20,24 @@ use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule;     
 use Illuminate\Support\Facades\Auth;
-class IndeliveryManager extends Component
+
+class Pending extends Component
 {
+    use \App\Livewire\V2\Order\Traits\OrderTrait;
+
+    protected $relationsToLoad = [
+        'client.willaya',
+        'logs.user', 
+        'logs.statusNew', 
+        'logs.statusOld', 
+        'Waiting.AcceptStepStatu', 
+        'details', 
+        'items', 
+        'items.variant.product',
+        'Notes.user', 
+        'chats.user', 
+        'histories'
+    ];
     public $showTimerModal = false;
     public $tempStatusId;
     public $tempOrderId;
@@ -69,33 +85,7 @@ class IndeliveryManager extends Component
     public $newNote = '';
     public $newMessage = '';
 
-    public function updatedCity($value)
-    {
-       $currentCommune = collect($this->communes)->firstWhere('name', $value);
 
-        if ($currentCommune) {
-            switch ((int)$this->companie) {
-                case 1001: 
-          
-                    $this->can_use_stopdesk = (bool)($currentCommune['hasPickupPoint'] ?? false);
-                    break;
-                
-                case 1010: 
-                
-                    $this->can_use_stopdesk = (bool)($currentCommune['delivery']['hasPickupPoint'] ?? false);
-                    break;
-               
-            }
-
-            if (!$this->can_use_stopdesk) {
-                $this->delivery_type = '0';
-            }
-        }
-
-        if (method_exists($this, 'calculateTotal')) {
-            $this->calculateTotal();
-        }
-    }
     public function updatedWilaya($value)
     {
         $this->validate([
@@ -147,20 +137,17 @@ class IndeliveryManager extends Component
     { 
         
         $this->calculateTotal();
-        $SecondStepStatus = SecondStepStatu::all(); 
-        $products = Product::where('store_id', Auth::user()->store_id)->latest()
-       ->get();  
+        $AcceptStepStatus = AcceptStepStatu::all(); 
+         $products = Product::where('store_id', Auth::user()->store_id)->latest()
+       ->get();         
 
        $orders = Order::query()->where('sid',Auth::user()->id)
-    // 1. Filter by Status (Table: order_Indeliverys)
+    // 1. Filter by Status (Table: order_Waitings)
     // We use whereHas because every order in this view MUST have a confirmation record
-    ->whereHas('Indelivery', function ($query) {
+    ->whereHas('Waiting', function ($query) {
         if ($this->statufilter) {
-            $query->where('ssid', $this->statufilter);
-        } else {
-            // Default view logic: Exclude specific statuses
-            $query->whereNotIn('ssid', [2, 3]);
-        }
+            $query->where('asid', $this->statufilter);
+        } 
     })
 
     // 2. Store Filter (Directly on the 'orders' table)
@@ -184,7 +171,7 @@ class IndeliveryManager extends Component
     ->with([
         'client', 
         'details', 
-        'Indelivery.SecondStepStatu', 
+        'Waiting.AcceptStepStatu', 
         'items'
     ])
     ->latest()
@@ -192,7 +179,7 @@ class IndeliveryManager extends Component
     $orders->withQueryString();
         $willayas = Willaya::all();
       
-        return view('livewire.store.order.indelivery-manager', ['orders' => $orders,'wilayas'=>$willayas, 'SecondStepStatus'=>$SecondStepStatus ,'products'=>$products]);
+        return view('livewire.v2.order.pending', ['orders' => $orders,'wilayas'=>$willayas, 'AcceptStepStatus'=>$AcceptStepStatus ,'products'=>$products]);
     }
     
 
@@ -219,60 +206,6 @@ class IndeliveryManager extends Component
         $this->expandedOrderId = $id;
         $this->loadOrderData($id);
     }
-
-    public function loadOrderData($id)
-    {
-  
-        $this->activeOrder = Order::with([
-            'client.willaya',
-            'logs.user', 
-            'logs.statusNew', 
-            'logs.statusOld', 
-            'Indelivery.SecondStepStatu', 
-            'details', 
-            'items', 
-            'items.variant.product',
-            'Notes.user', 
-            'chats.user', 
-            'histories'
-        ])->where('oid',$id)->first();
-        
-        if ($this->activeOrder) {
-      
-            $this->client_name = $this->activeOrder->client->full_name ?? '';
-            $this->phone1 = $this->activeOrder->client->phone_number_1 ?? '';
-            $this->phone2 = $this->activeOrder->client->phone_number_2 ?? '';
-            $this->wilaya = $this->activeOrder->client->wilaya ?? '';
-            $this->city = $this->activeOrder->client->town ?? '';
-            $this->address = $this->activeOrder->client->address ?? '';
-            $this->delivery_type = $this->activeOrder->details->stopdesk ?? 0;
-            $this->price = $this->activeOrder->details->price ?? 0;
-            $this->delivery_price = $this->activeOrder->details->delivery_price ?? 0;
-            $this->discount = 0; 
-            $this->Comment = $this->activeOrder->details->commenter; 
-            $this->selectedStatu = $this->activeOrder->Indelivery?->SecondStepStatu->ssid;
-           
-            $this->calculateTotal();
-             
-            $this->items = $this->activeOrder->items->map(function ($item) {
-            return [
-                'id'         => $item->id,
-                'vid'        => $item->vid,
-                'product_id' => $item->variant?->product_id, 
-                'sku'        => $item->sku,
-                'quantity'   => $item->quantity,
-                'original'      => $item->variant?->product->price,
-                'product_name' => $item->variant?->product?->name ?? 'Unknown Product',
-                'variant_info' => ($item->variant?->var_1 ?? '') . ' ' . ($item->variant?->var_2 ?? ''),
-             ];
-            })->toArray();
-
-            
-            $sid = $this->activeOrder->sid ?? '';
-            $this->availableProducts = Product::where('sid',$sid)->with(['variants'])->get();
-        }
-        $this->updatedWilaya($this->wilaya);
-    }
     
    public function proposeStatus($orderId, $statusId)
    {
@@ -294,15 +227,15 @@ class IndeliveryManager extends Component
 
     $order = Order::find($this->tempOrderId);
 
-    if ($order && $order->Indelivery) {
+    if ($order && $order->Waiting) {
         // 1. Capture the CURRENT status before we change it (for the logs)
-        $oldStatusId = $order->Indelivery->ssid;
+        $oldStatusId = $order->Waiting->asid;
 
         // 2. Format the full Date and Time
         $formattedTime = \Carbon\Carbon::parse($this->scheduleTime)->format('Y-m-d H:i:s');
 
         // 3. Update the Order Status
-        $order->Indelivery->update(['ssid' => $this->tempStatusId]);
+        $order->Waiting->update(['asid' => $this->tempStatusId]);
 
         // 4. Create the Timer entry with the FULL Date/Time
         \App\Models\Timer::updateOrCreate(
@@ -320,7 +253,7 @@ class IndeliveryManager extends Component
         ]);
 
         // Sync UI
-        $this->activeOrder = $order->load(['Indelivery.SecondStepStatu', 'logs.user']);
+        $this->activeOrder = $order->load(['Waiting.AcceptStepStatu', 'logs.user']);
         $this->showTimerModal = false;
         $this->selectedStatu = $this->tempStatusId;
         
@@ -333,16 +266,16 @@ public function updateStatus($orderId, $statusId)
     $statusId = (int) $statusId;
     $order = \App\Models\Order::find($orderId);
     
-    if ($order && $order->Indelivery) {
+    if ($order && $order->Waiting) {
         // FIX: Get the actual current status from the relationship
-        $oldStatusId = $order->Indelivery->ssid;
+        $oldStatusId = $order->Waiting->asid;
 
         // Don't log if there's no change
         if ($oldStatusId == $statusId) return;
 
         // 1. Update the status
-        $order->Indelivery->update([
-            'ssid' => $statusId 
+        $order->Waiting->update([
+            'asid' => $statusId 
         ]);
 
         // 2. CREATE THE LOG ENTRY using the captured $oldStatusId
@@ -361,7 +294,7 @@ public function updateStatus($orderId, $statusId)
             \App\Models\Timer::where('oid', $order->oid)->delete();
         }
 
-        $this->activeOrder = $order->load(['Indelivery.SecondStepStatu', 'logs.user']);
+        $this->activeOrder = $order->load(['Waiting.AcceptStepStatu', 'logs.user']);
         session()->flash('success', 'Status updated and history logged.');
     }
 }
@@ -472,12 +405,6 @@ public function updateStatus($orderId, $statusId)
     $this->total = ($this->price + $d) - $dis;
 }
 
-    
-
-   
-
-    
-
     public function sendMessage()
     {
         if (empty($this->newMessage) || !$this->activeOrder) return;
@@ -491,5 +418,86 @@ public function updateStatus($orderId, $statusId)
         $this->newMessage = '';
         $this->activeOrder->load('chats.user');
     }
-  
+
+    public function saveNote()
+    {
+        if (empty($this->newNote) || !$this->activeOrder) return;
+
+        OrderNots::create([
+            'oid' => $this->activeOrder->oid,
+            'uid' => auth()->id() ?? 1,
+            'text' => $this->newNote
+        ]);
+    
+        $this->newNote = '';
+        $this->activeOrder->load('Notes.user');
+    }
+    private function getStandardizedData()
+    {
+    return (object) [
+        'ref'           => 'VN-'.$this->activeOrder->id,
+        'name'          => $this->client_name,
+        'phone'         => $this->phone1,
+        'phone2'        => $this->phone2,
+        'address'       => $this->address,
+        'city'          => $this->city,
+        'wilaya'        => $this->wilaya,
+        'total_price'   => $this->total,
+        'delivery_type' => $this->delivery_type,
+        'note'          => $this->newNote ?: ($this->activeOrder->details->note ?? ''),
+        'product_name'  => collect($this->items)->map(function($item) {
+            $name = $item['product_name'];
+            $variant = !empty($item['variant_info']) ? " ({$item['variant_info']})" : "";
+            $qty = " x" . ($item['quantity'] ?? 1);
+            
+            return $name . $variant . $qty;
+        })->implode(' + '),
+        'quantity'      => collect($this->items)->sum('quantity'),
+    ];
+    }
+    public function RemoveNow($id)
+    {  
+        $switcher = new RemoveOrderSwitcher();
+        $result = $switcher->validate($id, 2);
+        if (isset($result['success']) && $result['success']) {
+           $order->update(['status' => 'Removed']);
+            session()->flash('success', 'Order is Removed !');
+        } else {
+            session()->flash('error', $result['message'] ?? 'Carrier refused validation.');
+        }
+    }
+    public function updateOrder(){
+        if (!$this->activeOrder) return;
+    // This creates the stdClass (Standardized Object)
+    $standardOrder = $this->getStandardizedData();
+   
+    try {
+        $switcher = new EditeOrderSwitcher();
+       
+        $result = $switcher->dispatch($this->activeOrder->tracking,$standardOrder, 2);
+           
+                if ($result['success']) {
+                     $this->saveOrder();
+                    session()->flash('success', "Dispatched! Tracking: " . $result['tracking']);
+                    $this->resetActiveOrder();
+                } else {
+                    session()->flash('error', $result['message']);
+                }
+        } catch (\Exception $e) {
+                session()->flash('error', "Error: " . $e->getMessage());
+         }
+    }
+   
+    public function shipNow($tracking)
+    {  
+        $switcher = new ShipOrderSwitcher();
+        $result = $switcher->validate($tracking, 2);
+        if (isset($result['success']) && $result['success']) {
+           $order->update(['status' => 'shipped']);
+            session()->flash('success', 'Order is ready for pickup!');
+        } else {
+            session()->flash('error', $result['message'] ?? 'Carrier refused validation.');
+        }
+    }
+
 }

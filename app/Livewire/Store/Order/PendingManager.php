@@ -148,7 +148,7 @@ class PendingManager extends Component
         
         $this->calculateTotal();
         $AcceptStepStatus = AcceptStepStatu::all(); 
-         $products = Product::where('sid', Auth::user()->id)->latest()
+         $products = Product::where('store_id', Auth::user()->store_id)->latest()
        ->get();         
 
        $orders = Order::query()->where('sid',Auth::user()->id)

@@ -104,7 +104,6 @@ class OrderManager extends Component
 
     private function loadAvailableProducts()
     {
-        // For demo purposes, get all products. In real app, you might filter by user permissions
         $this->availableProducts = Product::with(['variants'])->get();
     }
 

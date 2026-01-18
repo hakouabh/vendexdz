@@ -11,7 +11,7 @@ use App\Models\installedApps;
 class TerritoriesProduct extends Component
 {
      public $product; // Holds the Product model
-    public $sku;
+    public $product_id;
     public $feesData = [];
     public $installedApps = [];
 
@@ -21,7 +21,7 @@ class TerritoriesProduct extends Component
     public function mount(Product $product)
     {
         $this->product = $product;
-        $this->sku = $product->sku;
+        $this->product_id = $product->id;
         $sid = auth()->id();
 
         // Get shipping providers installed by this store
@@ -33,7 +33,7 @@ class TerritoriesProduct extends Component
         
         // Get existing fees for this Store + Product SKU
         $existingFees = fees::where('sid', $sid)
-            ->where('pid', $this->sku)
+            ->where('product_id', $this->product_id)
             ->get()
             ->keyBy('wid');
 
@@ -67,7 +67,7 @@ class TerritoriesProduct extends Component
         foreach ($this->feesData as $wid => $data) {
             if(!empty($data['app_id']))
             fees::updateOrCreate(
-                ['sid' => $sid, 'wid' => $wid, 'pid' => $this->sku],
+                ['sid' => $sid, 'wid' => $wid, 'product_id' => $this->product_id],
                 [
                     'app_id' => $data['app_id'],
                     'o_s_p'  => $data['o_s_p'],
@@ -78,7 +78,7 @@ class TerritoriesProduct extends Component
             );
         }
 
-        session()->flash('success', "Shipping rates for {$this->sku} saved.");
+        session()->flash('success', "Shipping rates for {$this->product_id} saved.");
     }
     public function render()
     {

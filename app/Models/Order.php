@@ -31,25 +31,29 @@ class Order extends Model
     }
     public function Notes()
     {
-        
         return $this->hasMany(OrderNots::class, 'oid', 'oid')->latest();
     }
+
     public function chats()
     {
         return $this->hasMany(order_Comments::class, 'oid', 'oid');
     }
+
     public function histories()
     {
         return $this->hasMany(order_logs::class, 'oid', 'oid')->latest();
     }
+
     public function client()
     {
         return $this->belongsTo(Client::class, 'cid', 'id');
     }
+    
     public function details()
     {
         return $this->hasOne(OrderDetails::class, 'oid', 'oid');
     }
+    
     public function Inconfirmation()
     {
         return $this->hasOne(OrderInconfirmation::class, 'oid', 'oid');

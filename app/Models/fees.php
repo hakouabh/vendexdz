@@ -10,7 +10,7 @@ class fees extends Model
         'sid',
         'app_id',
         'wid',
-        'pid',
+        'product_id',
         'o_s_p',
         'c_s_p',
         'o_d_p',
@@ -21,12 +21,10 @@ class fees extends Model
     }
     public function app()
     {
-    // Links app_id in fees table to app_id in installedApps table
         return $this->belongsTo(installedApps::class, 'app_id', 'app_id');
     }
     public function product()
     {
-        // pid in fees table maps to sku in products table
-        return $this->belongsTo(Product::class, 'pid', 'sku');
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 }

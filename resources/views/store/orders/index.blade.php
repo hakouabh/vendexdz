@@ -3,6 +3,5 @@
 @section('title', 'Orders - Vendex')
 
 @section('content')
-
-    @livewire('store.order-manager')
+    @livewire('v2.order.orders')
 @endsection

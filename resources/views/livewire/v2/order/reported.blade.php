@@ -22,12 +22,13 @@
             x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
             class="flex overflow-x-auto pb-4 gap-4 custom-scrollbar snap-x">
 
-            @foreach($SecondStepStatus as $status)
-            @if(in_array($status->ssid, [2, 3])) @continue @endif
+            @foreach($firstStepStatus as $status)
+            @if(!in_array($status->fsid, [2, 3])) @continue @endif
             @php
-            $count = $orders->where('Inconfirmation.SecondStepStatu.ssid', $status->ssid)->count();
+            $count = $orders->where('Inconfirmation.firstStepStatu.fsid', $status->fsid)->count();
             @endphp
-
+           
+ 
             <div class="flex-none w-44 snap-start group">
                 <div
                     class="relative bg-white border border-slate-100 rounded-[24px] px-4 py-2 shadow-sm group-hover:shadow-md group-hover:border-[#10F0B2]/30 transition-all duration-300 overflow-hidden">
@@ -78,7 +79,6 @@
     </style>
     <div class="flex justify-between w-full font-bold ">
         <div class="flex gap-2 w-3/5 ">
-            
             <x-dropdown align="center" width="48">
                 <x-slot name="trigger">
                     <button type="button"
@@ -133,8 +133,8 @@
                         <x-dropdown-link wire:click="Statufilter(null)" class="text-[]">
                             <i class=""></i> All
                         </x-dropdown-link>
-                        @foreach($SecondStepStatus as $status)
-                        <x-dropdown-link wire:click="Statufilter({{$status->ssid}})" class="text-[{{$status->color}}]">
+                        @foreach($firstStepStatus as $status)
+                        <x-dropdown-link wire:click="Statufilter({{$status->fsid}})" class="text-[{{$status->color}}]">
                             <i class="{{$status->icon}}"></i> {{$status->name}}
                         </x-dropdown-link>
                         @endforeach
@@ -169,6 +169,13 @@
                 </button>
                 @endif
             </div>
+            <button type="button"
+                class="inline-flex px-5 items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+
+                {{ __('Delivery all') }}
+
+            </button>
+
         </div>
 
     </div>
@@ -259,22 +266,22 @@
                 open = !open;
                 buttonRect = $event.target.closest('button').getBoundingClientRect();
             " type="button" class="focus:outline-none">
-                            @if($order->Inconfirmation?->SecondStepStatu)
+                            @if($order->Inconfirmation?->firstStepStatu)
                             <div class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset cursor-pointer hover:opacity-80 transition"
                                 style="
-                        background-color: {{ $order->Inconfirmation->SecondStepStatu->color }}15;
-                        color: {{ $order->Inconfirmation->SecondStepStatu->color }};
-                        ring-color: {{ $order->Inconfirmation->SecondStepStatu->color }}30;
+                        background-color: {{ $order->Inconfirmation->firstStepStatu->color }}15;
+                        color: {{ $order->Inconfirmation->firstStepStatu->color }};
+                        ring-color: {{ $order->Inconfirmation->firstStepStatu->color }}30;
                     ">
 
                                 <div class="h-1.5 w-1.5 rounded-full animate-pulse"
-                                    style="background-color: {{ $order->Inconfirmation->SecondStepStatu->color }}"></div>
+                                    style="background-color: {{ $order->Inconfirmation->firstStepStatu->color }}"></div>
 
-                                @if($order->Inconfirmation->SecondStepStatu->icon)
-                                <i class="{{ $order->Inconfirmation->SecondStepStatu->icon }}"></i>
+                                @if($order->Inconfirmation->firstStepStatu->icon)
+                                <i class="{{ $order->Inconfirmation->firstStepStatu->icon }}"></i>
                                 @endif
 
-                                {{ $order->Inconfirmation->SecondStepStatu->name }}
+                                {{ $order->Inconfirmation->firstStepStatu->name }}
 
                                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round"
@@ -304,8 +311,8 @@
                                     </p>
 
                                     <div class="max-h-60 overflow-y-auto custom-scrollbar">
-                                        @foreach($SecondStepStatus as $statu)
-                                        <button wire:click="proposeStatus({{ $order->id }}, {{ $statu->ssid }})"
+                                        @foreach($firstStepStatus as $statu)
+                                        <button wire:click="proposeStatus({{ $order->id }}, {{ $statu->fsid }})"
                                             @click="open = false"
                                             class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition">
                                             <div class="h-2 w-2 rounded-full"
@@ -324,8 +331,9 @@
 
                 <div class="col-span-6 text-cnter sm:col-span-1">
                     <div class="flex  items-baseline  justify-center">
-                        <span class="text-sm font-black text-gray-900 whitespace-nowrap">{{$order->details?->price}}
-                        </span><span class="text-[10px] font-extrabold text-gray-400">DZD</span>
+                        <span
+                            class="text-sm font-black text-gray-900 whitespace-nowrap">{{ $order->timer && $order->timer->time ? \Carbon\Carbon::parse($order->timer->time)->format('d M, H:i') : 'N/A' }}
+
                     </div>
                 </div>
 
@@ -536,10 +544,10 @@
                                             {{ empty($item['sku']) ? 'disabled' : '' }}
                                             class="w-full rounded-xl border-none bg-slate-50 p-2 text-[11px] font-bold {{ empty($item['product_id']) ? 'text-slate-300' : 'text-slate-700' }} focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
                                             <option value="">-- Variant --</option>
-                                            @if(!empty($item['sku']))
-                                            @foreach($this->getVariants($item['sku']) as $v)
-                                            <option value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }})</option>
-                                            @endforeach
+                                            @if(!empty($item['product_id']))
+                                                @foreach($this->getVariants($item['product_id']) as $v)
+                                                    <option value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }})</option>
+                                                @endforeach
                                             @endif
                                         </select>
                                     </div>
