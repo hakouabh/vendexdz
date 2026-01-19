@@ -7,7 +7,6 @@ use Livewire\Component;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\firstStepStatu;
-use App\Models\willaya;
 use App\Models\User;
 use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
@@ -44,45 +43,10 @@ class Inconfermation extends Component
     public $start_date=null;
     public $end_date=null;
 
-    public $companie=0;
-    public $communes = [];
-    public $selectedWilayaId = null;
-
-    public $expandedOrderId = null;
-    public $activeOrder = null;
     public $activeTab = 'chat'; 
-
-    public $availableProducts;
-
-    public $client_name;
-    public $phone1;
-    public $phone2;
-    public $wilaya;
-    public $city;
-    public $address;
-
-    public $Comment;
-
-    public $delivery_type = 1;
-    public $order_type = 'Normal';
-
-
-    public $price = 0;
-    public $delivery_price = 0;
-    public $discount = 0;
-    public $total = 0;
-    
-
-
-    public $items = []; 
-    public $can_use_stopdesk = true;
- 
-    public $newNote = '';
-    public $newMessage = '';
  
     public function render()
     { 
-        $this->calculateTotal();
         $firstStepStatus = firstStepStatu::all(); 
         $products = Product::where('store_id', Auth::user()->store_id)->latest()->get();
         $orders = Order::query()->where('sid',Auth::user()->id)
@@ -112,8 +76,7 @@ class Inconfermation extends Component
         ->latest()
         ->paginate(10, ['*'], 'inPage');
         $orders->withQueryString();
-        $willayas = Willaya::all();
-        return view('livewire.v2.order.inconfermation', ['orders' => $orders,'wilayas'=>$willayas, 'firstStepStatus'=>$firstStepStatus ,'products'=>$products]);
+        return view('livewire.v2.order.inconfermation', ['orders' => $orders, 'firstStepStatus'=>$firstStepStatus ,'products'=>$products]);
     }
     
     public function sendToShipping()

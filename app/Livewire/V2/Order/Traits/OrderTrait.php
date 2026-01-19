@@ -7,75 +7,32 @@ use App\Models\OrderItems;
 use App\Models\ProductVariant;
 use App\Models\fees;
 use App\Models\Order;
+use App\Models\Client;
 use App\Models\Product;
 use App\Models\OrderNots;
 use App\Models\order_Comments;
-use App\Services\TerritoryServices\ZRTerritoryService;
-use App\Services\TerritoryServices\AndersonTerritoryService;
 
 trait OrderTrait
 {
-    public function updatedCity($value)
-    {
-       $currentCommune = collect($this->communes)->firstWhere('name', $value);
-        if ($currentCommune) {
-            switch ((int)$this->companie) {
-                case 1001: 
-                    $this->can_use_stopdesk = (bool)($currentCommune['hasPickupPoint'] ?? false);
-                    break;
-                case 1010: 
-                    $this->can_use_stopdesk = (bool)($currentCommune['delivery']['hasPickupPoint'] ?? false);
-                    break;
-            }
-            if (!$this->can_use_stopdesk) {
-                $this->delivery_type = '0';
-            }
-        }
-        if (method_exists($this, 'calculateTotal')) {
-            $this->calculateTotal();
-        }
-    }
+    public $items = [];
+    public $availableProducts;
+    public $client_name;
+    public $phone1;
+    public $phone2;
+    public $address;
+    public $Comment;
+    public $delivery_type = 1;
+    public $order_type = 'Normal';
+    public $delivery_price = 0;
+    public $price = 0;
+    public $discount = 0;
+    public $total = 0;
+    public $companie = 0;
+    public $selectedWilayaId = null;
+    public $can_use_stopdesk = true;
+    public $expandedOrderId = null;
 
-    public function updatedWilaya($value)
-    {
-        $this->validate([
-            'items'         => 'required|array|min:1',
-            'items.*.vid'   => 'required|exists:product_variants,id',
-            'items.*.quantity' => 'required|integer|min:1',
-        ]);
-        if (!$value) {
-            $this->reset(['communes', 'selectedWilayaId', 'city', 'can_use_stopdesk']);
-            return;
-        }
-        $firstItemSku = $this->items[0]['product_id'] ?? null;
-
-        $app_id = fees::where('sid',$this->activeOrder->sid)
-            ->where('product_id', $firstItemSku)
-            ->where('wid',$this->wilaya)->first()->app_id;
-        $this->companie= $app_id;
-        switch ($this->companie){
-            case 1001: 
-                $service = new \App\Services\TerritoryServices\AndersonTerritoryService();
-                $data = $service->getEverythingCached();
-                $this->communes = $data['communes'][$value] ?? [];
-                break;
-            case 1010:
-                $service = new \App\Services\TerritoryServices\ZRTerritoryService();
-                $data = $service->getEverythingCached();
-                $zrWilaya = $data['wilayas'][$value] ?? null;
-                if ($zrWilaya) {
-                    $this->selectedWilayaId = $zrWilaya['id'];
-                    $this->communes = $data['communes'][$this->selectedWilayaId] ?? [];
-                } else {
-                    $this->communes = [];
-                }
-                break;
-            default:
-                $this->communes = [];
-                break;
-        }
-        $this->reset(['city', 'can_use_stopdesk']);
-    }
+    public Order $activeOrder;
 
     public function Storefilter($id){
         $this->storefilter=$id;
@@ -99,74 +56,30 @@ trait OrderTrait
         $this->expandedOrderId = $id;
         $this->loadOrderData($id, $this->relationsToLoad);
     }
-    
-    public function addItem()
-    {
-        if (!$this->activeOrder) return;
-
-        $item = OrderItems::create([
-            'oid' => $this->activeOrder->oid,
-            'sku' => 0,
-            'vid' => 0,
-            'product_id' => null,
-            'quantity' => 1
-        ]);
-
-        $this->items[] = [
-            'id' => $item->id,
-            'vid' => '',
-            'sku' => '',
-            'product_id' => null,
-            'quantity' => 1,
-            'original' => 0,
-            'product_name' => '',
-            'variant_info' => '',
-        ];
-    }
-
-    public function updatedItems($value, $key)
-    {
-        if (!str_contains($key, '.vid')) return;
-
-        $index = explode('.', $key)[0];
-        $variant = ProductVariant::with('product')->find($value);
-
-        if (!$variant) return;
-
-        $this->items[$index]['vid'] = $variant->id;
-        $this->items[$index]['sku'] = $variant->sku;
-        $this->items[$index]['product_id'] = $variant->product_id;
-        $this->items[$index]['original'] = $variant->product->price;
-        $this->items[$index]['product_name'] = $variant->product->name;
-        $this->items[$index]['variant_info'] = trim($variant->var_1.' '.$variant->var_2);
-
-        $this->calculateTotal();
-    }
-
-    public function deleteItem($itemId, $index)
-    {
-        OrderItems::where('id', $itemId)->delete();
-        unset($this->items[$index]);
-        $this->items = array_values($this->items);
-    }
 
     public function calculateTotal()
     {
-        $this->price = collect($this->items)->sum(fn ($i) =>
-            ((float)($i['original'] ?? 0)) * ((int)($i['quantity'] ?? 1))
-        );
-
-        if (!empty($this->items) && $this->wilaya) {
-            $fee = Fees::where('product_id', $this->items[0]['product_id'])
-                ->where('wid', $this->wilaya)
+        $orderItems = OrderItems::where('oid', $this->activeOrder->oid)->get();
+        $client = Client::find($this->activeOrder->cid);
+        $this->price = $orderItems->sum(function ($item) {
+            $price = $item->variant ? $item->variant->product->price : 0;
+            return $price * $item['quantity'];
+        });
+        if ($client->wilaya) {
+            $fee = Fees::where('product_id', $orderItems[0]['product_id'])
+                ->where('wid', $client->wilaya)
                 ->first();
-
             $this->delivery_price = $fee
                 ? ($this->delivery_type ? $fee->c_s_p : $fee->c_d_p)
                 : 0;
         }
-
         $this->total = ($this->price + $this->delivery_price) - ($this->discount ?? 0);
+        $this->dispatch('orderTotalsUpdated', [
+            'price'          => $this->price,
+            'delivery_price' => $this->delivery_price,
+            'discount'       => $this->discount,
+            'total'          => $this->total,
+        ]);
     }
     protected function loadOrderData($oid, array $relations)
     {
@@ -176,62 +89,12 @@ trait OrderTrait
 
         if (!$this->activeOrder) return;
 
-        $client = $this->activeOrder->client;
-
-        $this->client_name = $client->full_name ?? '';
-        $this->phone1 = $client->phone_number_1 ?? '';
-        $this->phone2 = $client->phone_number_2 ?? '';
-        $this->wilaya = $client->wilaya ?? '';
-        $this->address = $client->address ?? '';
-
-        $this->items = $this->activeOrder->items->map(fn ($item) => [
-            'id' => $item->id,
-            'vid' => $item->vid,
-            'sku' => $item->sku,
-            'quantity' => $item->quantity,
-            'product_id' => $item->product_id,
-            'original' => $item->variant?->product->price ?? 0,
-            'product_name' => $item->variant?->product->name ?? '',
-            'variant_info' => trim(($item->variant?->var_1 ?? '').' '.($item->variant?->var_2 ?? '')),
-        ])->toArray();
-
         $this->availableProducts = Product::where('created_by', $this->activeOrder->sid)
             ->with('variants')
             ->get();
-
         $this->calculateTotal();
-        $this->updatedWilaya($this->wilaya);
-        $this->city = $client->town ?? '';
     }
-    // public function calculateTotal()
-    // {
-    //     $computedPrice = 0; 
-    //     $delivery=null;
-    //     foreach ($this->items as $item) {
-            
-    //         $price = (float) ($item['original'] ?? 0);
-    //         $qty = (int) ($item['quantity'] ?? 1);
-    //         $computedPrice += ($price * $qty); 
-    //         if($delivery===null){
-    //         if($this->delivery_type==1){
-    //             $this->delivery_price = fees::where('product_id',$item['product_id'])->where('wid',$this->wilaya)->first()->c_s_p;
-    //         }else{
-    //             $this->delivery_price = fees::where('product_id',$item['product_id'])->where('wid',$this->wilaya)->first()->c_d_p  ?? 0;
-    //         }
-            
-    //         $delivery=$this->delivery_price;
-    //         }
-
-    //     }
-
-    //     $this->price = $computedPrice;
-
-   
-    //     $d = (float) ($this->delivery_price ?? 0);
-    //     $dis = (float) ($this->discount ?? 0);
-
-    //     $this->total = ($this->price + $d) - $dis;
-    // }
+    
     public function getVariants($id)
     {
         $product = Product::find($id);
@@ -241,23 +104,21 @@ trait OrderTrait
     public function saveOrder()
     {   
         if (!$this->activeOrder) return;
-        $this->validate([
-        'client_name'   => 'required|string|min:3',
-        'phone1'        => ['required','regex:/^((05|06|07)[0-9]{8})$/'],
-        'wilaya'        => 'required',
-        'city'          => 'required',
-        'address'          => 'required',
-        'items'         => 'required|array|min:1',
-        'items.*.vid'   => 'required|exists:product_variants,id',
-        'items.*.quantity' => 'required|integer|min:1',
-        ]);
+        // $this->validate([
+        // 'client_name'   => 'required|string|min:3',
+        // 'phone1'        => ['required','regex:/^((05|06|07)[0-9]{8})$/'],
+        // 'wilaya'        => 'required',
+        // 'city'          => 'required',
+        // 'address'          => 'required',
+        // 'items'         => 'required|array|min:1',
+        // 'items.*.vid'   => 'required|exists:product_variants,id',
+        // 'items.*.quantity' => 'required|integer|min:1',
+        // ]);
         if ($this->activeOrder->client) {
             $this->activeOrder->client->update([
                 'full_name' => $this->client_name,
                 'phone_number_1' => $this->phone1,
                 'phone_number_2' => $this->phone2,
-                'wilaya' => $this->wilaya,
-                'town' => $this->city,
                 'address' => $this->address,
             ]);
         }
@@ -268,16 +129,7 @@ trait OrderTrait
                 'price' => $this->total,
             ]);
         }
-        foreach ($this->items as $itemData) {
-            if (isset($itemData['id'])) {
-                OrderItems::where('id', $itemData['id'])->update([
-                    'vid' => $itemData['vid'],
-                    'product_id' => $itemData['product_id'],
-                    'quantity' => $itemData['quantity'] ?? 1,
-                ]);
-            }
-        }
-        $firstItemSku = $this->items[0]['product_id'] ?? null;
+        $firstItemSku = $this->activeOrder->items[0]['product_id'] ?? null;
         $app_id = fees::where('sid',$this->activeOrder->sid)
             ->where('product_id', $firstItemSku)
             ->where('wid',$this->wilaya)->first()->app_id;
@@ -379,9 +231,14 @@ trait OrderTrait
     private function resetActiveOrder()
     {
         $this->expandedOrderId = null;
-        $this->activeOrder = null;
-        $this->items = [];
         $this->reset(['client_name','availableProducts', 'phone1', 'phone2', 'price', 'delivery_price', 'discount', 'total']);
+        $this->dispatch('orderItemsUpdated', []);
+        $this->dispatch('orderTotalsUpdated', [
+            'price'          => 0,
+            'delivery_price' => 0,
+            'discount'       => 0,
+            'total'          => 0,
+        ]);
     }
     public function updated($propertyName)
     {
@@ -389,19 +246,6 @@ trait OrderTrait
        if (in_array($propertyName, ['price', 'delivery_price', 'discount']) || strpos($propertyName, 'items') !== false) {
         $this->calculateTotal();
         }
-    }
-    public function sendMessage()
-    {
-        if (empty($this->newMessage) || !$this->activeOrder) return;
-
-        order_Comments::create([
-            'oid' => $this->activeOrder->oid,
-            'uid' => auth()->id() ?? 1, 
-            'text' => $this->newMessage
-        ]);
-
-        $this->newMessage = '';
-        $this->activeOrder->load('chats.user');
     }
     public function saveNote()
     {
@@ -429,14 +273,14 @@ trait OrderTrait
             'total_price'   => $this->total,
             'delivery_type' => $this->delivery_type,
             'note'          => $this->newNote ?: ($this->activeOrder->details->note ?? ''),
-            'product_name'  => collect($this->items)->map(function($item) {
+            'product_name'  => collect($this->activeOrder->items)->map(function($item) {
                 $name = $item['product_name'];
                 $variant = !empty($item['variant_info']) ? " ({$item['variant_info']})" : "";
                 $qty = " x" . ($item['quantity'] ?? 1);
                 
                 return $name . $variant . $qty;
             })->implode(' + '),
-            'quantity'      => collect($this->items)->sum('quantity'),
+            'quantity'      => collect($this->activeOrder->items)->sum('quantity'),
         ];
     }
     public function updatedPhone1($value)

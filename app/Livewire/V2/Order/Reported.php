@@ -48,7 +48,6 @@ class Reported extends Component
     public $selectedWilayaId = null;
 
     public $expandedOrderId = null;
-    public $activeOrder = null;
     public $activeTab = 'chat'; 
 
     public $availableProducts;
@@ -81,8 +80,6 @@ class Reported extends Component
 
     public function render()
     { 
-        
-        $this->calculateTotal();
         $firstStepStatus = firstStepStatu::all(); 
         $products = Product::where('store_id', Auth::user()->store_id)->latest()
         ->get();          
