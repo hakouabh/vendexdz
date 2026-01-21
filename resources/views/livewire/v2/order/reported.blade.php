@@ -348,171 +348,9 @@
 
             @if($expandedOrderId == $order->oid)
             <div class="border-t border-gray-100 bg-gray-50/50">
-
                 <div class="flex  items-center justify-between gap-4 border-b border-gray-200 bg-white px-6 py-3">
-                    <div class="grid grid-cols-1 gap-4 w-full sm:grid-cols-3">
-                        <div class="sm:col-span-1">
-                            <label
-                                class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-gray-400">Full
-                                Name @error('client_name') <p class=" text-[8px] text-red-600"> {{ $message }}</p>
-                                @enderror</label>
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <i class="ri-user-smile-line text-gray-400"></i>
-                                </div>
-                                <input type="text" wire:model="client_name"
-                                    class="block w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-xs font-bold text-gray-700 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label
-                                class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-gray-400">Phone
-                                Number @error('phone1') <p class=" text-[8px] text-red-600"> {{ $message }}</p>
-                                @enderror</label>
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <i class="ri-phone-line text-gray-400"></i>
-                                </div>
-                                <input type="text" wire:model="phone1"
-                                    class="block w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-xs font-bold text-gray-700 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-2">
-                                    <button class="rounded bg-green-100 p-1 text-green-600 hover:bg-green-200">
-                                        <i class="ri-phone-fill"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="sm:col-span-1">
-                            <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">Phone Number
-                                2</label>
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <i class="ri-phone-line text-gray-400"></i>
-                                </div>
-                                <input type="text" wire:model="phone2"
-                                    class="block w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-xs font-bold text-gray-700 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-2">
-                                    <button class="rounded bg-green-100 p-1 text-green-600 hover:bg-green-200">
-                                        <i class="ri-phone-fill"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="sm:col-span-1">
-                            <label
-                                class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-gray-400">Wilaya
-                                @error('wilaya') <p class=" text-[8px] text-red-600"> {{ $message }}</p>
-                                @enderror</label>
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <i class="ri-map-pin-line text-gray-400"></i>
-                                </div>
-                                <select wire:model.live="wilaya"
-                                    class="block w-full appearance-none rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-8 text-xs font-bold text-gray-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
-                                    @foreach($wilayas as $w)
-                                    <option value="{{$w->wid}}">{{$w->wid}} {{$w->name}}</option>
-                                    @endforeach
-                                </select>
-                                <div
-                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                                    <i class="ri-arrow-down-s-fill"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="sm:col-span-1">
-                            <label
-                                class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-gray-400">City
-                                @error('city') <p class=" text-[8px] text-red-600"> {{ $message }}</p> @enderror</label>
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <i class="ri-map-pin-line text-gray-400"></i>
-                                </div>
-                                <select wire:model.live="city"
-                                    class="block w-full appearance-none rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-8 text-xs font-bold text-gray-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
-                                    @foreach($communes as $commune)
-                                    <option value="{{ $commune['name'] }}">
-                                        {{ $commune['name'] }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                                <div
-                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                                    <i class="ri-arrow-down-s-fill"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1">
-                            <label
-                                class="flex gap-1 items-center mb-1 block text-[10px] font-bold uppercase text-gray-400">Address
-                                /
-                                Commune @error('address') <p class=" text-[8px] text-red-600"> {{ $message }}</p>
-                                @enderror</label>
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <i class="ri-home-4-line text-gray-400"></i>
-                                </div>
-                                <input type="text" wire:model="address"
-                                    class="block w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-xs font-bold text-gray-700 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
-                            </div>
-                        </div>
-                        <div class="sm:col-span-1">
-                            <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">Delivery
-                                Note</label>
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <i class="ri-sticky-note-line text-gray-400"></i>
-                                </div>
-                                <input type="text" wire:model="Comment" placeholder="send it fast"
-                                    class="block w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-xs font-bold text-gray-700 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
-                            </div>
-                        </div>
-                        <div class="sm:col-span-1">
-                            <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">Delivery
-                                Type</label>
-                            <div class="flex rounded-lg bg-gray-100 p-1">
-                                <button wire:click="$set('delivery_type', '1')"
-                                    {{ !$can_use_stopdesk ? 'disabled' : '' }}
-                                    class="flex-1 rounded py-1.5 text-[10px] font-bold  {{ $delivery_type=='1'?'bg-white text-blue-600 shadow-sm':'text-gray-400' }}">
-                                    <span>Stopdesk</span>
-                                    @if(!$can_use_stopdesk)
-                                    <span class="text-[8px] text-red-500">Not Available</span>
-                                    @endif
-                                </button>
-                                <button wire:click="$set('delivery_type', '0')"
-                                    class="flex-1 rounded py-1.5 text-[10px] font-bold {{ $delivery_type=='0'?'bg-white text-blue-600 shadow-sm':'text-gray-400' }}">Domicile</button>
-                            </div>
-                        </div>
-                        <div class="sm:col-span-1" x-data="{ type: 'Normal' }">
-                            <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">Order Type</label>
-                            <div class="flex rounded-lg bg-gray-100 p-1">
-                                <button @click="type = 'Normal'"
-                                    :class="type === 'Normal' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
-                                    class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                                    Normal
-                                </button>
-                                <button @click="type = 'quantity_break'"
-                                    :class="type === 'quantity_break' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
-                                    class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                                    Quantity Break
-                                </button>
-                                <button @click="type = 'upsell'"
-                                    :class="type === 'upsell' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
-                                    class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                                    Up Sell
-                                </button>
-                                <button @click="type = 'crossell'"
-                                    :class="type === 'crossell' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
-                                    class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                                    Cross Sell
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
+                    <livewire:v2.order.templates.order-customer-info :activeOrder="$activeOrder" :key="'order-customer-info-'.$activeOrder->id" />    
                 </div>
-
                 <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-4">
                     <livewire:v2.order.templates.order-items :activeOrder="$activeOrder" :availableProducts="$availableProducts" :key="'order-items-'.$activeOrder->id" />
                     <livewire:v2.order.templates.order-price :key="'order-price-'.$activeOrder->id" />
@@ -536,29 +374,26 @@
                     <livewire:v2.order.templates.order-chat :order="$activeOrder" :key="'order-chat-'.$activeOrder->id" />
                 </div>
                 <div
-                    class="flex flex-col items-center justify-between gap-4 border-t border-gray-100 bg-gray-50 px-6 py-4 sm:flex-row rounded-b-xl">
-
-                    <button
-                        class="group flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-xs font-bold text-red-500 transition-all hover:bg-red-50 hover:border-red-300">
-                        <i class="ri-close-circle-line text-sm transition-transform group-hover:rotate-90"></i>
-                        Back
-                    </button>
-
-                    <div class="flex flex-wrap gap-3">
-
-                        <button wire:click="sendAllToShipping()" wire:loading.attr="disabled"
-                            class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-all hover:bg-gray-100 hover:text-blue-600 hover:border-gray-300 shadow-sm">
-                            <i class="ri-truck-line text-sm"></i>
-                            Setup Delivery
+                        class="flex flex-col items-center justify-between gap-4 border-t border-gray-100 bg-gray-50 px-6 py-4 sm:flex-row rounded-b-xl">
+                        <button
+                            class="group flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-xs font-bold text-red-500 transition-all hover:bg-red-50 hover:border-red-300">
+                            <i class="ri-close-circle-line text-sm transition-transform group-hover:rotate-90"></i>
+                            @lang('Back')
                         </button>
+                        <div class="flex flex-wrap gap-3">
+                            <button wire:click="sendAllToShipping()" wire:loading.attr="disabled"
+                                class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-all hover:bg-gray-100 hover:text-blue-600 hover:border-gray-300 shadow-sm">
+                                <i class="ri-truck-line text-sm"></i>
+                                @lang('Setup Delivery')
+                            </button>
 
-                        <button wire:click="saveOrder"
-                            class="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-xs font-bold text-white shadow-md shadow-blue-100 transition-all hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5">
-                            <i class="ri-save-3-line text-sm"></i>
-                            Save
-                        </button>
+                            <button wire:click="$dispatch('customerInfoUpdated');"
+                                class="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-xs font-bold text-white shadow-md shadow-blue-100 transition-all hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5">
+                                <i class="ri-save-3-line text-sm"></i>
+                                @lang('Save')
+                            </button>
+                        </div>
                     </div>
-                </div>
             </div>
             @endif
 

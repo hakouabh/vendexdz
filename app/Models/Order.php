@@ -15,6 +15,7 @@ class Order extends Model
         'app_id',
         'custom_id',
         'from',
+        'type'
         
     ];
     public function getRouteKeyName()
@@ -78,9 +79,5 @@ class Order extends Model
     public function logs()
     {
          return $this->hasMany(order_logs::class, 'oid', 'oid')->latest();
-    }
-     public function Type()
-    {
-         return $this->hasOne(order_type::class, 'oid', 'oid')->latest();
     }
 }

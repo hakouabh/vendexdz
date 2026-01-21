@@ -127,28 +127,28 @@
                 class="flex-1 rounded py-1.5 text-[10px] font-bold {{ $delivery_type=='0'?'bg-white text-blue-600 shadow-sm':'text-gray-400' }}">@lang('Domicile')</button>
         </div>
     </div>
-    <div class="sm:col-span-1" x-data="{ type: 'Normal' }">
+    <div class="sm:col-span-1" x-data="{ type: @entangle('type') }">
         <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">@lang('Order Type')</label>
         <div class="flex rounded-lg bg-gray-100 p-1">
-            <button @click="type = 'Normal'"
-                :class="type === 'Normal' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+            <button wire:click="setType('normal')"
+                :class="type === 'normal' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
                 class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                Normal
+                @lang('Normal')
             </button>
-            <button @click="type = 'quantity_break'"
+            <button wire:click="setType('quantity_break')"
                 :class="type === 'quantity_break' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
                 class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                Quantity Break
+                @lang('Quantity Break')
             </button>
-            <button @click="type = 'upsell'"
+            <button wire:click="setType('upsell')"
                 :class="type === 'upsell' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
                 class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                Up Sell
+                @lang('Up Sell')
             </button>
-            <button @click="type = 'crossell'"
+            <button wire:click="setType('crossell')"
                 :class="type === 'crossell' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
                 class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                Cross Sell
+                @lang('Cross Sell')
             </button>
         </div>
     </div>

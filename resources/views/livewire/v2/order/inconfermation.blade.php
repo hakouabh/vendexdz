@@ -286,7 +286,7 @@
                     </div>
                     <div class="col-span-6 text-cnter sm:col-span-1">
                         <div class="flex  items-baseline  justify-center">
-                            <span class="text-sm font-black text-gray-900 whitespace-nowrap">{{$order->details?->price}}
+                            <span class="text-sm font-black text-gray-900 whitespace-nowrap">{{$order->details?->total}}
                             </span><span class="text-[10px] font-extrabold text-gray-400">DZD</span>
                         </div>
                     </div>
@@ -301,9 +301,8 @@
                 @if($expandedOrderId == $order->oid)
                 <div class="border-t border-gray-100 bg-gray-50/50">
                     <div class="flex  items-center justify-between gap-4 border-b border-gray-200 bg-white px-6 py-3">
-                    <livewire:v2.order.templates.order-customer-info :activeOrder="$activeOrder" :key="'order-customer-info-'.$activeOrder->id" />    
+                        <livewire:v2.order.templates.order-customer-info :activeOrder="$activeOrder" :key="'order-customer-info-'.$activeOrder->id" />    
                     </div>
-
                     <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-4">
                         <livewire:v2.order.templates.order-items :activeOrder="$activeOrder" :availableProducts="$availableProducts" :key="'order-items-'.$activeOrder->id" />
                         <livewire:v2.order.templates.order-price :key="'order-price-'.$activeOrder->id" />
@@ -330,32 +329,27 @@
                     </div>
                     <div
                         class="flex flex-col items-center justify-between gap-4 border-t border-gray-100 bg-gray-50 px-6 py-4 sm:flex-row rounded-b-xl">
-
                         <button
                             class="group flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-xs font-bold text-red-500 transition-all hover:bg-red-50 hover:border-red-300">
                             <i class="ri-close-circle-line text-sm transition-transform group-hover:rotate-90"></i>
-                            Back
+                            @lang('Back')
                         </button>
-
                         <div class="flex flex-wrap gap-3">
-
                             <button wire:click="sendAllToShipping()" wire:loading.attr="disabled"
                                 class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-all hover:bg-gray-100 hover:text-blue-600 hover:border-gray-300 shadow-sm">
                                 <i class="ri-truck-line text-sm"></i>
-                                Setup Delivery
+                                @lang('Setup Delivery')
                             </button>
 
-                            <button wire:click="saveOrder"
+                            <button wire:click="$dispatch('customerInfoUpdated');"
                                 class="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-xs font-bold text-white shadow-md shadow-blue-100 transition-all hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5">
                                 <i class="ri-save-3-line text-sm"></i>
-                                Save
+                                @lang('Save')
                             </button>
                         </div>
                     </div>
                 </div>
                 @endif
-
-
             </div>
         </div>
     @endforeach

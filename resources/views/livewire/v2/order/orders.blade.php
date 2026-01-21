@@ -474,17 +474,14 @@
           </div>
 
           <div wire:loading.remove>
-              @if ($currentTab === 'inconfirmation')
-              @livewire('v2.order.inconfermation')
-
-              @elseif ($currentTab === 'postponed')
-              @livewire('v2.order.reported')
-
+              @if ($currentTab === 'postponed')
+                @livewire('v2.order.reported')
+              @elseif ($currentTab === 'inconfirmation')
+                @livewire('v2.order.inconfermation')
               @elseif ($currentTab === 'waiting')
-              @livewire('v2.order.pending')
-
+                @livewire('v2.order.pending')
               @elseif ($currentTab === 'indelivery')
-              @livewire('v2.order.indelivery')
+                @livewire('v2.order.indelivery')
               @endif
           </div>
       </div>

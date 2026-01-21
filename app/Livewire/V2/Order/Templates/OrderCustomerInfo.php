@@ -14,20 +14,57 @@ use App\Services\TerritoryServices\AndersonTerritoryService;
 class OrderCustomerInfo extends Component
 {
     use OrderTrait;
+    
     public Client $client;
+    public Order $activeOrder;
     public $wilaya;
     public $city;
     public $communes = [];
+    public $client_name;
+    public $phone1;
+    public $phone2;
+    public $address;
+    public $Comment;
+    public $can_use_stopdesk = true;
+    public $type = 'normal';
+
+    protected $listeners = [
+        'customerInfoUpdated' => 'syncCustomerData',
+        'deliveryTypeUpdated' => 'setDelivery',
+    ];
 
     public function mount(Order $activeOrder){
+        $this->activeOrder = $activeOrder;
         $this->client = $activeOrder->client;
         $this->client_name = $this->client->full_name ?? '';
         $this->phone1 = $this->client->phone_number_1 ?? '';
         $this->phone2 = $this->client->phone_number_2 ?? '';
         $this->address = $this->client->address ?? '';
         $this->wilaya = $this->client->wilaya ?? '';
+        $this->type = $activeOrder->type;
+        $this->Comment = $activeOrder->details->commenter ?? '';
         $this->updatedWilaya($this->wilaya);
-        $this->city = $this->client->town ?? '';  
+        $this->city = $this->client->town ?? '';
+        $this->updatedCity($this->city);
+    }
+
+    public function syncCustomerData()
+    {
+        $this->validate([
+            'client_name'   => 'required|string|min:3',
+            'phone1'        => ['required','regex:/^((05|06|07)[0-9]{8})$/'],
+            'address'       => 'required|string|min:5',
+        ]);
+
+        $this->client->full_name = $this->client_name;
+        $this->client->phone_number_1 = $this->phone1;
+        $this->client->phone_number_2 = $this->phone2;
+        $this->client->address = $this->address;
+        $this->client->save();
+
+        $this->activeOrder->details->update([
+            'commenter' => $this->Comment
+        ]);
     }
 
     public function updatedCity($value)
@@ -96,6 +133,23 @@ class OrderCustomerInfo extends Component
         }
         $this->delivery_type = $type;
         $this->calculateTotal();
+    }
+
+    public function setType($type){
+        $this->type = $type;
+        $this->activeOrder->update([
+            'type' => $type
+        ]);
+    }
+
+    public function updatedPhone1($value)
+    {
+        $cleanValue = str_replace([' ', '-', '.', '(', ')'], '', $value);
+        if (str_starts_with($cleanValue, '+213')) {
+            $cleanValue = '0' . substr($cleanValue, 4);
+        }
+        $this->phone1 = $cleanValue;
+
     }
 
     public function render()

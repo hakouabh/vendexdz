@@ -19,19 +19,6 @@ use App\Livewire\V2\Order\Traits\OrderTrait;
 class Reported extends Component
 {
     use OrderTrait;
-    private $relationsToLoad = [
-        'client.willaya',
-        'logs.user', 
-        'logs.statusNew', 
-        'logs.statusOld', 
-        'Inconfirmation.firstStepStatu', 
-        'details', 
-        'items', 
-        'items.variant.product',
-        'Notes.user', 
-        'chats.user', 
-        'histories'
-    ];
     public $showTimerModal = false;
     public $tempStatusId;
     public $tempOrderId;
@@ -43,40 +30,7 @@ class Reported extends Component
     public $start_date=null;
     public $end_date=null;
 
-    public $companie=0;
-    public $communes = [];
-    public $selectedWilayaId = null;
-
-    public $expandedOrderId = null;
     public $activeTab = 'chat'; 
-
-    public $availableProducts;
-
-    public $client_name;
-    public $phone1;
-    public $phone2;
-    public $wilaya;
-    public $city;
-    public $address;
-
-    public $Comment;
-
-    public $delivery_type = 1;
-    public $order_type = 'Normal';
-
-
-    public $price = 0;
-    public $delivery_price = 0;
-    public $discount = 0;
-    public $total = 0;
-    
-
-
-    public $items = []; 
-    public $can_use_stopdesk = true;
- 
-    public $newNote = '';
-    public $newMessage = '';
 
     public function render()
     { 
@@ -85,8 +39,6 @@ class Reported extends Component
         ->get();          
 
        $orders = Order::query()->where('sid',Auth::user()->id)
-        // 1. Filter by Status (Table: order_inconfirmations)
-        // We use whereHas because every order in this view MUST have a confirmation record
         ->whereHas('Inconfirmation', function ($query) {
             if ($this->statufilter) {
                 $query->where('fsid', $this->statufilter);
@@ -128,104 +80,104 @@ class Reported extends Component
     }
 
     public function sendToShipping()
-{
-    if (!$this->activeOrder) return;
+    {
+        if (!$this->activeOrder) return;
 
-    $this->saveOrder();
+        $this->saveOrder();
 
-    // This creates the stdClass (Standardized Object)
-    $standardOrder = $this->getStandardizedData();
+        // This creates the stdClass (Standardized Object)
+        $standardOrder = $this->getStandardizedData();
 
-    try {
-        $switcher = new \App\Services\ShippingSwitcher();
-        
-        // This now sends the stdClass to the updated dispatch method
-        $result = $switcher->dispatch($standardOrder, 2);
-
-        if ($result['success']) {
-            $this->activeOrder->update([
-                'tracking_number' => $result['tracking'],
-              
-                'company_id' => 1
-            ]);
-
-            session()->flash('success', "Dispatched! Tracking: " . $result['tracking']);
-            $this->resetActiveOrder();
-        } else {
-            session()->flash('error', $result['message']);
-        }
-    } catch (\Exception $e) {
-        session()->flash('error', "Error: " . $e->getMessage());
-    }
-}
-public function sendAllToShipping()
-{ 
-
-    $ordersToSend = Order::whereHas('Inconfirmation.firstStepStatu', function ($query) {
-            $query->where('fsid', 1) 
-                  ->where('aid', auth()->id()); 
-        })
-        ->with(['client', 'details', 'items.variant.product'])
-        ->get();
-
-    if ($ordersToSend->isEmpty()) {
-        session()->flash('error', 'No confirmed orders found to dispatch.');
-        return;
-    }
-
-
-    $groupedOrders = $ordersToSend->groupBy('app_id');
-
-    $totalSuccess = 0;
-    $totalErrors = 0;
-
-    try {
-        $switcher = new \App\Services\ShippingSwitcher();
-
-        foreach ($groupedOrders as $appId => $ordersInGroup) {
+        try {
+            $switcher = new \App\Services\ShippingSwitcher();
             
-         
-            $standardizedOrders = $ordersInGroup->map(function($order) {
-                $this->activeOrder = $order;
-                return $this->getStandardizedData();
-            })->toArray();
+            // This now sends the stdClass to the updated dispatch method
+            $result = $switcher->dispatch($standardOrder, 2);
 
-           
-            $bulkResult = $switcher->dispatch($standardizedOrders, $appId);
-
- 
-            foreach ($ordersInGroup as $order) {
-                $ref = $order->ref;
+            if ($result['success']) {
+                $this->activeOrder->update([
+                    'tracking_number' => $result['tracking'],
                 
-           
-                if (isset($bulkResult['successes'])) {
-                    $successData = collect($bulkResult['successes'])->firstWhere('externalId', $ref);
-                    
-                    if ($successData) {
-                        $order->update([
-                            'tracking'  => $successData['trackingNumber'],
-                            'custom_id' => $successData['parcelId'],
-                            'status'    => 'shipped', 
-                        ]);
-                        $totalSuccess++;
-                        continue;
-                    }
-                }
+                    'company_id' => 1
+                ]);
 
-        
-                $totalErrors++;
-                $failureData = collect($bulkResult['failures'] ?? [])->firstWhere('externalId', $ref);
-                $errorMsg = $failureData['errorMessage'] ?? 'Rejected by Carrier';
-                \Log::warning("Order #{$ref} (App: {$appId}) failed: " . $errorMsg);
+                session()->flash('success', "Dispatched! Tracking: " . $result['tracking']);
+                $this->resetActiveOrder();
+            } else {
+                session()->flash('error', $result['message']);
             }
+        } catch (\Exception $e) {
+            session()->flash('error', "Error: " . $e->getMessage());
+        }
+    }
+    public function sendAllToShipping()
+    { 
+
+        $ordersToSend = Order::whereHas('Inconfirmation.firstStepStatu', function ($query) {
+                $query->where('fsid', 1) 
+                    ->where('aid', auth()->id()); 
+            })
+            ->with(['client', 'details', 'items.variant.product'])
+            ->get();
+
+        if ($ordersToSend->isEmpty()) {
+            session()->flash('error', 'No confirmed orders found to dispatch.');
+            return;
         }
 
-        $this->resetActiveOrder();
-        session()->flash('success', "Process Finished: $totalSuccess orders sent. $totalErrors failed.");
 
-    } catch (\Exception $e) {
-        \Log::error("Critical Bulk Shipping Error: " . $e->getMessage());
-        session()->flash('error', "Error: " . $e->getMessage());
+        $groupedOrders = $ordersToSend->groupBy('app_id');
+
+        $totalSuccess = 0;
+        $totalErrors = 0;
+
+        try {
+            $switcher = new \App\Services\ShippingSwitcher();
+
+            foreach ($groupedOrders as $appId => $ordersInGroup) {
+                
+            
+                $standardizedOrders = $ordersInGroup->map(function($order) {
+                    $this->activeOrder = $order;
+                    return $this->getStandardizedData();
+                })->toArray();
+
+            
+                $bulkResult = $switcher->dispatch($standardizedOrders, $appId);
+
+    
+                foreach ($ordersInGroup as $order) {
+                    $ref = $order->ref;
+                    
+            
+                    if (isset($bulkResult['successes'])) {
+                        $successData = collect($bulkResult['successes'])->firstWhere('externalId', $ref);
+                        
+                        if ($successData) {
+                            $order->update([
+                                'tracking'  => $successData['trackingNumber'],
+                                'custom_id' => $successData['parcelId'],
+                                'status'    => 'shipped', 
+                            ]);
+                            $totalSuccess++;
+                            continue;
+                        }
+                    }
+
+            
+                    $totalErrors++;
+                    $failureData = collect($bulkResult['failures'] ?? [])->firstWhere('externalId', $ref);
+                    $errorMsg = $failureData['errorMessage'] ?? 'Rejected by Carrier';
+                    \Log::warning("Order #{$ref} (App: {$appId}) failed: " . $errorMsg);
+                }
+            }
+
+            $this->resetActiveOrder();
+            session()->flash('success', "Process Finished: $totalSuccess orders sent. $totalErrors failed.");
+
+        } catch (\Exception $e) {
+            \Log::error("Critical Bulk Shipping Error: " . $e->getMessage());
+            session()->flash('error', "Error: " . $e->getMessage());
+        }
     }
-}
 }

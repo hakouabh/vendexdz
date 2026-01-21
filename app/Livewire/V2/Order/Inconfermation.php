@@ -17,21 +17,6 @@ use App\Livewire\V2\Order\Traits\OrderTrait;
 class Inconfermation extends Component
 {
     use OrderTrait;
-
-    private $relationsToLoad = [
-        'client.willaya',
-        'logs.user', 
-        'logs.statusNew', 
-        'logs.statusOld', 
-        'Inconfirmation.firstStepStatu', 
-        'details', 
-        'items', 
-        'items.variant.product',
-        'Notes.user', 
-        'chats.user', 
-        'histories'
-    ];
-
     public $showTimerModal = false;
     public $tempStatusId;
     public $tempOrderId;

@@ -14,6 +14,7 @@ class OrderItems extends Component
 
     public Order $activeOrder;
     public $items = [];
+    
     protected $listeners = [
         'orderItemsUpdated' => 'syncItems',
     ];
@@ -93,6 +94,7 @@ class OrderItems extends Component
         OrderItem::where('id', $itemId)->delete();
         unset($this->items[$index]);
         $this->items = array_values($this->items);
+        $this->calculateTotal();
     }
 
     public function render()
