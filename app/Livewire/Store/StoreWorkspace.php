@@ -30,7 +30,7 @@ class StoreWorkspace extends Component
     public function mount()
     {
         $this->selectedDate = Carbon::today()->format('Y-m-d');
-        $this->products = Product::where('sid', auth()->id())->get();
+        $this->products = Product::where('store_id', auth()->user()->store_id)->get();
         $this->statusOptions = firstStepStatu::all();
         $this->loadData();
     }

@@ -255,8 +255,4 @@ trait OrderTrait
             'quantity'      => collect($this->activeOrder->items)->sum('quantity'),
         ];
     }
-    public function orderSaved(){
-        \Log::alert("orderSaved");
-        $this->expandedOrderId = null;
-    }
 }

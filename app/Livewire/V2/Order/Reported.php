@@ -31,6 +31,7 @@ class Reported extends Component
     public $end_date=null;
 
     public $activeTab = 'chat'; 
+    protected $listeners = ['orderSaved' => 'syncOrder'];
 
     public function render()
     { 
@@ -53,11 +54,9 @@ class Reported extends Component
             $query->where('sid', $this->storefilter);
         })
 
-        // 3. Product SKU Filter (Table: order_items)
         ->when($this->productfilter, function ($query) {
-            // This enters the 'order_items' table
             $query->whereHas('items', function ($q) {
-                $q->where('sku',$this->productfilter);
+                $q->where('product_id',$this->productfilter);
             });
         })
 
@@ -75,8 +74,7 @@ class Reported extends Component
         ->latest()
         ->paginate(10, ['*'], 'inPage');
         $orders->withQueryString();
-        $willayas = Willaya::all();
-        return view('livewire.v2.order.reported', ['orders' => $orders,'wilayas'=>$willayas, 'firstStepStatus'=>$firstStepStatus ,'products'=>$products]);
+        return view('livewire.v2.order.reported', ['orders' => $orders, 'firstStepStatus'=>$firstStepStatus ,'products'=>$products]);
     }
 
     public function sendToShipping()
@@ -179,5 +177,10 @@ class Reported extends Component
             \Log::error("Critical Bulk Shipping Error: " . $e->getMessage());
             session()->flash('error', "Error: " . $e->getMessage());
         }
+    }
+
+    public function syncOrder(){
+        $this->loadOrderData($this->activeOrder->oid);
+        $this->expandedOrderId =null;
     }
 }

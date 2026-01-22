@@ -65,6 +65,7 @@ class OrderCustomerInfo extends Component
         $this->activeOrder->details->update([
             'commenter' => $this->Comment
         ]);
+        $this->dispatch('orderSaved');
     }
 
     public function updatedCity($value)

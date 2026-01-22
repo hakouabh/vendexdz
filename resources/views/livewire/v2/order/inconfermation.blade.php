@@ -330,6 +330,7 @@
                     <div
                         class="flex flex-col items-center justify-between gap-4 border-t border-gray-100 bg-gray-50 px-6 py-4 sm:flex-row rounded-b-xl">
                         <button
+                            wire:click="toggleExpand('{{ $order->oid }}')"
                             class="group flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-xs font-bold text-red-500 transition-all hover:bg-red-50 hover:border-red-300">
                             <i class="ri-close-circle-line text-sm transition-transform group-hover:rotate-90"></i>
                             @lang('Back')

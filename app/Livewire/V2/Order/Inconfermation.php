@@ -29,6 +29,7 @@ class Inconfermation extends Component
     public $end_date=null;
 
     public $activeTab = 'chat'; 
+    protected $listeners = ['orderSaved' => 'syncOrder'];
  
     public function render()
     { 
@@ -164,5 +165,10 @@ class Inconfermation extends Component
             \Log::error("Critical Bulk Shipping Error: " . $e->getMessage());
             session()->flash('error', "Error: " . $e->getMessage());
         }
+    }
+
+    public function syncOrder(){
+        $this->loadOrderData($this->activeOrder->oid);
+        $this->expandedOrderId =null;
     }
 }
