@@ -71,7 +71,7 @@ trait OrderTrait
             'total' => $this->total,
             'price' => $this->price,
             'delivery_price' => $this->delivery_price,
-            'stopdesk' => $this->delivery_type,
+            'stopdesk' => $this->delivery_type ?? $this->activeOrder->details->stopdesk,
         ]);
         $this->dispatch('orderTotalsUpdated', [
             'price'          => $this->price,

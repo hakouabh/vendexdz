@@ -55,6 +55,7 @@
                 <i class="ri-map-pin-line text-gray-400"></i>
             </div>
             <select wire:model.live="wilaya"
+                {{ $canUpdate ? '' : 'disabled' }}
                 class="block w-full appearance-none rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-8 text-xs font-bold text-gray-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
                 @foreach($wilayas as $w)
                 <option value="{{$w->wid}}">{{$w->wid}} {{$w->name}}</option>
@@ -75,6 +76,7 @@
                 <i class="ri-map-pin-line text-gray-400"></i>
             </div>
             <select wire:model.live="city"
+                {{ $canUpdate ? '' : 'disabled' }}
                 class="block w-full appearance-none rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-8 text-xs font-bold text-gray-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
                 @foreach($communes as $commune)
                 <option value="{{ $commune['name'] }}">
@@ -116,7 +118,7 @@
         <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">@lang('Delivery Type')</label>
         <div class="flex rounded-lg bg-gray-100 p-1">
             <button wire:click="setDelivery('1')"
-                {{ !$can_use_stopdesk ? 'disabled' : '' }}
+                {{ !$can_use_stopdesk || !$canUpdate ? 'disabled' : '' }}
                 class="flex-1 rounded py-1.5 text-[10px] font-bold  {{ $delivery_type=='1'?'bg-white text-blue-600 shadow-sm':'text-gray-400' }}">
                 <span>@lang('Stopdesk')</span>
                 @if(!$can_use_stopdesk)
@@ -124,6 +126,7 @@
                 @endif
             </button>
             <button wire:click="setDelivery('0')"
+                {{ $canUpdate ? '' : 'disabled' }}
                 class="flex-1 rounded py-1.5 text-[10px] font-bold {{ $delivery_type=='0'?'bg-white text-blue-600 shadow-sm':'text-gray-400' }}">@lang('Domicile')</button>
         </div>
     </div>
@@ -131,21 +134,25 @@
         <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">@lang('Order Type')</label>
         <div class="flex rounded-lg bg-gray-100 p-1">
             <button wire:click="setType('normal')"
+                {{ $canUpdate ? '' : 'disabled' }}
                 :class="type === 'normal' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
                 class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
                 @lang('Normal')
             </button>
             <button wire:click="setType('quantity_break')"
+                {{ $canUpdate ? '' : 'disabled' }}
                 :class="type === 'quantity_break' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
                 class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
                 @lang('Quantity Break')
             </button>
             <button wire:click="setType('upsell')"
+                {{ $canUpdate ? '' : 'disabled' }}
                 :class="type === 'upsell' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
                 class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
                 @lang('Up Sell')
             </button>
             <button wire:click="setType('crossell')"
+                {{ $canUpdate ? '' : 'disabled' }}
                 :class="type === 'crossell' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
                 class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
                 @lang('Cross Sell')

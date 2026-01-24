@@ -30,6 +30,7 @@ class OrderCustomerInfo extends Component
     public $Comment;
     public $can_use_stopdesk = true;
     public $type = 'normal';
+    public $canUpdate;
 
     protected $listeners = [
         'customerInfoUpdated' => 'syncCustomerData',
@@ -38,7 +39,8 @@ class OrderCustomerInfo extends Component
         'updateDeliveryInfo' => 'updateDelivery',
     ];
 
-    public function mount(Order $activeOrder){
+    public function mount(Order $activeOrder, $canUpdate = true){
+
         $this->activeOrder = $activeOrder;
         $this->client = $activeOrder->client;
         $this->client_name = $this->client->full_name ?? '';
@@ -52,6 +54,7 @@ class OrderCustomerInfo extends Component
         $this->updatedWilaya($this->wilaya);
         $this->city = $this->client->town ?? '';
         $this->updatedCity($this->city);
+        $this->canUpdate = $canUpdate;
     }
 
     public function syncCustomerData()

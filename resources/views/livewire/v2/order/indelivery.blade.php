@@ -24,7 +24,7 @@
             @foreach($SecondStepStatus as $status)
             @if(in_array($status->ssid, [2, 3])) @continue @endif
             @php
-            $count = $orders->where('Inconfirmation.SecondStepStatu.ssid', $status->ssid)->count();
+            $count = $orders->where('Indelivery.SecondStepStatu.ssid', $status->ssid)->count();
             @endphp
             <div class="flex-none w-44 snap-start group">
                 <div
@@ -236,22 +236,22 @@
                 open = !open;
                 buttonRect = $event.target.closest('button').getBoundingClientRect();
             " type="button" class="focus:outline-none">
-                            @if($order->Inconfirmation?->SecondStepStatu)
+                            @if($order->Indelivery?->SecondStepStatu)
                             <div class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset cursor-pointer hover:opacity-80 transition"
                                 style="
-                        background-color: {{ $order->Inconfirmation->SecondStepStatu->color }}15;
-                        color: {{ $order->Inconfirmation->SecondStepStatu->color }};
-                        ring-color: {{ $order->Inconfirmation->SecondStepStatu->color }}30;
+                        background-color: {{ $order->Indelivery->SecondStepStatu->color }}15;
+                        color: {{ $order->Indelivery->SecondStepStatu->color }};
+                        ring-color: {{ $order->Indelivery->SecondStepStatu->color }}30;
                     ">
 
                                 <div class="h-1.5 w-1.5 rounded-full animate-pulse"
-                                    style="background-color: {{ $order->Inconfirmation->SecondStepStatu->color }}"></div>
+                                    style="background-color: {{ $order->Indelivery->SecondStepStatu->color }}"></div>
 
-                                @if($order->Inconfirmation->SecondStepStatu->icon)
-                                <i class="{{ $order->Inconfirmation->SecondStepStatu->icon }}"></i>
+                                @if($order->Indelivery->SecondStepStatu->icon)
+                                <i class="{{ $order->Indelivery->SecondStepStatu->icon }}"></i>
                                 @endif
 
-                                {{ $order->Inconfirmation->SecondStepStatu->name }}
+                                {{ $order->Indelivery->SecondStepStatu->name }}
 
                                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round"
@@ -313,11 +313,11 @@
             <div class="border-t border-gray-100 bg-gray-50/50">
 
                 <div class="flex  items-center justify-between gap-4 border-b border-gray-200 bg-white px-6 py-3">
-                    <livewire:v2.order.templates.order-customer-info :activeOrder="$activeOrder" :key="'order-customer-info-'.$activeOrder->id" />    
+                    <livewire:v2.order.templates.order-customer-info :activeOrder="$activeOrder" :canUpdate="false" :key="'order-customer-info-'.$activeOrder->id" />    
                 </div>
 
                 <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-4">
-                    <livewire:v2.order.templates.order-items :activeOrder="$activeOrder" :availableProducts="$availableProducts" :key="'order-items-'.$activeOrder->id" />
+                    <livewire:v2.order.templates.order-items :canUpdate="false" :activeOrder="$activeOrder" :availableProducts="$availableProducts" :key="'order-items-'.$activeOrder->id" />
                     <livewire:v2.order.templates.order-price :key="'order-price-'.$activeOrder->id" />
                     <livewire:v2.order.templates.order-logs :order="$activeOrder" :key="'order-logs-'.$activeOrder->id" />
                     <style>

@@ -14,14 +14,16 @@ class OrderItems extends Component
 
     public Order $activeOrder;
     public $items = [];
+    public $canUpdate;
     
     protected $listeners = [
         'orderItemsUpdated' => 'syncItems',
     ];
 
-    public function mount(Order $activeOrder, $availableProducts)
+    public function mount(Order $activeOrder, $availableProducts, $canUpdate = true)
     {
         $this->activeOrder = $activeOrder;
+        $this->canUpdate = $canUpdate;
         $this->items = $this->activeOrder->items->map(fn ($item) => [
             'id' => $item->id,
             'vid' => $item->vid,
