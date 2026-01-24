@@ -89,6 +89,7 @@ trait OrderTrait
             'logs.statusOld', 
             'Inconfirmation.firstStepStatu', 
             'Waiting.AcceptStepStatu',
+            'Indelivery.SecondStepStatu', 
             'details', 
             'items', 
             'items.variant.product',

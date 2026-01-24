@@ -13,6 +13,7 @@ use App\Models\ProductVariant;
 use App\Models\AcceptStepStatu;
 use App\Models\willaya;
 use App\Models\OrderWaiting;
+use App\Models\OrderIndelivery;
 use App\Models\OrderInconfirmation;
 use App\Models\fees;
 use App\Models\User;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;     
 use Illuminate\Support\Facades\Auth;
 use App\Services\RemoveOrderSwitcher;
+use App\Services\ShipOrderSwitcher;
 
 class Pending extends Component
 {
@@ -99,9 +101,9 @@ class Pending extends Component
     {  
         $switcher = new ShipOrderSwitcher();
         $result = $switcher->validate($this->activeOrder);
-        \Log::alert($result);
         if (isset($result['success']) && $result['success']) {
-
+            OrderWaiting::where('oid', $this->activeOrder->oid)->delete();
+            OrderIndelivery::create(['oid'=>$this->activeOrder->oid,'ssid'=>1]);
             $this->dispatch('notify', type: 'success', message: 'Order is ready for pickup!');
         } else {
             $this->dispatch('notify', type: 'error', message: $result['message'] ?? 'Carrier refused validation.');

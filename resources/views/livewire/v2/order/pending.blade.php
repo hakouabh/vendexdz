@@ -372,7 +372,7 @@
                             wire:click="$dispatch('updateDeliveryInfo')"
                             class="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-xs font-bold text-white shadow-md shadow-blue-100 transition-all hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5">
                             <i class="ri-save-3-line text-sm"></i>
-                            @lang('Save')
+                            @lang('Update Delivery')
                         </button>
                     </div>
                 </div>
