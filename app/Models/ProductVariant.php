@@ -15,8 +15,16 @@ class ProductVariant extends Model
         'quantity'
         
     ];
+    protected $appends = ['label'];
+
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    public function getLabelAttribute(){
+       return collect([$this->var_1, $this->var_2, $this->var_3])
+        ->filter()
+        ->implode(' ');
+    } 
 }

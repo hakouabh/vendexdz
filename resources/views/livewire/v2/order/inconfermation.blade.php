@@ -34,7 +34,7 @@
                     <div class="flex items-center justify-between mb-2">
                         <div class="px-2.5 py-0.5 rounded-lg text-[10px] text-white font-bold uppercase tracking-wider"
                             style="background-color: {{ $status->color }}">
-                            {{ $status->name }}
+                            {{ __($status->name) }}
                         </div>
                         <div
                             class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-600 group-hover:bg-slate-100 transition-colors">
@@ -44,8 +44,7 @@
 
                     <div class="flex gap-2 items-baseline">
                         <span class="text-3xl font-black text-slate-900 leading-none">{{ $count }} </span>
-                        <p class="text-gray-400 font-bold">order</p>
-
+                        <p class="text-gray-400 font-bold">@lang('Orders')</p>
                     </div>
                 </div>
             </div>
@@ -131,7 +130,7 @@
                         </x-dropdown-link>
                         @foreach($firstStepStatus as $status)
                         <x-dropdown-link wire:click="Statufilter({{$status->fsid}})" class="text-[{{$status->color}}]">
-                            <i class="{{$status->icon}}"></i> {{$status->name}}
+                            <i class="{{$status->icon}}"></i> {{__($status->name)}}
                         </x-dropdown-link>
                         @endforeach
                     </div>
@@ -196,7 +195,7 @@
                         <div class="flex items-center gap-3">
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-mono text-sm font-black text-gray-800">{{ $order->client->full_name ?? 'Unknown' }}</span>
+                                    <span class="font-mono text-sm font-black text-gray-800">{{ $order->client->full_name ?? __('Unknown') }}</span>
                                     <span class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
                                         <i class="ri-user-3-line"></i>@lang('Double')
                                     </span>
@@ -250,7 +249,7 @@
                                 @else
                                 <span
                                     class="text-gray-400 text-xs cursor-pointer border border-dashed border-gray-300 rounded-full px-2 py-1">
-                                    Select Status
+                                    @lang('Select Status')
                                 </span>
                                 @endif
                             </button>
@@ -264,7 +263,7 @@
                                     <div class="py-1">
                                         <p
                                             class="px-3 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest bg-white sticky top-0 z-10">
-                                            Change Status
+                                            @lang('Change Status')
                                         </p>
 
                                         <div class="max-h-60 overflow-y-auto custom-scrollbar">
@@ -336,13 +335,13 @@
                             @lang('Back')
                         </button>
                         <div class="flex flex-wrap gap-3">
-                            <button wire:click="sendAllToShipping()" wire:loading.attr="disabled"
+                            <button wire:click="$dispatch('setUpDelivery')" wire:loading.attr="disabled"
                                 class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-all hover:bg-gray-100 hover:text-blue-600 hover:border-gray-300 shadow-sm">
                                 <i class="ri-truck-line text-sm"></i>
                                 @lang('Setup Delivery')
                             </button>
 
-                            <button wire:click="$dispatch('customerInfoUpdated');"
+                            <button wire:click="$dispatch('customerInfoUpdated')"
                                 class="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-xs font-bold text-white shadow-md shadow-blue-100 transition-all hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5">
                                 <i class="ri-save-3-line text-sm"></i>
                                 @lang('Save')

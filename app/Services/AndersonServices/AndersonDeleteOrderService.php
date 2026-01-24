@@ -9,12 +9,10 @@ class AndersonDeleteOrderService
     protected string $baseUrl = 'https://anderson-ecommerce.ecotrack.dz';
     protected string $apiKey;
 
-    public function __construct()
+    public function __construct($token)
     {
-        $this->apiKey = config('services.eco.anderson_token');
+        $this->apiKey = $token;
     }
-
-    
      
     public function RemoveOrder(string $tracking)
     {

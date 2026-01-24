@@ -4,15 +4,17 @@ namespace App\Services;
 
 use App\Services\AndersonServices\AndersonCreateOrderService;
 use App\Services\ZRServices\ZRCreateOrderService;
+use App\Models\installedApps;
+
 class ShippingSwitcher
 {
     /**
      * Now accepts a single standard object OR an array of standard objects
      */
-    public function dispatch($orders, $companyId) 
+    public function dispatch($orders, $order) 
     {  
         // 1. Resolve service
-        $service = $this->resolveService($companyId);
+        $service = $this->resolveService($order->app_id, $order->sid);
 
         // 2. Normalize input: If it's a single object, wrap it in an array
         $orderList = is_array($orders) ? $orders : [$orders];
@@ -31,12 +33,12 @@ class ShippingSwitcher
         return $this->processResponse($singleRef, $result);
     }
 
-    protected function resolveService($id)
+    protected function resolveService($id, $sid)
     {  
-        
+        $installedApp = installedApps::where('sid', $sid)->where('app_id', $id)->first();
         return match ((int)$id) {
-            1001 => new AndersonCreateOrderService(),
-            1010 => new ZRCreateOrderService(),
+            1001 => new AndersonCreateOrderService($installedApp->token),
+            1010 => new ZRCreateOrderService($installedApp->token),
             default => throw new \Exception("Carrier Service ID [{$id}] not found in Switcher."),
         };
     }
@@ -53,7 +55,7 @@ class ShippingSwitcher
 
         return [
             'success' => false, 
-            'message' => $result['message'] ?? 'API error for ' . $ref
+            'message' => $result['results'][$ref]['errors'] ?? 'API error for ' . $ref
         ];
     }
 }

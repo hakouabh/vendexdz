@@ -12,9 +12,12 @@ class OrderItems extends Model
         'vid',   
         'quantity',     
     ];
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
     public function variant()
     {
         return $this->belongsTo(ProductVariant::class, 'vid', 'id');
     }
-
 }         

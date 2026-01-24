@@ -13,9 +13,9 @@ class AndersonCreateOrderService
     protected string $baseUrl = 'https://anderson-ecommerce.ecotrack.dz';
     protected string $apiKey;
 
-    public function __construct()
+    public function __construct($token)
     {
-        $this->apiKey = config('services.eco.anderson_token');
+        $this->apiKey = $token;
     }
 
     /**
@@ -35,13 +35,8 @@ class AndersonCreateOrderService
     ])->post("{$this->baseUrl}/api/v1/create/orders", ['orders' => $formattedOrders]);
 
     $data = $response->json();
-   
-    // FIX: Check for 'results' key because 'success' is not at the top level
-    if (isset($data['results']) && is_array($data['results'])) {
-        //$this->updateOrdersInDatabase($data);
-    }
 
-    return $data;
+        return $data;
     }
 
     protected function updateOrdersInDatabase($apiResponse)

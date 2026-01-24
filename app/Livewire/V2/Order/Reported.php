@@ -76,38 +76,7 @@ class Reported extends Component
         $orders->withQueryString();
         return view('livewire.v2.order.reported', ['orders' => $orders, 'firstStepStatus'=>$firstStepStatus ,'products'=>$products]);
     }
-
-    public function sendToShipping()
-    {
-        if (!$this->activeOrder) return;
-
-        $this->saveOrder();
-
-        // This creates the stdClass (Standardized Object)
-        $standardOrder = $this->getStandardizedData();
-
-        try {
-            $switcher = new \App\Services\ShippingSwitcher();
-            
-            // This now sends the stdClass to the updated dispatch method
-            $result = $switcher->dispatch($standardOrder, 2);
-
-            if ($result['success']) {
-                $this->activeOrder->update([
-                    'tracking_number' => $result['tracking'],
-                
-                    'company_id' => 1
-                ]);
-
-                session()->flash('success', "Dispatched! Tracking: " . $result['tracking']);
-                $this->resetActiveOrder();
-            } else {
-                session()->flash('error', $result['message']);
-            }
-        } catch (\Exception $e) {
-            session()->flash('error', "Error: " . $e->getMessage());
-        }
-    }
+    
     public function sendAllToShipping()
     { 
 

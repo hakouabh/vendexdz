@@ -16,7 +16,7 @@ trait OrderTrait
 {
     public $items = [];
     public $availableProducts;
-    public $delivery_type = 1;
+    public $delivery_type;
     public $order_type = 'Normal';
     public $delivery_price = 0;
     public $price = 0;
@@ -88,6 +88,7 @@ trait OrderTrait
             'logs.statusNew', 
             'logs.statusOld', 
             'Inconfirmation.firstStepStatu', 
+            'Waiting.AcceptStepStatu',
             'details', 
             'items', 
             'items.variant.product',
@@ -98,9 +99,6 @@ trait OrderTrait
             ->first();
 
         if (!$this->activeOrder) return;
-
-        $this->delivery_type = $this->activeOrder->details->stopdesk ?? '1';
-        $this->dispatch('deliveryTypeUpdated', $this->delivery_type);
 
         $this->availableProducts = Product::where('created_by', $this->activeOrder->sid)
             ->with('variants')
@@ -213,12 +211,6 @@ trait OrderTrait
             'total'          => 0,
         ]);
     }
-    // public function updated($propertyName)
-    // {
-    //    if (in_array($propertyName, ['price', 'delivery_price', 'discount']) || strpos($propertyName, 'items') !== false) {
-    //         $this->calculateTotal();
-    //     }
-    // }
     public function saveNote()
     {
         if (empty($this->newNote) || !$this->activeOrder) return;
@@ -231,28 +223,5 @@ trait OrderTrait
     
         $this->newNote = '';
         $this->activeOrder->load('Notes.user');
-    }
-    private function getStandardizedData()
-    {
-        return (object) [
-            'ref'           => 'VN-'.$this->activeOrder->id,
-            'name'          => $this->client_name,
-            'phone'         => $this->phone1,
-            'phone2'        => $this->phone2,
-            'address'       => $this->address,
-            'city'          => $this->city,
-            'wilaya'        => $this->wilaya,
-            'total_price'   => $this->total,
-            'delivery_type' => $this->delivery_type,
-            'note'          => $this->newNote ?: ($this->activeOrder->details->note ?? ''),
-            'product_name'  => collect($this->activeOrder->items)->map(function($item) {
-                $name = $item['product_name'];
-                $variant = !empty($item['variant_info']) ? " ({$item['variant_info']})" : "";
-                $qty = " x" . ($item['quantity'] ?? 1);
-                
-                return $name . $variant . $qty;
-            })->implode(' + '),
-            'quantity'      => collect($this->activeOrder->items)->sum('quantity'),
-        ];
     }
 }

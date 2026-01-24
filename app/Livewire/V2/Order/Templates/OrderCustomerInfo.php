@@ -4,12 +4,15 @@ namespace App\Livewire\V2\Order\Templates;
 
 use Livewire\Component;
 use App\Models\Order;
+use App\Models\OrderWaiting;
+use App\Models\OrderInconfirmation;
 use App\Models\Willaya;
 use App\Models\Client;
 use App\Models\Fees;
 use App\Livewire\V2\Order\Traits\OrderTrait;
 use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\TerritoryServices\AndersonTerritoryService;
+use App\Services\EditeOrderSwitcher;
 
 class OrderCustomerInfo extends Component
 {
@@ -31,6 +34,8 @@ class OrderCustomerInfo extends Component
     protected $listeners = [
         'customerInfoUpdated' => 'syncCustomerData',
         'deliveryTypeUpdated' => 'setDelivery',
+        'setUpDelivery' => 'sendToShipping',
+        'updateDeliveryInfo' => 'updateDelivery',
     ];
 
     public function mount(Order $activeOrder){
@@ -43,6 +48,7 @@ class OrderCustomerInfo extends Component
         $this->wilaya = $this->client->wilaya ?? '';
         $this->type = $activeOrder->type;
         $this->Comment = $activeOrder->details->commenter ?? '';
+        $this->delivery_type = $activeOrder->details->stopdesk;
         $this->updatedWilaya($this->wilaya);
         $this->city = $this->client->town ?? '';
         $this->updatedCity($this->city);
@@ -66,6 +72,87 @@ class OrderCustomerInfo extends Component
             'commenter' => $this->Comment
         ]);
         $this->dispatch('orderSaved');
+    }
+
+    public function updateDelivery(){
+        
+        $this->validate([
+            'client_name'   => 'required|string|min:3',
+            'phone1'        => ['required','regex:/^((05|06|07)[0-9]{8})$/'],
+            'address'       => 'required|string|min:5',
+        ]);
+
+        $this->client->full_name = $this->client_name;
+        $this->client->phone_number_1 = $this->phone1;
+        $this->client->phone_number_2 = $this->phone2;
+        $this->client->address = $this->address;
+        $this->client->save();
+
+        $this->activeOrder->details->update([
+            'commenter' => $this->Comment,
+        ]);
+        
+        if (!$this->activeOrder) return;
+
+        $standardOrder = $this->getStandardizedData();
+   
+        try {
+            $switcher = new EditeOrderSwitcher();
+        
+            $result = $switcher->dispatch($this->activeOrder, $standardOrder);
+            if ($result['success']) {
+                $this->dispatch('notify', type: 'success', message: $result['message']);
+                $this->dispatch('orderSaved');
+            } else {
+                $this->dispatch('notify', type: 'error', message: $result['message']);
+            }
+        } catch (\Exception $e) {
+                $this->dispatch('notify', type:'error', message: "Error: " . $e->getMessage());
+        }
+    }
+
+    public function sendToShipping()
+    {
+        $this->validate([
+            'client_name'   => 'required|string|min:3',
+            'phone1'        => ['required','regex:/^((05|06|07)[0-9]{8})$/'],
+            'address'       => 'required|string|min:5',
+        ]);
+
+        $this->client->full_name = $this->client_name;
+        $this->client->phone_number_1 = $this->phone1;
+        $this->client->phone_number_2 = $this->phone2;
+        $this->client->address = $this->address;
+        $this->client->save();
+
+        $this->activeOrder->details->update([
+            'commenter' => $this->Comment,
+        ]);
+        
+        if (!$this->activeOrder) return;
+
+        // This creates the stdClass (Standardized Object)
+        $standardOrder = $this->getStandardizedData();
+
+        try {
+            $switcher = new \App\Services\ShippingSwitcher();
+            
+            // This now sends the stdClass to the updated dispatch method
+            $result = $switcher->dispatch($standardOrder, $this->activeOrder);
+            if ($result['success']) {
+                $this->activeOrder->update([
+                    'tracking' => $result['tracking']
+                ]);
+                OrderInconfirmation::where('oid', $this->activeOrder->oid)->delete();
+                OrderWaiting::create(['oid'=>$this->activeOrder->oid,'asid'=>1]);
+                $this->dispatch('notify', type: 'success', message: "Dispatched! Tracking: " . $result['tracking']);
+                $this->dispatch('orderSaved');
+            } else {
+                $this->dispatch('notify', type: 'error', message: $result['message']);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('notify', type:'error', message: "Error: " . $e->getMessage());
+        }
     }
 
     public function updatedCity($value)
@@ -151,6 +238,29 @@ class OrderCustomerInfo extends Component
         }
         $this->phone1 = $cleanValue;
 
+    }
+    private function getStandardizedData()
+    {
+        return (object) [
+            'ref'           => 'VN-'.$this->activeOrder->id,
+            'name'          => $this->client_name,
+            'phone'         => $this->phone1,
+            'phone2'        => $this->phone2,
+            'address'       => $this->address,
+            'city'          => $this->city,
+            'wilaya'        => $this->wilaya,
+            'total_price'   => $this->total,
+            'delivery_type' => $this->delivery_type,
+            'note'          => $this->Comment,
+            'product_name'  => collect($this->activeOrder->items)->map(function($item) {
+                $name = $item->product->name;
+                $variant = $item->variant ? $item->variant->label : '';
+                $qty = " x" . ($item['quantity'] ?? 1);
+                
+                return $name . $variant . $qty;
+            })->implode(' + '),
+            'quantity'      => collect($this->activeOrder->items)->sum('quantity'),
+        ];
     }
 
     public function render()

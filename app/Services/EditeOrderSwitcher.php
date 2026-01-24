@@ -4,28 +4,30 @@ namespace App\Services;
 
 use App\Services\AndersonServices\AndersonEditOrderService;
 use App\Services\ZRServices\ZREditOrderService;
+use App\Models\installedApps;
 
 class EditeOrderSwitcher
 {
     /**
      * Now accepts a single standard object OR an array of standard objects
      */
-    public function dispatch($tracking,$orders, $companyId) 
+    public function dispatch($order, $orders) 
     {   
         
         // 1. Resolve service
-        $service = $this->resolveService($companyId);
+        $service = $this->resolveService($order->app_id, $order->sid);
         
-        $result = $service->updateOrder($tracking,$orders);
+        $result = $service->updateOrder($order->tracking, $orders);
           
         return $result;
     }
 
-    protected function resolveService($id)
+    protected function resolveService($id, $sid)
     {
+        $installedApp = installedApps::where('sid', $sid)->where('app_id', $id)->first();
         return match ((int)$id) {
-            1001 => new AndersonEditOrderService(),
-            1010 => new ZREditOrderService(),
+            1001 => new AndersonEditOrderService($installedApp->token),
+            1010 => new ZREditOrderService($installedApp->token),
             default => throw new \Exception("Carrier Service ID [{$id}] not found in Switcher."),
         };
     }

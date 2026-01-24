@@ -9,7 +9,7 @@ class AndersonReturnOrderService
     protected string $baseUrl = 'https://anderson-ecommerce.ecotrack.dz';
     protected string $apiKey;
 
-    public function __construct()
+    public function __construct($apiKey)
     {
         $this->apiKey = config('services.eco.anderson_token');
     }
