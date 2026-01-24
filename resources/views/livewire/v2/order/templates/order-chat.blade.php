@@ -35,7 +35,7 @@
     <div class="p-3 bg-slate-50 border-t border-slate-100">
         <div class="relative flex items-center">
             <input type="text" wire:model.defer="newMessage"
-                wire:keydown.enter="sendMessage" placeholder="Type an internal note..."
+                wire:keydown.enter="sendMessage" placeholder="{{__('Type an internal message...')}}"
                 class="w-full rounded-xl border border-slate-200 bg-white pl-4 pr-12 py-2 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all">
 
             <button wire:click="sendMessage"

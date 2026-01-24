@@ -110,7 +110,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <i class="ri-sticky-note-line text-gray-400"></i>
             </div>
-            <input type="text" wire:model="Comment" placeholder="send it fast"
+            <input type="text" wire:model="Comment" placeholder="{{__('Delivery Note')}}"
                 class="block w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-xs font-bold text-gray-700 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
         </div>
     </div>

@@ -14,7 +14,7 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\UserStatisticsController;
 
 
-use App\Http\Controllers\SyncController;
+// use App\Http\Controllers\SyncController;
 use App\Http\Middleware\CheckPermission;
 
 //new 
@@ -39,8 +39,8 @@ use App\Http\Controllers\Store\BillsController as StoreBillController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/sync', [SyncController::class, 'handle'])
-    ->withoutMiddleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\VerifyCsrfToken::class]);
+// Route::get('/sync', [SyncController::class, 'handle'])
+//     ->withoutMiddleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\VerifyCsrfToken::class]);
 
 Route::middleware([
     'auth:sanctum',

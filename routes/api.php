@@ -3,11 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Webhook\OrderWebhookController;
+use App\Http\Controllers\Admin\LanguageController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::post('/lang-import', [LanguageController::class, 'langImport']);
+Route::get('/ping', function () {
+    return app()->currentLocale();
+});
 
 Route::prefix('webhook')->group(function () {
     
