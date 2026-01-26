@@ -11,7 +11,6 @@ use App\Models\User;
 use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule;     
-use Illuminate\Support\Facades\Auth;
 use App\Livewire\V2\Order\Traits\OrderTrait;
 
 class Inconfermation extends Component
@@ -30,13 +29,17 @@ class Inconfermation extends Component
 
     public $activeTab = 'chat'; 
     protected $listeners = ['orderSaved' => 'syncOrder'];
+    
+
+    public function mount(){
+        $this->initializeStore();
+    }
  
     public function render()
     { 
-        $firstStepStatus = firstStepStatu::all(); 
-        $store_id = Auth::user()->userStore->store_id;
-        $products = Product::where('store_id', $store_id)->latest()->get();
-        $orders = Order::query()->where('sid',$store_id)
+        $firstStepStatus = firstStepStatu::all();
+        $products = Product::where('store_id', $this->store_id)->latest()->get();
+        $orders = Order::query()->where('sid',$this->store_id)
             ->whereHas('Inconfirmation', function ($query) {
             if ($this->statufilter) {
                 $query->where('fsid', $this->statufilter);
@@ -68,7 +71,6 @@ class Inconfermation extends Component
     
     public function sendAllToShipping()
     { 
-
         $ordersToSend = Order::whereHas('Inconfirmation.firstStepStatu', function ($query) {
                 $query->where('fsid', 1) 
                     ->where('aid', auth()->id()); 

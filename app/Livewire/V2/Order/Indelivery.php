@@ -20,7 +20,6 @@ use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule; 
 use App\Livewire\V2\Order\Traits\OrderTrait;    
-use Illuminate\Support\Facades\Auth;
 class Indelivery extends Component
 {
     use OrderTrait;
@@ -34,15 +33,19 @@ class Indelivery extends Component
     public $statufilter=null;
     public $start_date=null;
     public $end_date=null;
+    public $stores;
 
     public $activeTab = 'chat'; 
+
+    public function mount(){
+        $this->initializeStore();
+    }
+
     public function render()
     { 
-
         $SecondStepStatus = SecondStepStatu::all(); 
-        $store_id = Auth::user()->userStore->store_id;
-        $products = Product::where('store_id', $store_id)->latest()->get();  
-       $orders = Order::query()->where('sid',$store_id)
+        $products = Product::where('store_id', $this->store_id)->latest()->get();  
+       $orders = Order::query()->where('sid',$this->store_id)
         ->whereHas('Indelivery', function ($query) {
             if ($this->statufilter) {
                 $query->where('ssid', $this->statufilter);

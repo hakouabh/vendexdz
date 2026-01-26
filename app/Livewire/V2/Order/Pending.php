@@ -22,7 +22,6 @@ use App\Services\TerritoryServices\AndersonTerritoryService;
 use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule;     
-use Illuminate\Support\Facades\Auth;
 use App\Services\RemoveOrderSwitcher;
 use App\Services\ShipOrderSwitcher;
 
@@ -40,17 +39,21 @@ class Pending extends Component
     public $statufilter=null;
     public $start_date=null;
     public $end_date=null;
+    public $stores;
 
     public $activeTab = 'chat'; 
 
     protected $listeners = ['orderSaved' => 'syncOrder'];
+
+    public function mount(){
+        $this->initializeStore();
+    }
     
     public function render()
     {
         $AcceptStepStatus = AcceptStepStatu::all(); 
-        $store_id = Auth::user()->userStore->store_id;
-        $products = Product::where('store_id', $store_id)->latest()->get();         
-        $orders = Order::query()->where('sid',$store_id)
+        $products = Product::where('store_id', $this->store_id)->latest()->get();         
+        $orders = Order::query()->where('sid',$this->store_id)
         // 1. Filter by Status (Table: order_Waitings)
         // We use whereHas because every order in this view MUST have a confirmation record
         ->whereHas('Waiting', function ($query) {

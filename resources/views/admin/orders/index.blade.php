@@ -4,5 +4,5 @@
 
 @section('content')
 
-    @livewire('admin.order-manager')
+    @livewire('v2.order.orders')
 @endsection

@@ -5,6 +5,7 @@ namespace App\Livewire\V2\Order;
 use Livewire\Component;
 use Livewire\Attributes\Url; 
 use App\Models\Order;
+use App\Models\Store;
 use App\Models\OrderItems;
 use App\Models\Client;
 use App\Models\Product;
@@ -31,6 +32,7 @@ class Orders extends Component
     public $city;
     public $address;
     public $comment;
+    public $store_id;
 
     // Order Configuration
     public $delivery_type = 1;
@@ -82,6 +84,17 @@ class Orders extends Component
 
     public function mount()
     {
+        $user = auth()->user(); 
+        $query = $user->stores();
+        if (request()->is('agent/orders') || request()->is('manager/orders')) {
+            $query->where('created_by', '!=', $user->id);
+        }
+
+        if (request()->is('admin/orders')) {
+            $query = Store::where('created_by', '!=', $user->id); // all stores
+        }
+        $stores = $query->latest()->get();
+        $this->store_id = $stores->first()->id ?? null;
         $this->initializeOrder();
         $this->loadAvailableProducts();
     }
@@ -104,7 +117,7 @@ class Orders extends Component
 
     private function loadAvailableProducts()
     {
-        $this->availableProducts = Product::where('store_id', Auth::user()->userStore->store_id)->with(['variants'])->get();
+        $this->availableProducts = Product::where('store_id', $this->store_id)->with(['variants'])->get();
     }
 
     public function updatedCity($value)
@@ -299,7 +312,7 @@ class Orders extends Component
             $order = Order::create([
                 'oid' => time() . mt_rand(1000, 9999),
                 'cid' => $client->id,
-                'sid' => Auth::User()->userStore->store_id, 
+                'sid' => $this->store_id, 
                 'app_id' => $app_id,
             ]);
             
@@ -366,11 +379,13 @@ class Orders extends Component
     {
         $this->calculateTotal();
         $willayas = willaya::all();
+        $user = auth()->user();
         $firstStepStatus = firstStepStatu::all();
 
         return view('livewire.v2.order.orders', [
             'willayas' => $willayas,
-            'firstStepStatus' => $firstStepStatus
+            'firstStepStatus' => $firstStepStatus,
+            'user' => $user,
         ]);
     }
     public function updatedPhone1($value)

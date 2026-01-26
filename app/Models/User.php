@@ -95,6 +95,16 @@ class User extends Authenticatable
         return $this->hasOne(UserStore::class, 'user_id', 'id');
     }
 
+    public function stores()
+    {
+        return $this->belongsToMany(
+            Store::class,
+            'user_stores',
+            'user_id',
+            'store_id'
+        );
+    }
+
     public function store()
     {
         return $this->belongsTo(Store::class, 'store_id', 'id');

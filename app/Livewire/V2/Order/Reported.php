@@ -13,7 +13,6 @@ use App\Services\TerritoryServices\AndersonTerritoryService;
 use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule;     
-use Illuminate\Support\Facades\Auth;
 use App\Livewire\V2\Order\Traits\OrderTrait;
 
 class Reported extends Component
@@ -29,16 +28,20 @@ class Reported extends Component
     public $statufilter=null;
     public $start_date=null;
     public $end_date=null;
+    public $stores;
 
     public $activeTab = 'chat'; 
     protected $listeners = ['orderSaved' => 'syncOrder'];
 
+    public function mount(){
+        $this->initializeStore();
+    }
+
     public function render()
     { 
         $firstStepStatus = firstStepStatu::all(); 
-        $store_id = Auth::user()->userStore->store_id;
-        $products = Product::where('store_id', $store_id)->latest()->get();          
-        $orders = Order::query()->where('sid',$store_id)
+        $products = Product::where('store_id', $this->store_id)->latest()->get();          
+        $orders = Order::query()->where('sid',$this->store_id)
         ->whereHas('Inconfirmation', function ($query) {
             if ($this->statufilter) {
                 $query->where('fsid', $this->statufilter);

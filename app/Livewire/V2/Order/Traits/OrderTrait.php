@@ -7,6 +7,7 @@ use App\Models\OrderItems;
 use App\Models\ProductVariant;
 use App\Models\fees;
 use App\Models\Order;
+use App\Models\Store;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\OrderNots;
@@ -25,11 +26,28 @@ trait OrderTrait
     public $companie = 0;
     public $selectedWilayaId = null;
     public $expandedOrderId = null;
+    public $stores;
+    public $store_id;
 
     public Order $activeOrder;
 
+    public function initializeStore()
+    {
+        $user = auth()->user(); 
+        $query = $user->stores();
+        if (request()->is('agent/orders') || request()->is('manager/orders')) {
+            $query->where('created_by', '!=', $user->id);
+        }
+
+        if (request()->is('admin/orders')) {
+            $query = Store::where('created_by', '!=', $user->id); // all stores
+        }
+        $this->stores = $query->latest()->get();
+        $this->store_id = $this->stores->first()->id ?? null;
+    }
+
     public function Storefilter($id){
-        $this->storefilter=$id;
+        $this->storefilter = $id;
     }
 
     public function Productfilter($id){
