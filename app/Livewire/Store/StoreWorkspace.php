@@ -72,7 +72,7 @@ class StoreWorkspace extends Component
     public function loadData()
     {
         $store_id = auth()->user()->userStore->store_id;
-        $query = Order::where('sid', $userId);
+        $query = Order::where('sid', $store_id);
 
         // --- THIS IS THE KEY FIX ---
         // Determine if we are using a range or a single date

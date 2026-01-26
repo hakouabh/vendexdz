@@ -57,9 +57,8 @@ class Indelivery extends Component
 
         // 3. Product SKU Filter (Table: order_items)
         ->when($this->productfilter, function ($query) {
-            // This enters the 'order_items' table
             $query->whereHas('items', function ($q) {
-                $q->where('sku',$this->productfilter);
+                $q->where('product_id',$this->productfilter);
             });
         })
         // 4. Date Range (Optional)

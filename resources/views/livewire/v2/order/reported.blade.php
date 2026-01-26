@@ -102,7 +102,7 @@
                         <i class=""></i> All
                     </x-dropdown-link>
                     @foreach($products as $product)
-                    <x-dropdown-link wire:click="Productfilter('{{$product->sku}}')" class="text-[]">
+                    <x-dropdown-link wire:click="Productfilter('{{$product->id}}')" class="text-[]">
                         <i class=""></i> {{$product->name}}
                     </x-dropdown-link>
                     @endforeach
