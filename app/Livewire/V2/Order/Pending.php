@@ -48,9 +48,9 @@ class Pending extends Component
     public function render()
     {
         $AcceptStepStatus = AcceptStepStatu::all(); 
-        $products = Product::where('store_id', Auth::user()->store_id)->latest()
-            ->get();         
-        $orders = Order::query()->where('sid',Auth::user()->id)
+        $store_id = Auth::user()->userStore->store_id;
+        $products = Product::where('store_id', $store_id)->latest()->get();         
+        $orders = Order::query()->where('sid',$store_id)
         // 1. Filter by Status (Table: order_Waitings)
         // We use whereHas because every order in this view MUST have a confirmation record
         ->whereHas('Waiting', function ($query) {

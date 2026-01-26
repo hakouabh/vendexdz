@@ -700,7 +700,7 @@ protected function formatAyorItems($orderLines)
             $order = Order::create([
                 'oid' => $orderId,
                 'cid' => $client->id,
-                'sid' => $user->id,
+                'sid' => $user->userStore->store_id,
                 'aid' => $assignedAgentId,
                 'app_id' => $app_id,
                 'from' => $platform

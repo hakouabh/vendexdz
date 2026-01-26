@@ -113,7 +113,7 @@ class Products extends Component
 
         $data = [
             'created_by' => $user->id,
-            'store_id' => $user->store_id,
+            'store_id' => $user->userStore->store_id,
             'name' => $this->name,
             'sku' => $this->sku,
             'price' => $this->price,
@@ -143,7 +143,7 @@ class Products extends Component
     public function render()
     {
         return view('livewire.v2.products', [
-            'products' => app(ProductRepository::class)->paginateByStore(Auth::user()->store_id, 10),
+            'products' => app(ProductRepository::class)->paginateByStore(Auth::user()->userStore->store_id, 10),
             'categories' => Category::orderBy('name')->get(),
         ]);
     }

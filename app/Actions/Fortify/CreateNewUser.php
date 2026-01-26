@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
 use App\Models\Store;
+use App\Models\UserStore;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -37,9 +38,10 @@ class CreateNewUser implements CreatesNewUsers
             'name' => $input['name'] . "'s Store",
             'created_by' => $user->id
         ]);
-        $user->store_id = $store->id;
-        $user->save();
-
+        UserStore::create([
+            'user_id' => $user->id,
+            'store_id' => $store->id
+        ]);
         return $user;
     }
 }

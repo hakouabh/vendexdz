@@ -40,9 +40,9 @@ class Indelivery extends Component
     { 
 
         $SecondStepStatus = SecondStepStatu::all(); 
-        $products = Product::where('store_id', Auth::user()->store_id)->latest()
-       ->get();  
-       $orders = Order::query()->where('sid',Auth::user()->id)
+        $store_id = Auth::user()->userStore->store_id;
+        $products = Product::where('store_id', $store_id)->latest()->get();  
+       $orders = Order::query()->where('sid',$store_id)
         ->whereHas('Indelivery', function ($query) {
             if ($this->statufilter) {
                 $query->where('ssid', $this->statufilter);

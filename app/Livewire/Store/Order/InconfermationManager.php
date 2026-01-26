@@ -148,7 +148,7 @@ class InconfermationManager extends Component
         
         $this->calculateTotal();
         $firstStepStatus = firstStepStatu::all(); 
-        $products = Product::where('store_id', Auth::user()->store_id)->latest()
+        $products = Product::where('store_id', Auth::user()->userStore->store_id)->latest()
        ->get();
       
 

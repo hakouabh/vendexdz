@@ -104,7 +104,7 @@ class Orders extends Component
 
     private function loadAvailableProducts()
     {
-        $this->availableProducts = Product::where('store_id', Auth::user()->store_id)->with(['variants'])->get();
+        $this->availableProducts = Product::where('store_id', Auth::user()->userStore->store_id)->with(['variants'])->get();
     }
 
     public function updatedCity($value)
@@ -299,7 +299,7 @@ class Orders extends Component
             $order = Order::create([
                 'oid' => time() . mt_rand(1000, 9999),
                 'cid' => $client->id,
-                'sid' => Auth::User()->id, 
+                'sid' => Auth::User()->userStore->store_id, 
                 'app_id' => $app_id,
             ]);
             
@@ -325,9 +325,6 @@ class Orders extends Component
                 'fsid' => 1,
                 'aid' => Auth::id(),
             ]);
-            
-        
-        
         
             \DB::commit();
             

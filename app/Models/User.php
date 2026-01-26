@@ -90,6 +90,11 @@ class User extends Authenticatable
     return $this->roles()->where('roles.rid', $roleId)->exists();
     }
 
+    public function userStore()
+    {
+        return $this->hasOne(UserStore::class, 'user_id', 'id');
+    }
+
     public function store()
     {
         return $this->belongsTo(Store::class, 'store_id', 'id');

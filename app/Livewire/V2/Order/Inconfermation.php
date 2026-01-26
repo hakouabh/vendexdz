@@ -34,8 +34,9 @@ class Inconfermation extends Component
     public function render()
     { 
         $firstStepStatus = firstStepStatu::all(); 
-        $products = Product::where('store_id', Auth::user()->store_id)->latest()->get();
-        $orders = Order::query()->where('sid',Auth::user()->id)
+        $store_id = Auth::user()->userStore->store_id;
+        $products = Product::where('store_id', $store_id)->latest()->get();
+        $orders = Order::query()->where('sid',$store_id)
             ->whereHas('Inconfirmation', function ($query) {
             if ($this->statufilter) {
                 $query->where('fsid', $this->statufilter);
