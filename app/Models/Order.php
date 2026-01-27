@@ -26,9 +26,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderItems::class, 'oid', 'oid');
     }
-    public function Store()
+    public function store()
     {
-        return $this->hasMany(User::class, 'id', 'oid');
+        return $this->belongsTo(Store::class, 'sid', 'id');
     }
     public function Notes()
     {

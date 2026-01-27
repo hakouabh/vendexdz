@@ -35,12 +35,12 @@ trait OrderTrait
     {
         $user = auth()->user(); 
         $query = $user->stores();
-        if (request()->is('agent/orders') || request()->is('manager/orders')) {
-            $query->where('created_by', '!=', $user->id);
-        }
+        // if (request()->is('agent/orders') || request()->is('manager/orders')) {
+        //     $query->where('created_by', '!=', $user->id);
+        // }
 
         if (request()->is('admin/orders')) {
-            $query = Store::where('created_by', '!=', $user->id); // all stores
+            $query = Store::query(); // all stores
         }
         $this->stores = $query->latest()->get();
         $this->store_id = $this->stores->first()->id ?? null;

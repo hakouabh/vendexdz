@@ -29,17 +29,24 @@ class Inconfermation extends Component
 
     public $activeTab = 'chat'; 
     protected $listeners = ['orderSaved' => 'syncOrder'];
+    public string $context;
     
-
-    public function mount(){
+    public function mount($context){
+        $this->context = $context;
         $this->initializeStore();
     }
  
     public function render()
     { 
         $firstStepStatus = firstStepStatu::all();
-        $products = Product::where('store_id', $this->store_id)->latest()->get();
-        $orders = Order::query()->where('sid',$this->store_id)
+        $products = Product::when($this->storefilter, function ($query) {
+            $query->where('store_id', $this->storefilter);
+        })
+        ->when($this->storefilter == null, function ($query) {
+            $query->whereIn('store_id', $this->stores->pluck('id'));
+        })
+        ->latest()->get();
+        $orders = Order::query()->whereIn('sid',$this->stores->pluck('id'))
             ->whereHas('Inconfirmation', function ($query) {
             if ($this->statufilter) {
                 $query->where('fsid', $this->statufilter);
@@ -61,7 +68,8 @@ class Inconfermation extends Component
             'client', 
             'details', 
             'Inconfirmation.firstStepStatu', 
-            'items'
+            'items',
+            'store'
         ])
         ->latest()
         ->paginate(10, ['*'], 'inPage');

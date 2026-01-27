@@ -45,7 +45,10 @@ class Pending extends Component
 
     protected $listeners = ['orderSaved' => 'syncOrder'];
 
-    public function mount(){
+    public string $context;
+    
+    public function mount($context){
+        $this->context = $context;
         $this->initializeStore();
     }
     
@@ -53,7 +56,7 @@ class Pending extends Component
     {
         $AcceptStepStatus = AcceptStepStatu::all(); 
         $products = Product::where('store_id', $this->store_id)->latest()->get();         
-        $orders = Order::query()->where('sid',$this->store_id)
+        $orders = Order::query()->whereIn('sid',$this->stores->pluck('id'))
         // 1. Filter by Status (Table: order_Waitings)
         // We use whereHas because every order in this view MUST have a confirmation record
         ->whereHas('Waiting', function ($query) {

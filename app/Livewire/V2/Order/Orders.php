@@ -81,9 +81,11 @@ class Orders extends Component
         'items.*.quantity.required' => 'Quantity is required for all items',
         'items.*.quantity.min' => 'Quantity must be at least 1',
     ];
+    public string $context;
 
-    public function mount()
+    public function mount($context)
     {
+        $this->context = $context;
         $user = auth()->user(); 
         $query = $user->stores();
         if (request()->is('agent/orders') || request()->is('manager/orders')) {
@@ -94,7 +96,7 @@ class Orders extends Component
             $query = Store::where('created_by', '!=', $user->id); // all stores
         }
         $stores = $query->latest()->get();
-        $this->store_id = $stores->first()->id ?? null;
+        $this->store_id = request()->is('admin/orders') ? null : $stores->first()->id;
         $this->initializeOrder();
         $this->loadAvailableProducts();
     }

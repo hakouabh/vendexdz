@@ -37,7 +37,11 @@ class Indelivery extends Component
 
     public $activeTab = 'chat'; 
 
-    public function mount(){
+
+    public string $context;
+    
+    public function mount($context){
+        $this->context = $context;
         $this->initializeStore();
     }
 
@@ -45,7 +49,7 @@ class Indelivery extends Component
     { 
         $SecondStepStatus = SecondStepStatu::all(); 
         $products = Product::where('store_id', $this->store_id)->latest()->get();  
-       $orders = Order::query()->where('sid',$this->store_id)
+       $orders = Order::query()->whereIn('sid',$this->stores->pluck('id'))
         ->whereHas('Indelivery', function ($query) {
             if ($this->statufilter) {
                 $query->where('ssid', $this->statufilter);

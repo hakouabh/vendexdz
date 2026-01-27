@@ -33,7 +33,10 @@ class Reported extends Component
     public $activeTab = 'chat'; 
     protected $listeners = ['orderSaved' => 'syncOrder'];
 
-    public function mount(){
+    public string $context;
+    
+    public function mount($context){
+        $this->context = $context;
         $this->initializeStore();
     }
 
@@ -41,7 +44,7 @@ class Reported extends Component
     { 
         $firstStepStatus = firstStepStatu::all(); 
         $products = Product::where('store_id', $this->store_id)->latest()->get();          
-        $orders = Order::query()->where('sid',$this->store_id)
+        $orders = Order::query()->whereIn('sid',$this->stores->pluck('id'))
         ->whereHas('Inconfirmation', function ($query) {
             if ($this->statufilter) {
                 $query->where('fsid', $this->statufilter);

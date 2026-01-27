@@ -74,7 +74,7 @@
     </style>
     <div class="flex justify-between w-full font-bold ">
         <div class="flex gap-2 w-3/5 ">
-            @if(request()->is('admin/orders'))
+            @if($context =='admin')
             <x-dropdown align="left" width="48">
                 <x-slot name="trigger">
                     <button type="button"
@@ -216,7 +216,7 @@
                             <span class="font-mono text-sm font-black text-gray-800">#{{ $order->id }}</span>
                             <span
                                 class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
-                                <i class="ri-store-2-line"></i> @lang('Shop')
+                                <i class="ri-store-2-line"></i> {{$order->store->name ?? __('Unknown')}}
                             </span>
                         </div>
                         <span class="mt-1 flex w-fit items-center gap-1 text-[10px] text-gray-400">
