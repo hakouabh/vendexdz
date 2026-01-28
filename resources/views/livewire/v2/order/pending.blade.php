@@ -232,10 +232,11 @@
                             <div class="flex items-center gap-2">
                                 <span
                                     class="font-mono text-sm font-black text-gray-800">{{ $order->client->full_name ?? __('Unknown') }}</span>
-                                <span
-                                    class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
+                                @if($order->duplicated)
+                                <span class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
                                     <i class="ri-user-3-line"></i>@lang('Double')
                                 </span>
+                                @endif
                             </div>
 
                             <a href="tel:{{ $order->client->phone_number_1 ?? '' }}"

@@ -18,7 +18,6 @@ use App\Models\OrderInconfirmation;
 use App\Models\fees;
 use App\Models\User;
 use App\Services\TerritoryServices\ZRTerritoryService;
-use App\Services\TerritoryServices\AndersonTerritoryService;
 use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule;     

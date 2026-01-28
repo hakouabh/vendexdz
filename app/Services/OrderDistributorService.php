@@ -21,9 +21,7 @@ class OrderDistributorService
                 $agent = ProductAgent::where('sku', $sku)
                     ->where('is_active', true)
                     ->whereColumn('daily_received', '<', 'portion')
-
                     ->orderBy('daily_received', 'asc') 
-             
                     ->orderBy('portion', 'desc') 
                     ->lockForUpdate()
                     ->first();

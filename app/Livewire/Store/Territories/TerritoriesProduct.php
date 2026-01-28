@@ -22,7 +22,7 @@ class TerritoriesProduct extends Component
     {
         $this->product = $product;
         $this->product_id = $product->id;
-        $sid = auth()->id();
+        $sid = auth()->user()->userStore->store_id;
 
         // Get shipping providers installed by this store
         $this->installedApps = installedApps::where('sid', $sid)
@@ -62,7 +62,7 @@ class TerritoriesProduct extends Component
 
     public function save()
     {
-        $sid = auth()->id();
+        $sid = auth()->user()->userStore->store_id;
 
         foreach ($this->feesData as $wid => $data) {
             if(!empty($data['app_id']))

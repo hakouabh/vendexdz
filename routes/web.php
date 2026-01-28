@@ -171,8 +171,6 @@ Route::get('/test-anderson-order', function () {
 });
 Route::get('/test-tracking/{tracking_number}', function ($tracking_number) {
     $service = new AndersonTrackingService();
-    
-   
     $result = $service->getTrackingHistory($tracking_number);
 
     if (!$result) {

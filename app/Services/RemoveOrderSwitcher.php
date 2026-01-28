@@ -20,7 +20,9 @@ class RemoveOrderSwitcher
     {
         $installedApp = installedApps::where('sid', $sid)->where('app_id', $id)->first();
         return match ((int)$id) {
-            1001 => new AndersonDeleteOrderService($installedApp->token),
+            1001 => new AndersonDeleteOrderService($installedApp),
+            1002 => new AndersonDeleteOrderService($installedApp),
+            1003 => new AndersonDeleteOrderService($installedApp),
             1010 => new ZRDeleteOrderService($installedApp->token),
             default => throw new \Exception("Carrier [{$id}] not found."),
         };

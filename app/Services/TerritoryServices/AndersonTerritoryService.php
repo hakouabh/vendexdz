@@ -4,16 +4,17 @@ namespace App\Services\TerritoryServices;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use App\Models\InstalledApps;
 
 class AndersonTerritoryService
 {
-    protected string $baseUrl = 'https://anderson-ecommerce.ecotrack.dz';
+    protected string $baseUrl;
     protected string $apiKey;
 
-    public function __construct()
+    public function __construct($installedApp)
     {
-        
-        $this->apiKey = config('services.eco.anderson_token'); 
+        $this->baseUrl = $installedApp->supportedApp->base_url;
+        $this->apiKey = $installedApp->token;
     }
 
     public function getEverythingCached()

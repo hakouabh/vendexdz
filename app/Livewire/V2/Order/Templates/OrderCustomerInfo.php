@@ -9,6 +9,7 @@ use App\Models\OrderInconfirmation;
 use App\Models\Willaya;
 use App\Models\Client;
 use App\Models\Fees;
+use App\Models\InstalledApps;
 use App\Livewire\V2\Order\Traits\OrderTrait;
 use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\TerritoryServices\AndersonTerritoryService;
@@ -191,14 +192,17 @@ class OrderCustomerInfo extends Component
             ->where('product_id', $firstItemSku)
             ->where('wid',$this->wilaya)->first()->app_id;
         $this->companie= $app_id;
+        $installedApp = InstalledApps::where('sid',$this->activeOrder->sid)->where('app_id', $this->companie)->first();
         switch ($this->companie){
-            case 1001: 
-                $service = new \App\Services\TerritoryServices\AndersonTerritoryService();
+            case 1001:
+            case 1002:
+            case 1003:
+                $service = new AndersonTerritoryService($installedApp);
                 $data = $service->getEverythingCached();
                 $this->communes = $data['communes'][$value] ?? [];
                 break;
             case 1010:
-                $service = new \App\Services\TerritoryServices\ZRTerritoryService();
+                $service = new ZRTerritoryService();
                 $data = $service->getEverythingCached();
                 $zrWilaya = $data['wilayas'][$value] ?? null;
                 if ($zrWilaya) {

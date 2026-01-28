@@ -6,12 +6,13 @@ use Illuminate\Support\Facades\Http;
 
 class AndersonEditOrderService
 {
-    protected string $baseUrl = 'https://anderson-ecommerce.ecotrack.dz';
+    protected string $baseUrl;
     protected string $apiKey;
 
-    public function __construct($token)
+    public function __construct($installedApp)
     {
-        $this->apiKey = $token;
+        $this->baseUrl = $installedApp->supportedApp->base_url;
+        $this->apiKey = $installedApp->token;
     }
 
     public function updateOrder(string $tracking, $updatedData)

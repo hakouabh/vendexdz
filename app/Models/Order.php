@@ -18,6 +18,9 @@ class Order extends Model
         'type'
         
     ];
+
+    protected $apends = ['duplicated'];
+
     public function getRouteKeyName()
     {
         return 'oid';
@@ -78,6 +81,14 @@ class Order extends Model
     }
     public function logs()
     {
-         return $this->hasMany(order_logs::class, 'oid', 'oid')->latest();
+        return $this->hasMany(order_logs::class, 'oid', 'oid')->latest();
+    }
+
+    public function getDuplicatedAttribute()
+    {
+        return self::where('cid', $this->cid)
+            ->where('sid', $this->sid)
+            ->where('id', '!=', $this->id)
+            ->exists();
     }
 }

@@ -7,15 +7,15 @@ use App\Models\Order;
 use App\Models\OrderInconfirmation;
 use App\Models\OrderWaiting;
 
-
 class AndersonCreateOrderService
 {
-    protected string $baseUrl = 'https://anderson-ecommerce.ecotrack.dz';
+    protected string $baseUrl;
     protected string $apiKey;
 
-    public function __construct($token)
+    public function __construct($installedApp)
     {
-        $this->apiKey = $token;
+        $this->baseUrl = $installedApp->supportedApp->base_url;
+        $this->apiKey = $installedApp->token;
     }
 
     /**

@@ -26,7 +26,9 @@ class EditeOrderSwitcher
     {
         $installedApp = installedApps::where('sid', $sid)->where('app_id', $id)->first();
         return match ((int)$id) {
-            1001 => new AndersonEditOrderService($installedApp->token),
+            1001 => new AndersonEditOrderService($installedApp),
+            1002 => new AndersonEditOrderService($installedApp),
+            1003 => new AndersonEditOrderService($installedApp),
             1010 => new ZREditOrderService($installedApp->token),
             default => throw new \Exception("Carrier Service ID [{$id}] not found in Switcher."),
         };

@@ -37,7 +37,9 @@ class ShippingSwitcher
     {  
         $installedApp = installedApps::where('sid', $sid)->where('app_id', $id)->first();
         return match ((int)$id) {
-            1001 => new AndersonCreateOrderService($installedApp->token),
+            1001 => new AndersonCreateOrderService($installedApp),
+            1002 => new AndersonCreateOrderService($installedApp),
+            1003 => new AndersonCreateOrderService($installedApp),
             1010 => new ZRCreateOrderService($installedApp->token),
             default => throw new \Exception("Carrier Service ID [{$id}] not found in Switcher."),
         };
