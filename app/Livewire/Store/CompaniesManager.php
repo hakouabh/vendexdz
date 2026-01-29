@@ -74,7 +74,7 @@ class CompaniesManager extends Component
 
     public function render()
     {
-        $this->sid = Auth::user()->id;
+        $this->sid = auth()->user()->userStore->store_id;
         $query = SupportedApps::query();
         if (!empty($this->search)) {
             $query->where('name', 'like', '%' . $this->search . '%');

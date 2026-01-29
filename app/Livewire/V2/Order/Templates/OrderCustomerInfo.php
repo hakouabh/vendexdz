@@ -37,7 +37,7 @@ class OrderCustomerInfo extends Component
         'customerInfoUpdated' => 'syncCustomerData',
         'deliveryTypeUpdated' => 'setDelivery',
         'setUpDelivery' => 'sendToShipping',
-        'updateDeliveryInfo' => 'updateDelivery',
+        'updateDeliveryInfo' => 'updateDelivery'
     ];
 
     public function mount(Order $activeOrder, $canUpdate = true){
@@ -145,7 +145,8 @@ class OrderCustomerInfo extends Component
             $result = $switcher->dispatch($standardOrder, $this->activeOrder);
             if ($result['success']) {
                 $this->activeOrder->update([
-                    'tracking' => $result['tracking']
+                    'tracking' => $result['tracking'],
+                    'custom_id' => $result['parcelId']
                 ]);
                 OrderInconfirmation::where('oid', $this->activeOrder->oid)->delete();
                 OrderWaiting::create(['oid'=>$this->activeOrder->oid,'asid'=>1]);

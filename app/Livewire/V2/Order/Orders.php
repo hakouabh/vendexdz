@@ -37,7 +37,7 @@ class Orders extends Component
 
     // Order Configuration
     public $delivery_type = 1;
-    public $order_type = 'Normal';
+    public $type = 'normal';
     public $companie = 0;
     public $communes = [];
     public $selectedWilayaId = null;
@@ -281,7 +281,7 @@ class Orders extends Component
     }
 
     public function createOrder()
-    {           
+    {
         $this->validate();
     
         \DB::beginTransaction();
@@ -313,12 +313,12 @@ class Orders extends Component
                 }
             }
         
-        
             $order = Order::create([
                 'oid' => time() . mt_rand(1000, 9999),
                 'cid' => $client->id,
                 'sid' => $this->store_id, 
                 'app_id' => $app_id,
+                'type' => $this->type
             ]);
             
             $details = $order->details()->create([
@@ -363,7 +363,7 @@ class Orders extends Component
     {
         $this->reset([
             'client_name', 'phone1', 'phone2', 'wilaya', 'city', 'address',
-            'comment', 'delivery_type', 'order_type', 'companie', 'communes',
+            'comment', 'delivery_type', 'type', 'companie', 'communes',
             'selectedWilayaId', 'price', 'delivery_price', 'discount', 'total'
         ]);
         $this->initializeOrder();
@@ -401,5 +401,10 @@ class Orders extends Component
         }
         $this->phone1 = $cleanValue;
 
+    }
+
+    public function setType($type)
+    {
+        $this->type = $type;
     }
 }

@@ -22,7 +22,7 @@
             class="flex overflow-x-auto pb-4 gap-4 custom-scrollbar snap-x">
 
             @foreach($SecondStepStatus as $status)
-            @if(in_array($status->ssid, [2, 3])) @continue @endif
+            @if(in_array($status->ssid, [3, 4])) @continue @endif
             @php
             $count = $orders->where('Indelivery.SecondStepStatu.ssid', $status->ssid)->count();
             @endphp
@@ -215,7 +215,7 @@
                         <span class="font-mono text-sm font-black text-gray-800">#{{ $order->id }}</span>
                         <span
                             class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
-                            <i class="ri-store-2-line"></i> @lang('Shop')
+                            <i class="ri-store-2-line"></i> {{$order->store->name ?? __('Unknown')}}
                         </span>
                     </div>
                     <span class="mt-1 flex w-fit items-center gap-1 text-[10px] text-gray-400">

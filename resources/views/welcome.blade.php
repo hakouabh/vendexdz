@@ -482,12 +482,27 @@
                       @if (Route::has('login'))
                 <nav class="flex items-center justify-end gap-4">
                     @auth
-                        <a href="/agent/dashboard"
-                        class="px-6 py-2 bg-gray-900  text-white rounded-full hover:shadow-lg transition-all hover-scale">
-                       dashboard
-                    </a>
-                            
-                      
+                        @if(auth()->user()->roles()->where('roles.rid', 2)->exists())
+                            <a href="/agent/dashboard"
+                            class="px-6 py-2 bg-gray-900  text-white rounded-full hover:shadow-lg transition-all hover-scale">
+                                @lang('Admin dashboard')
+                            </a>
+                        @elseif(auth()->user()->roles()->where('roles.rid', 3)->exists())
+                            <a href="/agent/dashboard"
+                            class="px-6 py-2 bg-gray-900  text-white rounded-full hover:shadow-lg transition-all hover-scale">
+                                @lang('Manager dashboard')
+                            </a>
+                        @elseif(auth()->user()->roles()->where('roles.rid', 4)->exists())
+                            <a href="/agent/dashboard"
+                            class="px-6 py-2 bg-gray-900  text-white rounded-full hover:shadow-lg transition-all hover-scale">
+                                @lang('Agent dashboard')
+                            </a>
+                        @else
+                            <a href="/store/dashboard"
+                            class="px-6 py-2 bg-gray-900  text-white rounded-full hover:shadow-lg transition-all hover-scale">
+                                @lang('Dashboard')
+                            </a>
+                        @endif
                     @else
                        <a href="/login" class="px-4 py-2 text-gray-900 hover:text-green-700 transition-colors">Sign In</a>
                     <a href="/register"

@@ -22,7 +22,7 @@
             class="flex overflow-x-auto pb-4 gap-4 custom-scrollbar snap-x">
 
             @foreach($firstStepStatus as $status)
-            @if(in_array($status->fsid, [2, 3])) @continue @endif
+            @if(in_array($status->fsid, [3, 4])) @continue @endif
             @php
             $count = $orders->where('Inconfirmation.firstStepStatu.fsid', $status->fsid)->count();
             @endphp
@@ -193,7 +193,7 @@
                 @endif
             </div>
             <button type="button"
-                disabled
+                wire:click="sendAllToShipping" wire:loading.attr="disabled"
                 class="inline-flex px-5 items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
                 {{ __('Delivery all') }}
             </button>

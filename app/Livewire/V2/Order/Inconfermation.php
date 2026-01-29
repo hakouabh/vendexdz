@@ -9,9 +9,10 @@ use App\Models\Product;
 use App\Models\firstStepStatu;
 use App\Models\User;
 use App\Services\ShippingSwitcher;
-use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule;     
 use App\Livewire\V2\Order\Traits\OrderTrait;
+use App\Models\OrderWaiting;
+use App\Models\OrderInconfirmation;
 
 class Inconfermation extends Component
 {
@@ -51,7 +52,7 @@ class Inconfermation extends Component
             if ($this->statufilter) {
                 $query->where('fsid', $this->statufilter);
             } else {
-                $query->whereNotIn('fsid', [2, 3]);
+                $query->whereNotIn('fsid', [3, 4]);
             }
         })
         ->when($this->storefilter, function ($query) {
@@ -76,11 +77,17 @@ class Inconfermation extends Component
         $orders->withQueryString();
         return view('livewire.v2.order.inconfermation', ['orders' => $orders, 'firstStepStatus'=>$firstStepStatus ,'products'=>$products]);
     }
-    
+
+
+    public function syncOrder(){
+        $this->loadOrderData($this->activeOrder->oid);
+        $this->expandedOrderId =null;
+    }
+
     public function sendAllToShipping()
     { 
         $ordersToSend = Order::whereHas('Inconfirmation.firstStepStatu', function ($query) {
-                $query->where('fsid', 1) 
+                $query->where('fsid', 2) 
                     ->where('aid', auth()->id()); 
             })
             ->with(['client', 'details', 'items.variant.product'])
@@ -90,8 +97,6 @@ class Inconfermation extends Component
             session()->flash('error', 'No confirmed orders found to dispatch.');
             return;
         }
-
-
         $groupedOrders = $ordersToSend->groupBy('app_id');
 
         $totalSuccess = 0;
@@ -101,54 +106,77 @@ class Inconfermation extends Component
             $switcher = new \App\Services\ShippingSwitcher();
 
             foreach ($groupedOrders as $appId => $ordersInGroup) {
-                
-            
                 $standardizedOrders = $ordersInGroup->map(function($order) {
                     $this->activeOrder = $order;
-                    return $this->getStandardizedData();
+                    return $this->getLocalStandardizedData();
                 })->toArray();
-
             
-                $bulkResult = $switcher->dispatch($standardizedOrders, $appId);
-
+                $bulkResult = $switcher->dispatch($standardizedOrders, $this->activeOrder);
     
-                foreach ($ordersInGroup as $order) {
-                    $ref = $order->ref;
-                    
-            
-                    if (isset($bulkResult['successes'])) {
-                        $successData = collect($bulkResult['successes'])->firstWhere('externalId', $ref);
-                        
-                        if ($successData) {
-                            $order->update([
-                                'tracking'  => $successData['trackingNumber'],
-                                'custom_id' => $successData['parcelId'],
-                                'status'    => 'shipped', 
-                            ]);
-                            $totalSuccess++;
-                            continue;
-                        }
+                foreach ($bulkResult['results'] as $ref => $result) {
+                    if (($result['success'] ?? false) === true) {
+                    $id = str_replace('VN-', '', $result['reference']);
+                    $order = Order::find($id);
+
+                    if (!$order) {
+                        \Log::warning("Order #{$id} not found in DB.");
+                        continue;
                     }
 
-            
-                    $totalErrors++;
-                    $failureData = collect($bulkResult['failures'] ?? [])->firstWhere('externalId', $ref);
-                    $errorMsg = $failureData['errorMessage'] ?? 'Rejected by Carrier';
-                    \Log::warning("Order #{$ref} (App: {$appId}) failed: " . $errorMsg);
+                    $order->update([
+                        'tracking'  => $result['tracking'],
+                        'custom_id' =>  $result['parcelId'] ?? null,
+                    ]);
+
+                    OrderInconfirmation::where('oid', $order->oid)->delete();
+                    OrderWaiting::create([
+                        'oid'  => $order->oid,
+                        'asid' => 1
+                    ]);
+
+                    $this->dispatch(
+                        'notify',
+                        type: 'success',
+                        message: "Dispatched! Tracking: {$result['tracking']}"
+                    );
+
+                    $totalSuccess++;
+                    continue;
+                    }
+                    else {
+                        $totalErrors++;
+                        \Log::warning("Order #{$ref} (App: {$appId}) not found in bulk response.");
+                    }
                 }
             }
-
-            $this->resetActiveOrder();
-            session()->flash('success', "Process Finished: $totalSuccess orders sent. $totalErrors failed.");
-
+            $this->dispatch('notify', type: 'success', message: "Process Finished: $totalSuccess orders sent. $totalErrors failed.");
         } catch (\Exception $e) {
             \Log::error("Critical Bulk Shipping Error: " . $e->getMessage());
-            session()->flash('error', "Error: " . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: "Error: " . $e->getMessage());
         }
     }
 
-    public function syncOrder(){
-        $this->loadOrderData($this->activeOrder->oid);
-        $this->expandedOrderId =null;
+    private function getLocalStandardizedData()
+    {
+        return (object) [
+            'ref'           => 'VN-'.$this->activeOrder->id,
+            'name'          => $this->activeOrder->client->full_name ?? 'Unknown Client',
+            'phone'         => $this->activeOrder->client->phone_number_1 ?? '',
+            'phone2'        => $this->activeOrder->client->phone_number_2 ?? '',
+            'address'       => $this->activeOrder->client->address ?? '',
+            'city'          => $this->activeOrder->client->town ?? '',
+            'wilaya'        => $this->activeOrder->client->wilaya ?? '',
+            'total_price'   => $this->activeOrder->details->total ?? 0,
+            'delivery_type' => $this->activeOrder->details->delivery_type,
+            'note'          => $this->activeOrder->details->commenter ?? '',
+            'product_name'  => collect($this->activeOrder->items)->map(function($item) {
+                $name = $item->product->name;
+                $variant = $item->variant ? $item->variant->label : '';
+                $qty = " x" . ($item['quantity'] ?? 1);
+                
+                return $name . $variant . $qty;
+            })->implode(' + '),
+            'quantity'      => collect($this->activeOrder->items)->sum('quantity'),
+        ];
     }
 }

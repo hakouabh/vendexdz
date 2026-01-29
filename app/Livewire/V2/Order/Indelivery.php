@@ -54,7 +54,7 @@ class Indelivery extends Component
                 $query->where('ssid', $this->statufilter);
             } else {
                 // Default view logic: Exclude specific statuses
-                $query->whereNotIn('ssid', [2, 3]);
+                $query->whereNotIn('ssid', [3, 4]);
             }
         })
         ->when($this->storefilter, function ($query) {

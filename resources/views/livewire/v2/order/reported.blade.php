@@ -23,7 +23,7 @@
             class="flex overflow-x-auto pb-4 gap-4 custom-scrollbar snap-x">
 
             @foreach($firstStepStatus as $status)
-            @if(!in_array($status->fsid, [2, 3])) @continue @endif
+            @if(!in_array($status->fsid, [3, 4])) @continue @endif
             @php
             $count = $orders->where('Inconfirmation.firstStepStatu.fsid', $status->fsid)->count();
             @endphp
@@ -200,12 +200,6 @@
                 </button>
                 @endif
             </div>
-            <button type="button"
-                disabled
-                class="inline-flex px-5 items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                {{ __('Delivery all') }}
-            </button>
-
         </div>
 
     </div>
@@ -231,7 +225,7 @@
                         <span class="font-mono text-sm font-black text-gray-800">#{{ $order->id }}</span>
                         <span
                             class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
-                            <i class="ri-store-2-line"></i> @lang('Shop')
+                            <i class="ri-store-2-line"></i> {{$order->store->name ?? __('Unknown')}}
                         </span>
                     </div>
                     <span class="mt-1 flex w-fit items-center gap-1 text-[10px] text-gray-400">

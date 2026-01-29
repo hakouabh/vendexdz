@@ -14,7 +14,7 @@
                             {{ $canUpdate ? '' : 'disabled' }}
                             class="w-full rounded-xl border-none bg-slate-50 p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
                             <option value="">-- @lang('Products') --</option>
-                            @foreach($this->availableProducts as $prod)
+                            @foreach($availableProducts as $prod)
                                 <option value="{{ $prod->id }}">{{ $prod->name }}</option>
                             @endforeach
                         </select>

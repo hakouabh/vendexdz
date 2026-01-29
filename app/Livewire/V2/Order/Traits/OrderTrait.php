@@ -119,7 +119,7 @@ trait OrderTrait
 
         if (!$this->activeOrder) return;
 
-        $this->availableProducts = Product::where('created_by', $this->activeOrder->sid)
+        $this->availableProducts = Product::where('store_id', $this->activeOrder->sid)
             ->with('variants')
             ->get();
     }
@@ -131,7 +131,7 @@ trait OrderTrait
     }
 
     public function proposeStatus($orderId, $statusId){
-       if (in_array((int)$statusId, [2, 3])) {
+       if (in_array((int)$statusId, [3, 4])) {
            $this->tempOrderId = $orderId;
            $this->tempStatusId = $statusId;
            $this->scheduleTime = now()->addHours(2)->format('Y-m-d\TH:i'); // Default 2 hours later
@@ -157,6 +157,10 @@ trait OrderTrait
             // 3. Update the Order Status
             $order->Inconfirmation->update(['fsid' => $this->tempStatusId]);
 
+            $order->update([
+                'aid' => auth()->id(),
+            ]);
+
             // 4. Create the Timer entry with the FULL Date/Time
             \App\Models\Timer::updateOrCreate(
                 ['oid' => $order->oid],
@@ -166,7 +170,7 @@ trait OrderTrait
             // 5. IMPORTANT: Add the Log entry so you don't get the 'statu_old' error
             \App\Models\order_logs::create([
                 'oid'       => $order->oid,
-                'aid'       => auth()->id() ?? 1,
+                'aid'       => auth()->id(),
                 'statu_old' => $oldStatusId,
                 'statu_new' => $this->tempStatusId,
                 'text'      => 'Follow-up scheduled for: ' . $formattedTime,
@@ -198,10 +202,14 @@ trait OrderTrait
                 'fsid' => $statusId 
             ]);
 
+            $order->update([
+                'aid' => auth()->id(),
+            ]);
+
             // 2. CREATE THE LOG ENTRY using the captured $oldStatusId
             \App\Models\order_logs::create([
                 'oid'       => $order->oid,
-                'aid'       => auth()->id() ?? 1,
+                'aid'       => auth()->id(),
                 'statu_old' => $oldStatusId, // Guaranteed not null now
                 'statu_new' => $statusId,
                 'text'      => 'Status updated via confirmation manager.',
@@ -210,7 +218,7 @@ trait OrderTrait
             $this->selectedStatu = $statusId;
 
             // 3. Cleanup Timer
-            if (!in_array($statusId, [2, 3])) {
+            if (!in_array($statusId, [3, 4])) {
                 \App\Models\Timer::where('oid', $order->oid)->delete();
             }
 
@@ -236,7 +244,7 @@ trait OrderTrait
 
         OrderNots::create([
             'oid' => $this->activeOrder->oid,
-            'uid' => auth()->id() ?? 1,
+            'uid' => auth()->id(),
             'text' => $this->newNote
         ]);
     

@@ -49,7 +49,7 @@ class Reported extends Component
                 $query->where('fsid', $this->statufilter);
             } else {
                 // Default view logic: Exclude specific statuses
-                $query->whereIn('fsid', [2, 3]);
+                $query->whereIn('fsid', [3, 4]);
             }
         })
 

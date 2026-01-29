@@ -31,8 +31,8 @@
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Create New Order</h1>
-                    <p class="text-slate-600 mt-1">Add a new customer order to the system</p>
+                    <h1 class="text-2xl font-bold text-slate-900">@lang('Create New Order')</h1>
+                    <p class="text-slate-600 mt-1">@lang('Add a new customer order to the system')</p>
                 </div>
                 
             </div>
@@ -45,12 +45,12 @@
                                 <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
                                     <i class="ri-archive-line text-emerald-600"></i>
                                 </div>
-                                <h3 class="text-sm font-bold text-slate-800">Order Items</h3>
+                                <h3 class="text-sm font-bold text-slate-800">@lang('Order Items')</h3>
                             </div>
                             <button type="button" wire:click="addItem"
                                 class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-all">
                                 <i class="ri-add-line text-sm"></i>
-                                <span class="text-[11px] font-bold">Add Item</span>
+                                <span class="text-[11px] font-bold">@lang('Add Item')</span>
                             </button>
                         </div>
 
@@ -59,7 +59,7 @@
                             <div
                                 class="group relative p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-emerald-200 transition-all duration-300">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-xs font-bold text-slate-700">Item {{ $index + 1 }}</h4>
+                                    <h4 class="text-xs font-bold text-slate-700">@lang('Item') {{ $index + 1 }}</h4>
                                     @if(count($items) > 1)
                                     <button type="button" wire:click="deleteItem({{ $index }})"
                                         class="h-6 w-6 flex items-center justify-center rounded-lg text-slate-300 hover:bg-rose-50 hover:text-rose-500 transition-all">
@@ -74,8 +74,8 @@
                                             class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Product</label>
                                         <select wire:model.live="items.{{ $index }}.product_id"
                                             class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
-                                            <option value="">-- Select Product --</option>
-                                            @foreach($this->availableProducts as $prod)
+                                            <option value="">-- @lang('Select Product') --</option>
+                                            @foreach($availableProducts as $prod)
                                             <option value="{{ $prod->id }}">{{ $prod->name }}</option>
                                             @endforeach
                                         </select>
@@ -83,11 +83,11 @@
 
                                     <div>
                                         <label
-                                            class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Variant</label>
+                                            class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Variant')</label>
                                         <select wire:model.live="items.{{ $index }}.vid"
                                             {{ empty($item['product_id']) ? 'disabled' : '' }}
                                             class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold {{ empty($item['sku']) ? 'text-slate-300' : 'text-slate-700' }} focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
-                                            <option value="">-- Select Variant --</option>
+                                            <option value="">-- @lang('Select Variant') --</option>
                                             @if(!empty($item['product_id']))
                                             @foreach($this->getVariants($item['product_id']) as $v)
                                             <option value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }})</option>
@@ -98,7 +98,7 @@
 
                                     <div>
                                         <label
-                                            class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Quantity</label>
+                                            class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Quantity')</label>
                                         <div class="flex items-center bg-slate-900 rounded-lg px-2 py-1">
                                             <span class="text-[9px] font-black text-slate-400 uppercase mr-1">Q:</span>
                                             <input type="number" wire:model.live="items.{{ $index }}.quantity"
@@ -129,7 +129,7 @@
                         <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
                             <i class="ri-user-line text-blue-600"></i>
                         </div>
-                        <h3 class="text-sm font-bold text-slate-800">Customer Information</h3>
+                        <h3 class="text-sm font-bold text-slate-800">@lang('Customer Information')</h3>
                     </div>
 
                     <div class="p-6 space-y-4">
@@ -137,7 +137,7 @@
                             <div>
                                 <label
                                     class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-slate-400">
-                                    Full Name @error('client_name') <p class="text-[8px] text-red-600">{{ $message }}</p>
+                                    @lang('Full Name') @error('client_name') <p class="text-[8px] text-red-600">{{ $message }}</p>
                                     @enderror
                                 </label>
                                 <div class="relative">
@@ -146,14 +146,13 @@
                                     </div>
                                     <input type="text" wire:model="client_name"
                                         class="block w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-3 text-xs font-bold text-slate-700 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
-                                        placeholder="Enter customer full name">
+                                        placeholder="@lang('Enter customer full name')">
                                 </div>
                             </div>
-
                             <div>
                                 <label
                                     class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-slate-400">
-                                    Primary Phone @error('phone1') <p class="text-[8px] text-red-600">{{ $message }}</p>
+                                    @lang('Primary Phone') @error('phone1') <p class="text-[8px] text-red-600">{{ $message }}</p>
                                     @enderror
                                 </label>
                                 <div class="relative">
@@ -162,7 +161,7 @@
                                     </div>
                                     <input type="text" wire:model.live="phone1"
                                         class="block w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-3 text-xs font-bold text-slate-700 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
-                                        placeholder="Enter primary phone number">
+                                        placeholder="@lang('Enter primary phone number')">
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-2">
                                         <button type="button"
                                             class="rounded bg-green-100 p-1 text-green-600 hover:bg-green-200">
@@ -173,15 +172,14 @@
                             </div>
 
                             <div>
-                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Secondary
-                                    Phone</label>
+                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Secondary Phone')</label>
                                 <div class="relative">
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <i class="ri-phone-line text-slate-400"></i>
                                     </div>
                                     <input type="text" wire:model="phone2"
                                         class="block w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-3 text-xs font-bold text-slate-700 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
-                                        placeholder="Enter secondary phone number">
+                                        placeholder="@lang('Enter secondary phone number')">
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-2">
                                         <button type="button"
                                             class="rounded bg-green-100 p-1 text-green-600 hover:bg-green-200">
@@ -190,11 +188,10 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div>
                                 <label
                                     class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-slate-400">
-                                    Wilaya @error('wilaya') <p class="text-[8px] text-red-600">{{ $message }}</p>@enderror
+                                    @lang('Wilaya') @error('wilaya') <p class="text-[8px] text-red-600">{{ $message }}</p>@enderror
                                 </label>
                                 <div class="relative">
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -202,7 +199,7 @@
                                     </div>
                                     <select wire:model.live="wilaya"
                                         class="block w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-8 text-xs font-bold text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
-                                        <option value="">Select Wilaya</option>
+                                        <option value="">@lang('Select Wilaya')</option>
                                         @foreach($willayas as $w)
                                         <option value="{{ $w->wid }}">{{ $w->wid }} {{ $w->name }}</option>
                                         @endforeach
@@ -213,11 +210,10 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div>
                                 <label
                                     class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-slate-400">
-                                    City/Town @error('city') <p class="text-[8px] text-red-600">{{ $message }}</p>
+                                    @lang('City/Town') @error('city') <p class="text-[8px] text-red-600">{{ $message }}</p>
                                     @enderror
                                 </label>
                                 <div class="relative">
@@ -226,7 +222,7 @@
                                     </div>
                                     <select wire:model.live="city"
                                         class="block w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-8 text-xs font-bold text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
-                                        <option value="">Select City</option>
+                                        <option value="">@lang('Select City')</option>
                                         @foreach($communes as $commune)
                                         <option value="{{ $commune['name'] }}">
                                             {{ $commune['name'] }}
@@ -243,7 +239,7 @@
                             <div>
                                 <label
                                     class="flex mb-1 gap-1 items-center block text-[10px] font-bold uppercase text-slate-400">
-                                    Address @error('address') <p class="text-[8px] text-red-600">{{ $message }}</p>
+                                    @lang('Address') @error('address') <p class="text-[8px] text-red-600">{{ $message }}</p>
                                     @enderror
                                 </label>
                                 <div class="relative">
@@ -252,7 +248,7 @@
                                     </div>
                                     <input type="text" wire:model="address"
                                         class="block w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-3 text-xs font-bold text-slate-700 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
-                                        placeholder="Enter delivery address">
+                                        placeholder="@lang('Enter delivery address')">
                                 </div>
                             </div>
                         </div>
@@ -265,30 +261,28 @@
                         <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
                             <i class="ri-settings-3-line text-purple-600"></i>
                         </div>
-                        <h3 class="text-sm font-bold text-slate-800">Order Configuration</h3>
+                        <h3 class="text-sm font-bold text-slate-800">@lang('Order Configuration')</h3>
                     </div>
 
                     <div class="p-6 space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Delivery
-                                    Type</label>
+                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Delivery Type')</label>
                                 <div class="flex rounded-lg bg-slate-100 p-1">
                                     <button type="button" wire:click="$set('delivery_type', '1')"
                                         {{ !$can_use_stopdesk ? 'disabled' : '' }}
                                         class="flex-1 rounded py-1.5 text-[10px] font-bold {{ $delivery_type=='1'?'bg-white text-blue-600 shadow-sm':'text-slate-400' }}">
-                                        <span>Stopdesk</span>
+                                        <span>@lang('Stopdesk')</span>
                                         @if(!$can_use_stopdesk)
-                                        <span class="text-[8px] text-red-500">Not Available</span>
+                                        <span class="text-[8px] text-red-500">@lang('Not Available')</span>
                                         @endif
                                     </button>
                                     <button type="button" wire:click="$set('delivery_type', '0')"
-                                        class="flex-1 rounded py-1.5 text-[10px] font-bold {{ $delivery_type=='0'?'bg-white text-blue-600 shadow-sm':'text-slate-400' }}">Domicile</button>
+                                        class="flex-1 rounded py-1.5 text-[10px] font-bold {{ $delivery_type=='0'?'bg-white text-blue-600 shadow-sm':'text-slate-400' }}">@lang('Domicile')</button>
                                 </div>
                             </div>
-
                             <div>
-                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Discount</label>
+                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Discount')</label>
                                 <div class="relative">
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <i class="ri-price-tag-3-line text-slate-400"></i>
@@ -298,24 +292,28 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Order
-                                    Type</label>
+                            <div x-data="{ type: @entangle('type') }">
+                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Order Type')</label>
                                 <div class="flex rounded-lg bg-slate-100 p-1">
-                                    <button type="button" x-data="{ type: 'Normal' }" @click="type = 'Normal'"
-                                        :class="type === 'Normal' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400'"
+                                    <button type="button"  @click="type = 'normal'"
+                                        :class="type === 'normal' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400'"
                                         class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                                        Normal
+                                        @lang('Normal')
                                     </button>
                                     <button type="button" @click="type = 'quantity_break'"
                                         :class="type === 'quantity_break' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400'"
                                         class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                                        Quantity Break
+                                        @lang('Quantity Break')
                                     </button>
                                     <button type="button" @click="type = 'upsell'"
                                         :class="type === 'upsell' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400'"
                                         class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
-                                        Up Sell
+                                        @lang('Up Sell')
+                                    </button>
+                                    <button type="button" @click="type = 'crossell'"
+                                        :class="type === 'crossell' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+                                        class="flex-1 rounded-md py-1.5 text-[10px] font-bold transition-all">
+                                        @lang('Cross Sell')
                                     </button>
                                 </div>
                             </div>
