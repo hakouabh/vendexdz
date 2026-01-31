@@ -57,6 +57,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'short_name'
     ];
 
     /**
@@ -72,6 +73,10 @@ class User extends Authenticatable
         ];
     }
     
+    public function getShortNameAttribute()
+    {
+        return strtoupper(substr($this->name, 0, 2));
+    }
     
     public function roles()
     {

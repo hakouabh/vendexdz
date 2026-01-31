@@ -483,7 +483,7 @@
                 <nav class="flex items-center justify-end gap-4">
                     @auth
                         @if(auth()->user()->roles()->where('roles.rid', 2)->exists())
-                            <a href="/agent/dashboard"
+                            <a href="/admin/dashboard"
                             class="px-6 py-2 bg-gray-900  text-white rounded-full hover:shadow-lg transition-all hover-scale">
                                 @lang('Admin dashboard')
                             </a>

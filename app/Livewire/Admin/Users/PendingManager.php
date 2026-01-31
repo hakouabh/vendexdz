@@ -4,6 +4,8 @@ namespace App\Livewire\Admin\Users;
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\Product;
+use App\Models\Order;
 class PendingManager extends Component
 {
     public $isEditModalOpen = false;
@@ -14,6 +16,7 @@ class PendingManager extends Component
     public $phone;
     public $is_active = false;
     public $role;
+    public $search = '';
     
     public function openEditModal($id)
     {
@@ -48,16 +51,33 @@ class PendingManager extends Component
         ]);
         $Pending->roles()->sync([$this->role]);
         $this->isEditModalOpen = false;
-        
-        // رسالة نجاح (اختياري)
-        // session()->flash('message', 'Pending updated successfully.');
     }
 
     public function render()
     {
         $pendings = User::whereHas('roles', function ($q) {
         $q->where('roles.rid', 1); 
-        })->paginate(10);
+        })
+        ->where(function($query) {
+            $query->where('name', 'like', '%' . $this->search . '%')
+            ->orWhere('email', 'like', '%' . $this->search . '%');
+        })
+        ->paginate(10);
+        $pendings->withQueryString();
         return view('livewire.admin.users.pending-manager',['pendings'=>$pendings]);
+    }
+
+    public function deletePending($id)
+    {
+        $Pending = User::find($id);
+        $Models = [
+            Order::class,
+        ];
+        $result = canDelete($Models, 'sid', $Pending->userStore->store_id);
+        if ($result) {
+            $this->dispatch('notify', message: __('Cannot delete user because it is associated with existing orders.'), type: 'error');
+            return;
+        }
+        $Pending->delete();
     }
 }

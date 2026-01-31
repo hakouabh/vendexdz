@@ -3,15 +3,14 @@
 
         <div class="p-6 border-b border-gray-100 flex justify-between items-center">
             <div>
-                <h2 class="text-lg font-bold text-slate-900">Managers</h2>
-                <p class="text-sm text-slate-500 mt-1">Manage your Managers.</p>
+                <h2 class="text-lg font-bold text-slate-900">@lang('Managers')</h2>
+                <p class="text-sm text-slate-500 mt-1">@lang('Manage your Managers.')</p>
             </div>
-
             <div class="flex gap-3">
                 <div class="relative w-96 group hidden md:block">
                     <i
                         class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500"></i>
-                    <input type="text" placeholder="Search..."
+                    <input type="text" placeholder="@lang('Search Manager...')" wire:model="search"
                         class="w-full pl-10 pr-12 py-2 bg-gray-50 border border-transparent focus:bg-white focus:border-indigo-200 focus:ring-2 focus:ring-indigo-50 rounded-lg outline-none text-sm transition text-slate-700 placeholder-gray-400">
                     <div
                         class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 border border-gray-200 px-1.5 py-0.5 rounded bg-white">
@@ -29,14 +28,13 @@
                             <input type="checkbox"
                                 class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                         </th>
-                        <th class="px-6 py-4">Manager</th>
-                        <th class="px-6 py-4">Whatsapp</th>
-                        <th class="px-6 py-4">Create_Date</th>
-                        <th class="px-6 py-4">Update_Date</th>
+                        <th class="px-6 py-4">@lang('Manager')</th>
+                        <th class="px-6 py-4">@lang('Whatsapp')</th>
+                        <th class="px-6 py-4">@lang('Create_Date')</th>
+                        <th class="px-6 py-4">@lang('Update_Date')</th>
 
-                        <th class="px-6 py-4">Status</th>
-
-                        <th class="px-6 py-4 text-right">Actions</th>
+                        <th class="px-6 py-4">@lang('Status')</th>
+                        <th class="px-6 py-4 text-right">@lang('Actions')</th>
 
                     </tr>
                 </thead>
@@ -52,7 +50,7 @@
                             <div class="flex items-center gap-3">
                                 <div
                                     class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
-                                    JD
+                                        {{ $manager->short_name}}
                                 </div>
                                 <div>
                                     <div class="font-medium text-slate-900">{{$manager->name}}</div>
@@ -68,12 +66,12 @@
                             @if($manager->is_active)
                             <span
                                 class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">
-                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> @lang('Active')
                             </span>
                             @else
                             <span
                                 class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Disactive
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> @lang('Inactive')
                             </span>
                             @endif
                         </td>
@@ -88,20 +86,8 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-            <span class="text-sm text-slate-500">Showing <span class="font-medium text-slate-900">1-3</span> of <span
-                    class="font-medium text-slate-900">50</span></span>
-
-            <div class="flex items-center gap-2">
-                <button
-                    class="px-3 py-1 text-sm border border-gray-200 rounded-md text-slate-500 hover:bg-gray-50 disabled:opacity-50">Previous</button>
-                <button class="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700">1</button>
-                <button
-                    class="px-3 py-1 text-sm border border-gray-200 rounded-md text-slate-500 hover:bg-gray-50">2</button>
-                <button
-                    class="px-3 py-1 text-sm border border-gray-200 rounded-md text-slate-500 hover:bg-gray-50">Next</button>
-            </div>
+        <div class="px-6 py-4 border-t border-gray-100">
+            {{ $managers->links() }}
         </div>
     </div>
     <x-dialog-modal wire:model="isEditModalOpen" maxWidth="lg">
@@ -240,7 +226,7 @@
 
                 <button type="button"
                     class="text-xs font-medium text-red-500 hover:text-red-700 hover:underline transition">
-                    Delete Manager
+                    
                 </button>
 
                 <div class="flex items-center gap-3">

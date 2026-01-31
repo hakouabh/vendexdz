@@ -89,11 +89,11 @@ class Orders extends Component
         $this->context = $context;
         $user = auth()->user(); 
         $query = $user->stores();
-        if (request()->is('agent/orders') || request()->is('manager/orders')) {
-            $query->where('created_by', '!=', $user->id);
-        }
+        // if (request()->is('agent/orders') || request()->is('manager/orders')) {
+        //     $query->where('created_by', '!=', $user->id);
+        // }
 
-        if (request()->is('admin/orders')) {
+        if ($user->hasRole(2)) {
             $query = Store::where('created_by', '!=', $user->id); // all stores
         }
         $stores = $query->latest()->get();

@@ -39,7 +39,7 @@ trait OrderTrait
         //     $query->where('created_by', '!=', $user->id);
         // }
 
-        if (request()->is('admin/orders')) {
+        if ($user->hasRole(2)) {
             $query = Store::query(); // all stores
         }
         $this->stores = $query->latest()->get();

@@ -3,15 +3,14 @@
 
         <div class="p-6 border-b border-gray-100 flex justify-between items-center">
             <div>
-                <h2 class="text-lg font-bold text-slate-900">Stores</h2>
-                <p class="text-sm text-slate-500 mt-1">Manage your Stores.</p>
+                <h2 class="text-lg font-bold text-slate-900">@lang('Stores')</h2>
+                <p class="text-sm text-slate-500 mt-1">@lang('Manage your Stores.')</p>
             </div>
-
             <div class="flex gap-3">
                 <div class="relative w-96 group hidden md:block">
                     <i
                         class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500"></i>
-                    <input type="text" placeholder="Search..."
+                    <input type="text" placeholder="@lang('Search Store ...')" wire:model.live="search"
                         class="w-full pl-10 pr-12 py-2 bg-gray-50 border border-transparent focus:bg-white focus:border-indigo-200 focus:ring-2 focus:ring-indigo-50 rounded-lg outline-none text-sm transition text-slate-700 placeholder-gray-400">
                     <div
                         class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 border border-gray-200 px-1.5 py-0.5 rounded bg-white">
@@ -29,14 +28,13 @@
                             <input type="checkbox"
                                 class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                         </th>
-                        <th class="px-6 py-4">Manager</th>
-                        <th class="px-6 py-4">Whatsapp</th>
-                        <th class="px-6 py-4">Create_Date</th>
-                        <th class="px-6 py-4">Update_Date</th>
+                        <th class="px-6 py-4">@lang('Store')</th>
+                        <th class="px-6 py-4">@lang('Whatsapp')</th>
+                        <th class="px-6 py-4">@lang('Create_Date')</th>
+                        <th class="px-6 py-4">@lang('Update_Date')</th>
 
-                        <th class="px-6 py-4">Status</th>
-
-                        <th class="px-6 py-4 text-right">Actions</th>
+                        <th class="px-6 py-4">@lang('Status')</th>
+                        <th class="px-6 py-4 text-right">@lang('Actions')</th>
 
                     </tr>
                 </thead>
@@ -52,7 +50,7 @@
                             <div class="flex items-center gap-3">
                                 <div
                                     class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
-                                    JD
+                                    {{$store->short_name}}
                                 </div>
                                 <div>
                                     <div class="font-medium text-slate-900">{{$store->name}}</div>
@@ -68,12 +66,12 @@
                             @if($store->is_active)
                             <span
                                 class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">
-                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> @lang('Active')
                             </span>
                             @else
                             <span
                                 class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Disactive
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> @lang('Inactive')
                             </span>
                             @endif
                         </td>
@@ -88,20 +86,8 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-            <span class="text-sm text-slate-500">Showing <span class="font-medium text-slate-900">1-3</span> of <span
-                    class="font-medium text-slate-900">50</span></span>
-
-            <div class="flex items-center gap-2">
-                <button
-                    class="px-3 py-1 text-sm border border-gray-200 rounded-md text-slate-500 hover:bg-gray-50 disabled:opacity-50">Previous</button>
-                <button class="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700">1</button>
-                <button
-                    class="px-3 py-1 text-sm border border-gray-200 rounded-md text-slate-500 hover:bg-gray-50">2</button>
-                <button
-                    class="px-3 py-1 text-sm border border-gray-200 rounded-md text-slate-500 hover:bg-gray-50">Next</button>
-            </div>
+        <div class="px-6 py-4 border-t border-gray-100">
+            {{$stores->links()}}
         </div>
     </div>
     <x-dialog-modal wire:model="isEditModalOpen" maxWidth="lg">
@@ -114,7 +100,7 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-slate-900 tracking-tight">{{ __('Update Store') }}</h2>
-                        <p class="text-sm text-slate-500 mt-1">Manage store details, contact info, and visibility.</p>
+                        <p class="text-sm text-slate-500 mt-1">@lang('Manage store details, contact info, and visibility.')</p>
                     </div>
                 </div>
                 <button wire:click="$set('isEditModalOpen', false)"
@@ -127,8 +113,7 @@
         <x-slot name="content">
             <div class="space-y-6 px-2">
                 <div>
-                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Store
-                        Information</label>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Store Information')</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <i
@@ -143,7 +128,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">
-                            Assign Role
+                            @lang('Assign Role')
                         </label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -152,11 +137,11 @@
                             </div>
                             <select wire:model="role"
                                 class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200 appearance-none cursor-pointer">
-                                <option value="" disabled>Select Role</option>
-                                <option value="1">pending</option>
-                                <option value="3">Manager</option>
-                                <option value="4">Agent</option>
-                                <option value="5">Store</option>
+                                <option value="" disabled>@lang('Select Role')</option>
+                                <option value="1">@lang('Pending')</option>
+                                <option value="3">@lang('Manager')</option>
+                                <option value="4">@lang('Agent')</option>
+                                <option value="5">@lang('Store')</option>
                             </select>
                             <div
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
@@ -167,8 +152,7 @@
                     </div>
                     <div>
                         <label
-                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Contact
-                            Email</label>
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Contact Email')</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                                 <i
@@ -183,7 +167,7 @@
 
                     <div>
                         <label
-                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Whatsapp</label>
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Whatsapp')</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                                 <i
@@ -198,8 +182,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Store
-                        Status</label>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Store Status')</label>
 
                     <label
                         class="relative flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 group
@@ -208,18 +191,18 @@
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-sm font-bold {{ $is_active ? 'text-indigo-700' : 'text-slate-700' }}">
-                                    {{ $is_active ? 'Active Store' : 'Inactive Store' }}
+                                    {{ $is_active ? __('Active Store') : __('Inactive Store') }}
                                 </span>
                                 @if($is_active)
                                 <span
-                                    class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wide">Live</span>
+                                    class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wide">@lang('Live')</span>
                                 @else
                                 <span
-                                    class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 uppercase tracking-wide">Hidden</span>
+                                    class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 uppercase tracking-wide">@lang('Hidden')</span>
                                 @endif
                             </div>
                             <p class="text-xs {{ $is_active ? 'text-indigo-600/80' : 'text-slate-500' }}">
-                                {{ $is_active ? 'This store is currently visible to all users and accepting orders.' : 'This store is hidden from the public and cannot accept orders.' }}
+                                {{ $is_active ? __('This store is currently visible to all users and accepting orders.') : __('This store is hidden from the public and cannot accept orders.') }}
                             </p>
                         </div>
 
@@ -239,20 +222,21 @@
             <div class="border-t border-slate-100 pt-4 w-full flex justify-between items-center">
 
                 <button type="button"
+                    wire:click="deleteStore({{ $editingStoreId }})" wire:loading.attr="disabled"
                     class="text-xs font-medium text-red-500 hover:text-red-700 hover:underline transition">
-                    Delete Store
+                    @lang('Delete Store')
                 </button>
 
                 <div class="flex items-center gap-3">
                     <x-secondary-button wire:click="$set('isEditModalOpen', false)" wire:loading.attr="disabled"
                         class="!rounded-lg border-slate-200">
-                        Cancel
+                        @lang('Cancel')
                     </x-secondary-button>
 
                     <x-button wire:click="updateStore" wire:loading.attr="disabled"
                         class="bg-slate-900 hover:bg-slate-800 text-white !rounded-lg px-6 shadow-lg shadow-slate-200">
-                        <span wire:loading.remove>Save Changes</span>
-                        <span wire:loading>Saving...</span>
+                        <span wire:loading.remove>@lang('Save Changes')</span>
+                        <span wire:loading>@lang('Saving...')</span>
                     </x-button>
                 </div>
             </div>

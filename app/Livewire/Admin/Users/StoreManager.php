@@ -4,6 +4,8 @@ namespace App\Livewire\Admin\Users;
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Store;
 class StoreManager extends Component
 {
     public $isEditModalOpen = false;
@@ -14,6 +16,7 @@ class StoreManager extends Component
     public $phone;
     public $is_active = false;
     public $role;
+    public $search = ''; 
 
     public function openEditModal($id)
     {
@@ -56,7 +59,35 @@ class StoreManager extends Component
     {
         $stores = User::whereHas('roles', function ($q) {
         $q->where('roles.rid', 5); 
-        })->paginate(10);
+        })
+        ->where(function($query) {
+            $query->where('name', 'like', '%' . $this->search . '%')
+            ->orWhere('email', 'like', '%' . $this->search . '%');
+        })
+        ->paginate(10);
+        $stores->withQueryString();
         return view('livewire.admin.users.store-manager',['stores'=>$stores]);
+    }
+
+    public function deleteStore($id)
+    {
+        $Store = User::find($id);
+        $Models = [
+            Order::class,
+        ];
+        $result = canDelete($Models, 'sid', $Store->userStore->store_id);
+        if ($result) {
+            $this->dispatch('notify', message: __('Cannot delete user because it is associated with existing orders.'), type: 'error');
+            return;
+        }
+        $Models = [
+            Store::class,
+        ];
+        $result = canDelete($Models, 'created_by', $Store->id);
+        if ($result) {
+            $this->dispatch('notify', message: __('Cannot delete user because it is associated with existing store.'), type: 'error');
+            return;
+        }
+        $Store->delete();
     }
 }

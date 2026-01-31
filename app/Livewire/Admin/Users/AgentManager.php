@@ -14,6 +14,7 @@ class AgentManager extends Component
     public $phone;
     public $is_active = false;
     public $role;
+    public $search = '';
 
     public function openEditModal($id)
     {
@@ -49,14 +50,18 @@ class AgentManager extends Component
         $Agent->roles()->sync([$this->role]);
         $this->isEditModalOpen = false;
         
-        // رسالة نجاح (اختياري)
-        // session()->flash('message', 'Agent updated successfully.');
     }
     public function render()
     {
         $agents = User::whereHas('roles', function ($q) {
         $q->where('roles.rid', 4); 
-        })->paginate(10);
+        })
+        ->where(function ($query) {
+            $query->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('email', 'like', '%' . $this->search . '%');
+        })
+        ->paginate(10);
+        $agents->withQueryString();
         return view('livewire.admin.users.agent-manager',['agents'=>$agents]);
     }
 }

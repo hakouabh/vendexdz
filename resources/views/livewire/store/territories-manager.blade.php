@@ -2,7 +2,7 @@
     @if(!$selectedSku)
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Select Product for Shipping Setup</h3>
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">@lang('Select Product for Shipping Setup')</h3>
                 <div class="mt-4 relative">
                     <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                     <input type="text" wire:model.live="search" placeholder="Search by product name or SKU..." 
@@ -35,7 +35,7 @@
     @else
         <div class="mb-4">
             <button wire:click="clearSelection" class="flex items-center gap-2 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition">
-                <i class="ri-arrow-left-line"></i> Back to Product List
+                <i class="ri-arrow-left-line"></i> @lang('Back to Product List')
             </button>
         </div>
         

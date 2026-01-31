@@ -14,6 +14,7 @@ class ManagerManager extends Component
     public $phone;
     public $is_active = false;
     public $role;
+    public $search = '';
 
     public function openEditModal($id)
     {
@@ -56,7 +57,13 @@ class ManagerManager extends Component
     {
         $managers = User::whereHas('roles', function ($q) {
         $q->where('roles.rid', 3); 
-        })->paginate(10);
+        })
+        ->where(function ($query) {
+            $query->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('email', 'like', '%' . $this->search . '%');
+        })
+        ->paginate(10);
+        $managers->withQueryString();
         return view('livewire.admin.users.manager-manager',['managers'=>$managers]);
     }
 }
