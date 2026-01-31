@@ -77,7 +77,7 @@ trait OrderTrait
             return $price * $item['quantity'];
         });
         if ($client->wilaya) {
-            $fee = Fees::where('product_id', $orderItems[0]['product_id'])
+            $fee = fees::where('product_id', $orderItems[0]['product_id'])
                 ->where('wid', $client->wilaya)
                 ->first();
             $this->delivery_price = $fee

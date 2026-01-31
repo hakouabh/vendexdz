@@ -8,7 +8,7 @@ use App\Models\OrderWaiting;
 use App\Models\OrderInconfirmation;
 use App\Models\Willaya;
 use App\Models\Client;
-use App\Models\Fees;
+use App\Models\fees;
 use App\Models\InstalledApps;
 use App\Livewire\V2\Order\Traits\OrderTrait;
 use App\Services\TerritoryServices\ZRTerritoryService;
@@ -189,7 +189,7 @@ class OrderCustomerInfo extends Component
         }
         $firstItemSku = $this->activeOrder->items[0]['product_id'] ?? null;
 
-        $app_id = Fees::where('sid',$this->activeOrder->sid)
+        $app_id = fees::where('sid',$this->activeOrder->sid)
             ->where('product_id', $firstItemSku)
             ->where('wid',$this->wilaya)->first()->app_id;
         $this->companie= $app_id;
