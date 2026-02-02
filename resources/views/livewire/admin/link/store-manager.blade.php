@@ -25,32 +25,32 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100 text-sm">
                             @foreach($stores as $store)
-                            <tr wire:click="SelectStore({{$store->id}})" class="hover:bg-gray-50/80 transition duration-150 group" style="cursor: pointer;">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
-                                            {{$store->short_name}}
+                                <tr wire:click="SelectStore({{$store->id}})" class="transition duration-150 group {{ $selectedStore?->id == $store->id ? 'bg-indigo-50' : 'hover:bg-gray-50/80' }}" style="cursor: pointer;">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
+                                                {{$store->short_name}}
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-slate-900">{{$store->name}}</div>
+                                                <div class="text-xs text-slate-400">{{__('whatsapp') .': '. $store->owner->phone}}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div class="font-medium text-slate-900">{{$store->name}}</div>
-                                            <div class="text-xs text-slate-400">{{__('whatsapp') .': '. $store->phone}}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    @if($store->is_active)
-                                    <span
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active
-                                    </span>
-                                    @else
-                                    <span
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Disactive
-                                    </span>
-                                    @endif
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if($store->owner->is_active)
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> @lang('Active')
+                                        </span>
+                                        @else
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> @lang('Inactive')
+                                        </span>
+                                        @endif
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -78,21 +78,33 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 text-sm">
-                        @if($store)
-                        @foreach($store->managers as $manager)
-                        <tr class="hover:bg-gray-50/80 transition">
-                            <td class="px-5 py-3 font-medium text-slate-700">{{$manager->name}}</td>
-                            <td class="px-6 py-4 text-right">
-                                <button class="text-slate-400 hover:text-indigo-600 transition"><i
-                                        class="ri-delete-bin-line text-lg"></i></button>
-                            </td>
-                        </tr>
-                        @endforeach
+                        @if($selectedStore)
+                            @foreach($selectedStore->managers as $manager)
+                            <tr class="hover:bg-gray-50/80 transition">
+                                <td class="px-5 py-3 font-medium text-slate-700">{{$manager->name}}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <button wire:click="removeLink({{$manager->id}})" class="text-slate-400 hover:text-indigo-600 transition"><i
+                                            class="ri-delete-bin-line text-lg"></i></button>
+                                </td>
+                            </tr>
+                            @endforeach
+                            <tr class="hover:bg-gray-50/80 transition">
+                                <td class="px-5 py-3">
+                                    <select wire:model="selectedManagerId" class="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="" disabled>@lang('Add Manager')</option>
+                                        @foreach($availableManagers as $manager)
+                                            <option value="{{$manager->id}}">{{$manager->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button wire:click="addManager" class="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition">Add</button>
+                                </td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>
             </div>
-
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden w-full">
                 <div class="p-5 border-b border-gray-100 flex justify-between items-center">
                     <div>
@@ -109,17 +121,30 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 text-sm">
-                        @if($store)
-                            @foreach($store->agents as $agent)
+                        @if($selectedStore)
+                            @foreach($selectedStore->agents as $agent)
                             <tr class="hover:bg-gray-50/80 transition">
                                 <td class="px-5 py-3 font-medium text-slate-700">{{$agent->name}}</td>
                                 <!-- <td class="px-5 py-3 text-right text-green-600 font-bold">{{$agent->name}}</td> -->
                                 <td class="px-6 py-4 text-right">
-                                    <button class="text-slate-400 hover:text-indigo-600 transition"><i
+                                    <button wire:click="removeLink({{$agent->id}})" class="text-slate-400 hover:text-indigo-600 transition"><i
                                             class="ri-delete-bin-line text-lg"></i></button>
                                 </td>
                             </tr>
                             @endforeach
+                            <tr class="hover:bg-gray-50/80 transition">
+                                <td class="px-5 py-3">
+                                    <select wire:model="selectedAgentId" class="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="" disabled>@lang('Add Agent')</option>
+                                        @foreach($availableAgents as $agent)
+                                            <option value="{{$agent->id}}">{{$agent->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button wire:click="addAgent" class="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition">@lang('Add')</button>
+                                </td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>
