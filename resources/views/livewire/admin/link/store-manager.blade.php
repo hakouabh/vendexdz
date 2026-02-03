@@ -65,7 +65,7 @@
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden w-full">
                 <div class="p-5 border-b border-gray-100 flex justify-between items-center">
                     <div>
-                        <h2 class="text-base font-bold text-slate-900">Managers</h2>
+                        <h2 class="text-base font-bold text-slate-900">@lang('Managers')</h2>
                     </div>
                     <i class="ri-user-settings-line text-amber-500"></i>
                 </div>
@@ -73,8 +73,8 @@
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-gray-50/50 text-slate-500 text-[10px] uppercase font-bold tracking-wider">
                         <tr>
-                            <th class="px-5 py-2">Name</th>
-                            <th class="px-5 py-2 text-right">Delete</th>
+                            <th class="px-5 py-2">@lang('Name')</th>
+                            <th class="px-5 py-2 text-right">@lang('Delete')</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 text-sm">
@@ -108,7 +108,7 @@
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden w-full">
                 <div class="p-5 border-b border-gray-100 flex justify-between items-center">
                     <div>
-                        <h2 class="text-base font-bold text-slate-900">Agents</h2>
+                        <h2 class="text-base font-bold text-slate-900">@lang('Agents')</h2>
                     </div>
                     <i class="ri-team-line text-amber-500"></i>
                 </div>
