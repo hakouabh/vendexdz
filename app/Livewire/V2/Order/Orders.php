@@ -13,7 +13,7 @@ use App\Models\ProductVariant;
 use App\Models\firstStepStatu;
 use App\Models\willaya;
 use App\Models\fees;
-use App\Models\InstalledApps;
+use App\Models\installedApps;
 use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\TerritoryServices\AndersonTerritoryService;
 use Illuminate\Support\Facades\Log;
@@ -162,7 +162,7 @@ class Orders extends Component
                 $this->companie = $fee->app_id;
             }
         }
-        $installedApp = InstalledApps::where('sid',auth()->user()->userStore->store_id)->where('app_id', $this->companie)->first();
+        $installedApp = installedApps::where('sid',auth()->user()->userStore->store_id)->where('app_id', $this->companie)->first();
         switch ($this->companie) {
             case 1001:
             case 1002:

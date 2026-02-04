@@ -4,7 +4,7 @@ namespace App\Services\TerritoryServices;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
-use App\Models\InstalledApps;
+use App\Models\installedApps;
 
 class AndersonTerritoryService
 {
