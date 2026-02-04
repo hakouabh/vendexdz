@@ -118,6 +118,10 @@ class Orders extends Component
         ];
     }
 
+    public function updatedStoreId($value){
+        $this->loadAvailableProducts();
+    }
+
     private function loadAvailableProducts()
     {
         $this->availableProducts = Product::where('store_id', $this->store_id)->with(['variants'])->get();
