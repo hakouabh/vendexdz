@@ -9,7 +9,7 @@ use App\Models\OrderInconfirmation;
 use App\Models\Willaya;
 use App\Models\Client;
 use App\Models\fees;
-use App\Models\installedApps;
+use App\Models\InstalledApps;
 use App\Livewire\V2\Order\Traits\OrderTrait;
 use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\TerritoryServices\AndersonTerritoryService;
@@ -193,7 +193,7 @@ class OrderCustomerInfo extends Component
             ->where('product_id', $firstItemSku)
             ->where('wid',$this->wilaya)->first()->app_id;
         $this->companie= $app_id;
-        $installedApp = installedApps::where('sid',$this->activeOrder->sid)->where('app_id', $this->companie)->first();
+        $installedApp = InstalledApps::where('sid',$this->activeOrder->sid)->where('app_id', $this->companie)->first();
         switch ($this->companie){
             case 1001:
             case 1002:

@@ -156,9 +156,9 @@ class Orders extends Component
             return;
         }
 
-        $firstItemSku = $this->items[0]['product_id'] ?? null;
+        $firstItemSku = Product::find($this->items[0]['product_id']) ?? null;
         if ($firstItemSku) {
-            $fee = fees::where('product_id', $firstItemSku)
+            $fee = fees::where('product_id', $firstItemSku->id)
                 ->where('wid', $value)
                 ->first();
             
@@ -166,7 +166,7 @@ class Orders extends Component
                 $this->companie = $fee->app_id;
             }
         }
-        $installedApp = installedApps::where('sid',auth()->user()->userStore->store_id)->where('app_id', $this->companie)->first();
+        $installedApp = installedApps::where('sid', $firstItemSku->store_id)->where('app_id', $this->companie)->first();
         switch ($this->companie) {
             case 1001:
             case 1002:
