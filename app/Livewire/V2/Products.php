@@ -22,6 +22,7 @@ class Products extends Component
     // Product fields
     public $productId;
     public $name;
+    public $nickname;
     public $sku;
     public $price;
     public $url;
@@ -55,6 +56,7 @@ class Products extends Component
 
         $this->productId = $product->id;
         $this->name = $product->name;
+        $this->nickname = $product->nickname;
         $this->sku = $product->sku;
         $this->price = $product->price;
         $this->url = $product->url;
@@ -115,6 +117,7 @@ class Products extends Component
             'created_by' => $user->id,
             'store_id' => $user->userStore->store_id,
             'name' => $this->name,
+            'nickname' => $this->nickname,
             'sku' => $this->sku,
             'price' => $this->price,
             'url' => $this->url,
@@ -136,7 +139,7 @@ class Products extends Component
     public function resetFields()
     {
         $this->reset([
-            'productId', 'name', 'sku', 'price', 'url', 'category_id', 'variants', 'isEditMode', 'showForm'
+            'productId', 'name', 'nickname', 'sku', 'price', 'url', 'category_id', 'variants', 'isEditMode', 'showForm'
         ]);
     }
 
