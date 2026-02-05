@@ -45,7 +45,7 @@ class AgentWorkspace extends Component
     public function updatedSelectedProduct()
     {
         if ($this->selectedProduct) {
-            $product = $this->products->where('sku', $this->selectedProduct)->first();
+            $product = $this->products->find($this->selectedProduct);
             $this->selectedProductDisplayName = $product ? $product->name : 'All Products';
         } else {
             $this->selectedProductDisplayName = 'All Products';
@@ -55,7 +55,6 @@ class AgentWorkspace extends Component
     }
     public function updatedSelectedStore()
     {
-        
         $this->loadData();
     }
 
@@ -105,7 +104,7 @@ class AgentWorkspace extends Component
         
         if ($this->selectedProduct) {
             $query->whereHas('items', function($q) {
-                $q->where('sku', $this->selectedProduct);
+                $q->where('product_id', $this->selectedProduct);
             });
         }
         if ($this->selectedStore) {
