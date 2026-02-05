@@ -282,7 +282,9 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Discount')</label>
+                                <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Discount') 
+                                    <span class="text-red-600">(@lang('You can discount up to') ) {{$totalDiscount}} DZD</span>
+                                </label>
                                 <div class="relative">
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <i class="ri-price-tag-3-line text-slate-400"></i>

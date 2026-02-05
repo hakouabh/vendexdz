@@ -12,6 +12,7 @@ class OrderDetails extends Model
         'price',
         'delivery_price',
         'total',
+        'discount',
         'commenter'
     ];
     

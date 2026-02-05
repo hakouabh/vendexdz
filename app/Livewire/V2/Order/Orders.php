@@ -43,6 +43,7 @@ class Orders extends Component
 
     // Pricing
     public $price = 0;
+    public $totalDiscount = 0;
     public $delivery_price = 0;
     public $discount = 0;
     public $total = 0;
@@ -88,10 +89,6 @@ class Orders extends Component
         $this->context = $context;
         $user = auth()->user(); 
         $query = $user->stores();
-        // if (request()->is('agent/orders') || request()->is('manager/orders')) {
-        //     $query->where('created_by', '!=', $user->id);
-        // }
-
         if ($user->hasRole(2)) {
             $query = Store::where('created_by', '!=', $user->id); // all stores
         }
@@ -120,13 +117,6 @@ class Orders extends Component
 
     public function updatedStoreId($value){
         $this->loadAvailableProducts();
-    }
-
-    public function updatedDiscount($value){
-        $totalDiscount = 0;
-        foreach ($this->items as $item){
-            $totalDiscount += $item['discount']; 
-        }
     }
 
     private function loadAvailableProducts()
@@ -265,11 +255,13 @@ class Orders extends Component
     {
         $computedPrice = 0;
         $delivery = null;
+        $totalDiscount = 0;
 
         foreach ($this->items as $item) {
             $price = (float) ($item['original'] ?? 0);
             $qty = (int) ($item['quantity'] ?? 1);
             $computedPrice += ($price * $qty);
+            $totalDiscount += ($item['quantity'] * $item['discount']);
 
             if ($delivery === null && !empty($item['product_id']) && !empty($this->wilaya)) {
                 $fee = fees::where('product_id', $item['product_id'])
@@ -290,6 +282,7 @@ class Orders extends Component
         $d = (float) ($this->delivery_price ?? 0);
         $dis = (float) ($this->discount ?? 0);
         $this->total = ($this->price + $d) - $dis;
+        $this->totalDiscount = $totalDiscount;
     }
 
     public function createOrder()

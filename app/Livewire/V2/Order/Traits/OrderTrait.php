@@ -72,6 +72,9 @@ trait OrderTrait
     {
         $orderItems = OrderItems::where('oid', $this->activeOrder->oid)->get();
         $client = Client::find($this->activeOrder->cid);
+        $totalDiscount = $orderItems->sum(function ($item){
+            return $item->variant->discount * $item['quantity'];
+        });
         $this->price = $orderItems->sum(function ($item) {
             $price = $item->variant ? $item->variant->product->price : 0;
             return $price * $item['quantity'];
@@ -84,9 +87,11 @@ trait OrderTrait
                 ? ($this->delivery_type ? $fee->c_s_p : $fee->c_d_p)
                 : 0;
         }
+        $this->discount = $this->activeOrder->details->discount;
         $this->total = ($this->price + $this->delivery_price) - ($this->discount ?? 0);
         $this->activeOrder->details->update([
             'total' => $this->total,
+            'discount' => $this->discount,
             'price' => $this->price,
             'delivery_price' => $this->delivery_price,
             'stopdesk' => $this->delivery_type ?? $this->activeOrder->details->stopdesk,
@@ -96,6 +101,7 @@ trait OrderTrait
             'delivery_price' => $this->delivery_price,
             'discount'       => $this->discount,
             'total'          => $this->total,
+            'totalDiscount'  => $totalDiscount
         ]);
     }
     protected function loadOrderData($oid)
@@ -236,6 +242,7 @@ trait OrderTrait
             'delivery_price' => 0,
             'discount'       => 0,
             'total'          => 0,
+            'totalDiscount' => 0,
         ]);
     }
     public function saveNote()

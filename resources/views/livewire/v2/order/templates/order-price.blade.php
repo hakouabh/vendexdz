@@ -2,8 +2,9 @@
     <h5 class="text-[11px] font-bold uppercase text-gray-400">@lang('Order Price')</h5>
     <div class="sm:col-span-1">
         <!-- // TODO calculated discount -->
-        <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">@lang('Discount') <br>(you
-            can discount enter 100 and 300 da )</label>
+        <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">@lang('Discount') <br>
+        <span class="text-red-600">(@lang('You can discount up to') ) {{$totalDiscount}} DZD</span>
+        </label>
         <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <i class="ri-price-tag-3-line text-gray-400"></i>
