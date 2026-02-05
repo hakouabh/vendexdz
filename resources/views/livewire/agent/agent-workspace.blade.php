@@ -53,6 +53,41 @@
                     @endif
                 </div>
                 <div class=" flex flex-col justify-center md:flex-row gap-4">
+                    <x-dropdown align="left" width="48">
+                        <x-slot name="trigger">
+                            <button type="button"
+                                class="inline-flex  items-center px-3 py-1.5 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                                <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+                                    </path>
+                                </svg>
+                                @if($selectedStore)
+                                {{ $stores->firstWhere('id', $selectedStore)->name ?? __('Filter Store') }}
+                                @else
+                                {{ __('Filter Store') }}
+                                @endif
+                                <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <div class="block px-4 py-2 text-xs text-gray-400 uppercase tracking-widest">
+                                 {{ __('Filter Store') }}
+                            </div>
+                            <x-dropdown-link wire:click="$set('selectedStore', null)" class="text-[]">
+                                <i class=""></i> All
+                            </x-dropdown-link>
+                            @foreach($stores as $store)
+                            <x-dropdown-link  wire:click="$set('selectedStore', {{ $store->id }})" class="text-[]">
+                                <i class=""></i> {{$store->name}}
+                            </x-dropdown-link>
+                            @endforeach
+                        </x-slot>
+                    </x-dropdown>
                     <!-- Product Dropdown -->
                     <div class="flex-1" x-data="{ open: false }">
 
@@ -124,41 +159,6 @@
                             </div>
                         </div>
                     </div>
-                    <x-dropdown align="left" width="48">
-                        <x-slot name="trigger">
-                            <button type="button"
-                                class="inline-flex  items-center px-3 py-1.5 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                                <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
-                                    </path>
-                                </svg>
-                                @if($selectedStore)
-                                {{ $stores->firstWhere('id', $selectedStore)->name ?? __('Filter Store') }}
-                                @else
-                                {{ __('Filter Store') }}
-                                @endif
-                                <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </button>
-                        </x-slot>
-                        <x-slot name="content">
-                            <div class="block px-4 py-2 text-xs text-gray-400 uppercase tracking-widest">
-                                 {{ __('Filter Store') }}
-                            </div>
-                            <x-dropdown-link wire:click="$set('selectedStore', null)" class="text-[]">
-                                <i class=""></i> All
-                            </x-dropdown-link>
-                            @foreach($stores as $store)
-                            <x-dropdown-link  wire:click="$set('selectedStore', {{ $store->id }})" class="text-[]">
-                                <i class=""></i> {{$store->name}}
-                            </x-dropdown-link>
-                            @endforeach
-                        </x-slot>
-                    </x-dropdown>
                     <!-- Quick Date Selection Buttons -->
                     <div class="flex items-end gap-2">
                         <button wire:click="$set('selectedDate', '{{ \Carbon\Carbon::today()->format('Y-m-d') }}')"

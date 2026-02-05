@@ -323,6 +323,7 @@ class Orders extends Component
                 'cid' => $client->id,
                 'sid' => $this->store_id, 
                 'app_id' => $app_id,
+                'aid' => auth()->id(),
                 'type' => $this->type
             ]);
             

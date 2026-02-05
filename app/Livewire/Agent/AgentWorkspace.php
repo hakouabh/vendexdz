@@ -34,9 +34,6 @@ class AgentWorkspace extends Component
     public function mount()
     {
         $this->selectedDate = Carbon::today()->format('Y-m-d');
-        $this->products = Product::whereHas('agents', function ($query) {
-            $query->where('aid', auth()->id());
-        })->get();
         $this->statusOptions = firstStepStatu::all();
         $this->dailyGoal = 100;
         $this->loadData();
@@ -108,9 +105,7 @@ class AgentWorkspace extends Component
             });
         }
         if ($this->selectedStore) {
-            $query->with('AgentStores', function($q) {
-                $q->where('sid', $this->selectedStore);
-            });
+            $query->where('sid', $this->selectedStore);
         }
         
         $orders = $query->get();
@@ -221,11 +216,10 @@ class AgentWorkspace extends Component
         $this->dailyProgress = $this->orderStats['total'];
     }
     public function updatedStoreId($value)
-{
-    $this->loadAvailableProducts();
-    // إرسال إشارة للجميع أن المتجر تغير
-    $this->dispatch('refresh-orders', storeId: $value);
-}
+    {
+        $this->loadAvailableProducts();
+        $this->dispatch('refresh-orders', storeId: $value);
+    }
     private function resetStats()
     {
         $this->orderStats = [
@@ -274,7 +268,15 @@ class AgentWorkspace extends Component
     
     public function render()
     {
-        $this->stores = Auth::user()->AgentStores()->get(); 
+        $this->stores = Auth::user()->stores; 
+        $this->products = Product::whereHas('store', function ($query) {
+            $query->when($this->selectedStore == null, function ($q)  {
+                $q->whereIn('store_id', auth()->user()->stores->pluck('id'));
+            });
+            $query->when($this->selectedStore, function ($q)  {
+                $q->where('store_id', $this->selectedStore);
+            });
+        })->get();
         return view('livewire.agent.agent-workspace');
     }
 }
