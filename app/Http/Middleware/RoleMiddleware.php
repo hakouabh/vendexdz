@@ -26,9 +26,9 @@ class RoleMiddleware
 
         // 2. Super Admin Override (Optional but recommended)
         // If you have a specific 'super_admin' role, always let them through
-        if ($user->roles()->where('roles.rid', 2)->exists()) {
-              return $next($request);
-        }
+        // if ($user->roles()->where('roles.rid', 2)->exists()) {
+        //       return $next($request);
+        // }
         // 3. Check if the user's role matches ANY of the allowed roles
         // This assumes you have a 'role' string column in your 'users' table.
         if (! $user->roles()->where('roles.rid', $roleId)->exists()) {
