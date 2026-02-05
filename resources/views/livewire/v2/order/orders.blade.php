@@ -287,7 +287,7 @@
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <i class="ri-price-tag-3-line text-slate-400"></i>
                                     </div>
-                                    <input type="number" wire:model.live="discount" value="0"
+                                    <input type="number" wire:model.live="discount" value="0" {{ $items[0]['vid'] == null ? 'disabled' : ''}}
                                         class="block w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-3 text-xs font-bold text-slate-700 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
                                 </div>
                             </div>

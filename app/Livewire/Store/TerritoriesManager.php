@@ -31,7 +31,7 @@ class TerritoriesManager extends Component
    
     public function render()
     {
-        $products = Product::where('store_id', auth()->user()->userStore->id)
+        $products = Product::where('store_id', auth()->user()->userStore->store_id)
             ->where(function($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                       ->orWhere('sku', 'like', '%' . $this->search . '%');

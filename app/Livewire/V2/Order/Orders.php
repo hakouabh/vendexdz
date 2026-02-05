@@ -107,6 +107,7 @@ class Orders extends Component
             [
                 'id' => null,
                 'vid' => '',
+                'discount' => 0,
                 'product_id' => null,
                 'sku' => '',
                 'quantity' => 1,
@@ -119,6 +120,13 @@ class Orders extends Component
 
     public function updatedStoreId($value){
         $this->loadAvailableProducts();
+    }
+
+    public function updatedDiscount($value){
+        $totalDiscount = 0;
+        foreach ($this->items as $item){
+            $totalDiscount += $item['discount']; 
+        }
     }
 
     private function loadAvailableProducts()
@@ -202,12 +210,12 @@ class Orders extends Component
 
         if (strpos($key, '.vid') !== false) {
             $index = explode('.', $key)[0];
-            
             $variant = ProductVariant::with('product')->find($value);
 
             if ($variant) {
                 $this->items[$index]['original'] = $variant->product->price;
                 $this->items[$index]['vid'] = $variant->id;
+                $this->items[$index]['discount'] = $variant->discount;
                 $this->items[$index]['sku'] = $variant->sku;
                 $this->items[$index]['product_id'] = $variant->product_id;
                 $this->items[$index]['product_name'] = $variant->product->name;
@@ -235,6 +243,7 @@ class Orders extends Component
             'vid' => '',
             'product_id' => null,
             'sku' => '',
+            'discount' => 0,
             'quantity' => 1,
             'original' => 0,
             'product_name' => 'Select Product',
