@@ -330,6 +330,7 @@ class Orders extends Component
                 'oid' => $order->oid,
                 'price' => $this->total,
                 'total' => $this->total,
+                'discount' => $this->discount,
                 'delivery_price' => $this->delivery_price,
                 'commenter' => $this->comment,
                 'stopdesk' => $this->delivery_type,

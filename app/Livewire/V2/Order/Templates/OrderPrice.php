@@ -4,37 +4,40 @@ namespace App\Livewire\V2\Order\Templates;
 
 use Livewire\Component;
 use App\Models\Order;
+use App\Livewire\V2\Order\Traits\OrderTrait;
 
 class OrderPrice extends Component
 {
-    public $price = 0;
-    public $delivery_price = 0;
-    public $discount = 0;
-    public $total = 0;
+    use OrderTrait;
+    public $order_price = 0;
+    public $order_delivery_price = 0;
+    public $order_discount = 0;
+    public $order_total = 0;
     public $totalDiscount = 0;
-    public Order $activeOrder;
+    public Order $order;
 
     protected $listeners = [
         'orderTotalsUpdated' => 'syncTotals',
     ];
 
     public function mount(Order $activeOrder){
-        $this->activeOrder = $activeOrder;
+        $this->order = $activeOrder;
     }
     
     public function syncTotals($data)
     {
-        $this->price          = $data['price'];
-        $this->delivery_price = $data['delivery_price'];
-        $this->discount       = $data['discount'];
-        $this->total          = $data['total'];
+        $this->order_price          = $data['price'];
+        $this->order_delivery_price = $data['delivery_price'];
+        $this->order_discount       = $data['discount'];
+        $this->order_total          = $data['total'];
         $this->totalDiscount  = $data['totalDiscount'];
     }
 
-    public function updatedDiscount($value){
-        $this->activeOrder->details->update([
+    public function updatedOrderDiscount($value){
+        $this->order->details->update([
             'discount' => $value
         ]);
+        $this->calculateTotal();
     }
 
     public function render()

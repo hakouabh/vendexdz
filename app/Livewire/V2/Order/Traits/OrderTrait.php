@@ -87,11 +87,9 @@ trait OrderTrait
                 ? ($this->delivery_type ? $fee->c_s_p : $fee->c_d_p)
                 : 0;
         }
-        $this->discount = $this->activeOrder->details->discount;
-        $this->total = ($this->price + $this->delivery_price) - ($this->discount ?? 0);
+        $this->total = ($this->price + $this->delivery_price) - ($this->activeOrder->details->discount ?? 0);
         $this->activeOrder->details->update([
             'total' => $this->total,
-            'discount' => $this->discount,
             'price' => $this->price,
             'delivery_price' => $this->delivery_price,
             'stopdesk' => $this->delivery_type ?? $this->activeOrder->details->stopdesk,
@@ -99,7 +97,7 @@ trait OrderTrait
         $this->dispatch('orderTotalsUpdated', [
             'price'          => $this->price,
             'delivery_price' => $this->delivery_price,
-            'discount'       => $this->discount,
+            'discount'       => $this->activeOrder->details->discount,
             'total'          => $this->total,
             'totalDiscount'  => $totalDiscount
         ]);
