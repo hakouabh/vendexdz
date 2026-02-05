@@ -73,7 +73,8 @@ trait OrderTrait
         $orderItems = OrderItems::where('oid', $this->activeOrder->oid)->get();
         $client = Client::find($this->activeOrder->cid);
         $totalDiscount = $orderItems->sum(function ($item){
-            return $item->variant->discount * $item['quantity'];
+
+            return $item->variant ? $item->variant->discount * $item['quantity'] : 0;
         });
         $this->price = $orderItems->sum(function ($item) {
             $price = $item->variant ? $item->variant->product->price : 0;

@@ -60,6 +60,7 @@ class OrderItems extends Component
             'vid' => '',
             'sku' => '',
             'product_id' => null,
+            'discount' => 0,
             'quantity' => 1,
             'original' => 0,
             'product_name' => '',
