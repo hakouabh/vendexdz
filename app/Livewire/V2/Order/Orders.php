@@ -21,8 +21,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Orders extends Component
 {
-
-     #[Url(keep: true)] 
+    #[Url(keep: true)] 
     public $currentTab = 'inconfirmation';
     public $isCreating = false;
     // Customer Information
@@ -352,7 +351,6 @@ class Orders extends Component
             
             $this->createdOrder = $order;
             $this->showSuccessModal = true;
-            $this->resetForm();
             $this->dispatch('showSuccessToast', 'Order created successfully!');
         
         } catch (\Exception $e) {
@@ -377,6 +375,7 @@ class Orders extends Component
     {
         $this->showSuccessModal = false;
         $this->createdOrder = null;
+        $this->resetForm();
     }
        
     public function setTab($tab)

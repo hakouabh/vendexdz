@@ -9,19 +9,24 @@ use Illuminate\Support\Facades\Auth;
 class Products extends Component
 {
     public $search = '';
+    public $storefilter = null;
+
+    public function storeFilter($id){
+        $this->storefilter = $id;
+    }
 
     public function render()
     {
+        $user = auth()->user();
+        $stores = $user->stores;
         $products = Product::query()
-        
-            ->whereHas('agentAssignments', function($query) {
-                $query->where('aid', Auth::id())
-                      ->where('is_active', true);
+            ->when($this->storefilter, function ($query) {
+                $query->where('store_id', $this->storefilter);
             })
-           
-            ->with(['variants', 'agentAssignments' => function($query) {
-                $query->where('aid', Auth::id());
-            }])
+            ->when($this->storefilter == null, function ($query) use ($stores)  {
+                $query->whereIn('store_id', $stores->pluck('id'));
+            })
+            ->with('variants')
             ->where(function($q) {
                 $q->where('name', 'like', '%' . $this->search . '%')
                   ->orWhere('sku', 'like', '%' . $this->search . '%');
@@ -29,7 +34,8 @@ class Products extends Component
             ->get();
 
         return view('livewire.agent.products', [
-            'products' => $products
+            'products' => $products,
+            'stores' => $stores
         ]);
     }
     

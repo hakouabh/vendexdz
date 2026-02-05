@@ -8,7 +8,7 @@ class ProductAgent extends Model
 {
     protected $fillable = [
         'aid',
-        'sku',
+        'product_id',
         'portion',
         'is_active',
         'daily_received',  

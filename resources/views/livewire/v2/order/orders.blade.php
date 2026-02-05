@@ -320,13 +320,13 @@
                         </div>
 
                         <div>
-                            <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Order Notes</label>
+                            <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Order Notes')</label>
                             <div class="relative">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                     <i class="ri-sticky-note-line text-slate-400"></i>
                                 </div>
                                 <textarea wire:model="comment"
-                                    placeholder="Add any special instructions or notes for this order"
+                                    placeholder="@lang('Add any special instructions or notes for this order')"
                                     class="block w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-3 text-xs font-bold text-slate-700 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
                                     rows="3"></textarea>
                             </div>
@@ -340,26 +340,26 @@
                         <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
                             <i class="ri-calculator-line text-orange-600"></i>
                         </div>
-                        <h3 class="text-sm font-bold text-slate-800">Price Summary</h3>
+                        <h3 class="text-sm font-bold text-slate-800">@lang('Price Summary')</h3>
                     </div>
 
                     <div class="p-6">
                         <div class="space-y-2">
                             <div class="flex justify-between text-sm">
-                                <span class="text-slate-600">Subtotal:</span>
+                                <span class="text-slate-600">@lang('Subtotal'):</span>
                                 <span class="font-bold text-slate-900">{{ number_format($price, 2) }} DZD</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-slate-600">Delivery:</span>
+                                <span class="text-slate-600">@lang('Delivery'):</span>
                                 <span class="font-bold text-slate-900">{{ number_format($delivery_price, 2) }} DZD</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-red-600">Discount:</span>
+                                <span class="text-red-600">@lang('Discount'):</span>
                                 <span class="font-bold text-red-600">-{{ number_format($discount, 2) }} DZD</span>
                             </div>
                             <div class="border-t border-slate-200 pt-2 mt-2">
                                 <div class="flex justify-between font-bold text-lg">
-                                    <span class="text-slate-900">Total:</span>
+                                    <span class="text-slate-900">@lang('Total'):</span>
                                     <span class="text-blue-600">{{ number_format($total, 2) }} DZD</span>
                                 </div>
                             </div>
@@ -395,14 +395,12 @@
                                     <i class="ri-check-line text-green-600 text-xl"></i>
                                 </div>
                                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                    <h3 class="text-lg font-bold leading-6 text-gray-900" id="modal-title">Order Created
-                                        Successfully!</h3>
+                                    <h3 class="text-lg font-bold leading-6 text-gray-900" id="modal-title">@lang('Order Created Successfully')!</h3>
                                     <div class="mt-2">
-                                        <p class="text-sm text-gray-500">The order has been created successfully with the
-                                            following details:</p>
+                                        <p class="text-sm text-gray-500">@lang('The order has been created successfully with the following details'):</p>
                                         <div class="mt-3 space-y-1 text-sm">
-                                            <p><strong>Order ID:</strong> {{ $createdOrder->ref }}</p>
-                                            <p><strong>Total:</strong> {{ number_format($total, 2) }} DZD</p>
+                                            <p><strong>@lang('Order') ID:</strong> {{ $createdOrder->oid }}</p>
+                                            <p><strong>@lang('Total'):</strong> {{ number_format($total, 2) }} DZD</p>
                                         </div>
                                     </div>
                                 </div>
@@ -418,7 +416,6 @@
                 </div>
             </div>
             @endif
-
             <style>
             /* Custom scrollbar styles */
             .custom-scrollbar::-webkit-scrollbar {
@@ -501,65 +498,5 @@
             </div>
           </div>
       </div>
-      <!-- Success Modal -->
-      @if($showSuccessModal && $createdOrder)
-      <div class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-          <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-              <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="closeSuccessModal">
-              </div>
-
-              <div
-                  class="inline-block transform overflow-hidden rounded-2xl bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-                  <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                      <div class="sm:flex sm:items-start">
-                          <div
-                              class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                              <i class="ri-check-line text-green-600 text-xl"></i>
-                          </div>
-                          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                              <h3 class="text-lg font-bold leading-6 text-gray-900" id="modal-title">Order Created
-                                  Successfully!</h3>
-                              <div class="mt-2">
-                                  <p class="text-sm text-gray-500">The order has been created successfully with the
-                                      following details:</p>
-                                  <div class="mt-3 space-y-1 text-sm">
-                                      <p><strong>Order ID:</strong> {{ $createdOrder->id }}</p>
-                                      <p><strong>Total:</strong> {{ number_format($createdOrder->total, 2) }} DZD</p>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                      <button type="button" wire:click="closeSuccessModal"
-                          class="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                          Close
-                      </button>
-                  </div>
-              </div>
-          </div>
-      </div>
-      @endif
-
-      <style>
-      /* Custom scrollbar styles */
-      .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-          height: 5px;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #e2e8f0;
-          border-radius: 10px;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #cbd5e1;
-      }
-      </style>
   </div>
-  </div>
+</div>

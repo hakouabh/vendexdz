@@ -21,17 +21,21 @@
                     <div class="block px-4 py-2 text-xs text-gray-400 uppercase tracking-widest">
                         {{ __('Stores') }}
                     </div>
-                    <x-dropdown-link wire:click="" class="text-[]">
-                        <i class=""></i> All
+                    <x-dropdown-link wire:click="storeFilter(null)" class="text-[]">
+                        <i class=""></i> @lang('All')
                     </x-dropdown-link>
-                  
+                    @foreach($stores as $store)
+                        <x-dropdown-link wire:click="storeFilter({{$store->id}})" class="text-[]">
+                            <i class=""></i> {{$store->name}}
+                        </x-dropdown-link>
+                    @endforeach
                 </x-slot>
             </x-dropdown>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl font-black text-slate-900 tracking-tight">Product Inventory</h1>
-                    <p class="text-sm text-slate-500 mt-1">Manage and market your assigned products</p>
+                    <h1 class="text-2xl font-black text-slate-900 tracking-tight">@lang('Product Inventory')</h1>
+                    <p class="text-sm text-slate-500 mt-1">@lang('Manage and market your assigned products')</p>
                 </div>
 
                 <div class="relative w-full md:w-96">
@@ -40,7 +44,7 @@
                     </span>
                     <input wire:model.live="search" type="text" 
                         class="block w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm outline-none" 
-                        placeholder="Search by name or SKU...">
+                        placeholder="@lang('Search by name or SKU...')">
                 </div>
             </div>
         </div>
@@ -52,8 +56,8 @@
                 <div class="bg-slate-50 p-6 rounded-full mb-4">
                     <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 </div>
-                <h3 class="text-xl font-bold text-slate-900">No products found</h3>
-                <p class="text-slate-400 mt-2">Try adjusting your search or contact support for assignments.</p>
+                <h3 class="text-xl font-bold text-slate-900">@lang('No products found')</h3>
+                <p class="text-slate-400 mt-2">@lang('Try adjusting your search or contact support for assignments.')</p>
             </div>
         @else
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -68,8 +72,8 @@
                             </span>
                             @if($assignment)
                                 <div class="text-right">
-                                    <p class="text-[9px] text-slate-400 uppercase font-black tracking-tighter">Comm.</p>
-                                    <p class="text-green-500 font-bold text-sm leading-none">{{ $assignment->portion }}%</p>
+                                    <p class="text-[9px] text-slate-400 uppercase font-black tracking-tighter">@lang('Commition')</p>
+                                    <p class="text-green-500 font-bold text-sm leading-none">{{ $assignment->portion }} DZD</p>
                                 </div>
                             @endif
                         </div>
@@ -78,18 +82,17 @@
                             <h3 class="text-3xl font-bold text-slate-800 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight min-h-[3rem]">
                                 {{ $product->name }}
                             </h3>
-                            
                             <div class="mt-2 flex items-baseline gap-1">
                                 <span class="text-3xl font-black text-slate-900">{{ number_format($product->price, 0) }}</span>
                                 <span class="text-xs font-bold text-slate-400 uppercase">DA</span>
                             </div>
 
                             <div class="mt-6">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Stock & Variants</p>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">@lang('Stock & Variants')</p>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($product->variants as $variant)
                                         <div class="flex items-center bg-slate-50 border border-slate-100 rounded-xl px-2.5 py-1.5 shadow-inner">
-                                            <span class="text-[10px] text-slate-700 font-bold">{{ $variant->var_1 }}</span>
+                                            <span class="text-[10px] text-slate-700 font-bold">{{ $variant->label }}</span>
                                             <span class="mx-2 w-1 h-1 bg-slate-300 rounded-full"></span>
                                             <span class="text-[10px] font-black {{ $variant->quantity > 0 ? 'text-blue-600' : 'text-red-400' }}">
                                                 {{ $variant->quantity }}
@@ -103,7 +106,7 @@
                         <div class="p-6 pt-0 mt-auto">
                             <div class="flex gap-2 border-t border-slate-50 pt-4">
                                 <a href="{{ $product->url }}" target="_blank" class="flex-1 bg-slate-900 text-white text-center text-xs font-bold py-3 rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200">
-                                    View Details
+                                    @lang('View Details')
                                 </a>
                                 <button onclick="copyLink('{{ $product->url }}')" class="p-3 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 transition-all" title="Copy Marketing Link">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>

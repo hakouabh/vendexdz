@@ -13,36 +13,34 @@ class AgentManager extends Component
 
    public $searchAgent = '';
     public $selectedAgent = null;
-    public $portions = []; // لتخزين قيم العمولات لكل SKU في الواجهة
+    public $portions = [];
 
     public function selectAgent($id)
     {
         $this->selectedAgent = User::find($id);
-        // تحميل العمولات الموجودة مسبقاً في المصفوفة
         $this->portions = ProductAgent::where('aid', $id)
-            ->pluck('portion', 'sku')
+            ->pluck('portion', 'product_id')
             ->toArray();
     }
 
-    public function linkProduct($sku)
+    public function linkProduct($id)
     {
         if (!$this->selectedAgent) return;
 
-        // الحصول على القيمة المدخلة أو تعيين 0 كافتراضي
-        $amount = $this->portions[$sku] ?? 0;
+        $amount = $this->portions[$id] ?? 0;
 
         ProductAgent::updateOrCreate(
-            ['aid' => $this->selectedAgent->id, 'sku' => $sku],
+            ['aid' => $this->selectedAgent->id, 'product_id' => $id],
             ['portion' => $amount, 'is_active' => true]
         );
 
         $this->dispatch('notify', type: 'success', message: 'Assignment Updated');
     }
 
-    public function unlinkProduct($sku)
+    public function unlinkProduct($id)
     {
-        ProductAgent::where('aid', $this->selectedAgent->id)->where('sku', $sku)->delete();
-        unset($this->portions[$sku]);
+        ProductAgent::where('aid', $this->selectedAgent->id)->where('product_id', $id)->delete();
+        unset($this->portions[$id]);
         $this->dispatch('notify', type: 'warning', message: 'Product Unlinked');
     }
     public function render()
@@ -51,12 +49,14 @@ class AgentManager extends Component
         $q->where('roles.rid', 4); 
         })->get();
 
-        $products = Product::all(); // Or filter by store
+        $products = Product::when($this->selectedAgent, function ($query)  {
+            $query->whereIn('store_id', $this->selectedAgent->stores->pluck('id'));
+        })->get();
         return view('livewire.admin.link.agent-manager', [
             'agents' => $agents,
             'products' => $products,
             'linkedProducts' => $this->selectedAgent 
-                ? ProductAgent::where('aid', $this->selectedAgent->id)->pluck('sku')->toArray() 
+                ? ProductAgent::where('aid', $this->selectedAgent->id)->pluck('product_id')->toArray() 
                 : []
         ]);
     }

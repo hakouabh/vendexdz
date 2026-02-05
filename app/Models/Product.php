@@ -31,12 +31,16 @@ class Product extends Model
     }
     public function agents()
     {
-        return $this->belongsToMany(User::class, 'product_agents', 'sku', 'aid', 'sku', 'id')
+        return $this->belongsToMany(User::class, 'product_agents', 'product_id', 'aid', 'id', 'id')
                 ->withPivot('portion', 'is_active');
     }
 
     public function agentAssignments()
     {
-        return $this->hasMany(ProductAgent::class, 'sku', 'sku');
+        return $this->hasMany(ProductAgent::class, 'product_id', 'id');
+    }
+
+    public function store(){
+        return $this->belongsTo(Store::class, 'store_id', 'id');
     }
 }

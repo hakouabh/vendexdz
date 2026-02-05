@@ -41,7 +41,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @foreach($products as $product)
-    @php $isLinked = in_array($product->sku, $linkedProducts); @endphp
+    @php $isLinked = in_array($product->id, $linkedProducts); @endphp
     
     <div class="relative group bg-white border {{ $isLinked ? 'border-indigo-500 ring-1 ring-indigo-500' : 'border-slate-200' }} rounded-[32px] p-5 transition-all hover:shadow-xl">
         
@@ -59,20 +59,20 @@
             <div class="flex-1">
                 <label class="block text-[9px] font-black text-slate-400 uppercase ml-2">Portion (DZD)</label>
                 <input type="number" 
-                    wire:model.defer="portions.{{ $product->sku }}" 
+                    wire:model.defer="portions.{{ $product->id }}" 
                     placeholder="0.00"
                     class="w-full bg-transparent border-none font-black text-indigo-600 focus:ring-0 p-0 ml-2">
             </div>
 
             @if($isLinked)
-                <button wire:click="unlinkProduct('{{ $product->sku }}')" class="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all">
+                <button wire:click="unlinkProduct('{{ $product->id }}')" class="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all">
                     <i class="ri-delete-bin-line"></i>
                 </button>
-                <button wire:click="linkProduct('{{ $product->sku }}')" class="w-10 h-10 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200">
+                <button wire:click="linkProduct('{{ $product->id }}')" class="w-10 h-10 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200">
                     <i class="ri-save-line"></i>
                 </button>
             @else
-                <button wire:click="linkProduct('{{ $product->sku }}')" class="flex-1 py-3 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all">
+                <button wire:click="linkProduct('{{ $product->id }}')" class="flex-1 py-3 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all">
                     Link Product
                 </button>
             @endif
