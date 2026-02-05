@@ -146,7 +146,7 @@ class OrderCustomerInfo extends Component
             if ($result['success']) {
                 $this->activeOrder->update([
                     'tracking' => $result['tracking'],
-                    'custom_id' => $result['parcelId']
+                    'custom_id' => $result['parcelId'] ?? null
                 ]);
                 OrderInconfirmation::where('oid', $this->activeOrder->oid)->delete();
                 OrderWaiting::create(['oid'=>$this->activeOrder->oid,'asid'=>1]);
