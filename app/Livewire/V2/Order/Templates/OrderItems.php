@@ -94,6 +94,7 @@ class OrderItems extends Component
 
     public function deleteItem($itemId, $index)
     {
+        if(count($this->items) == 1) return;
         OrderItem::where('id', $itemId)->delete();
         unset($this->items[$index]);
         $this->items = array_values($this->items);

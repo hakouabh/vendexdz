@@ -28,6 +28,8 @@ trait OrderTrait
     public $expandedOrderId = null;
     public $stores;
     public $store_id;
+    public $showErrorModal = false;
+    public $error_messages;
 
     public Order $activeOrder;
 
@@ -145,6 +147,29 @@ trait OrderTrait
            $this->updateStatus($orderId, $statusId);
         }
     }
+
+    public function decrementQuantity($orderItems){
+        \DB::transaction(function () use ($orderItems) {
+            foreach ($orderItems as $item) {
+                $variant = $item->variant;
+
+                if ($variant->quantity < $item->quantity) {
+                        $this->error_messages = trans('Insufficient stock for product '). $variant->product->name;
+                        $this->showErrorModal = true;
+                    return;
+                }
+            }
+            foreach ($orderItems as $item) {
+                $item->variant->decrement('quantity', $item->quantity);
+            }
+
+        });
+    }
+    public function incrementQuantity($orderItems){
+        foreach($orderItems as $item){
+            $item->variant->increment('quantity', $item->quantity);
+        }
+    }
     public function confirmStatusWithTimer()
     {
         // Ensure we have an order ID and a time
@@ -196,13 +221,17 @@ trait OrderTrait
         $order = Order::find($orderId);
         
         if ($order && $order->Inconfirmation) {
-            // FIX: Get the actual current status from the relationship
             $oldStatusId = $order->Inconfirmation->fsid;
 
-            // Don't log if there's no change
             if ($oldStatusId == $statusId) return;
 
-            // 1. Update the status
+            if($statusId == 2)
+                $this->decrementQuantity($order->items);
+            elseif($oldStatusId == 2)
+                $this->incrementQuantity($order->items);
+
+            if($this->showErrorModal) return;
+            
             $order->Inconfirmation->update([
                 'fsid' => $statusId 
             ]);
@@ -211,11 +240,10 @@ trait OrderTrait
                 'aid' => auth()->id(),
             ]);
 
-            // 2. CREATE THE LOG ENTRY using the captured $oldStatusId
             \App\Models\order_logs::create([
                 'oid'       => $order->oid,
                 'aid'       => auth()->id(),
-                'statu_old' => $oldStatusId, // Guaranteed not null now
+                'statu_old' => $oldStatusId,
                 'statu_new' => $statusId,
                 'text'      => 'Status updated via confirmation manager.',
             ]);
@@ -256,5 +284,10 @@ trait OrderTrait
     
         $this->newNote = '';
         $this->activeOrder->load('Notes.user');
+    }
+
+    public function closeErrorModal()
+    {
+        $this->showErrorModal = false;
     }
 }
