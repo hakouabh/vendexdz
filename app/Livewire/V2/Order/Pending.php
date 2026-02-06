@@ -96,6 +96,7 @@ class Pending extends Component
             OrderWaiting::where('oid', $this->activeOrder->oid)->delete();
             OrderInconfirmation::create(['oid'=>$this->activeOrder->oid,'fsid'=>1]);
             $this->activeOrder->update(['tracking' => null]);
+            $this->incrementQuantity($this->activeOrder->items);
             $this->dispatch('notify', type: 'success', message: 'Order is Removed !');
         } else {
             $this->dispatch('notify', type: 'error', message: $result['message'] ?? 'Carrier refused validation.');

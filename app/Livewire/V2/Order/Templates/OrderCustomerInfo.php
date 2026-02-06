@@ -32,6 +32,8 @@ class OrderCustomerInfo extends Component
     public $can_use_stopdesk = true;
     public $type = 'normal';
     public $canUpdate;
+    public $setupShippingErrorModal = false;
+    public $error_shipping_messages;
 
     protected $listeners = [
         'customerInfoUpdated' => 'syncCustomerData',
@@ -132,8 +134,13 @@ class OrderCustomerInfo extends Component
         $this->activeOrder->details->update([
             'commenter' => $this->Comment,
         ]);
+
+        if($this->activeOrder->Inconfirmation->fsid != 2){
+            $this->checkDecrementQuantity($this->activeOrder->items);
+        }
         
         if (!$this->activeOrder) return;
+        if($this->setupShippingErrorModal) return;
 
         // This creates the stdClass (Standardized Object)
         $standardOrder = $this->getStandardizedData();
@@ -148,6 +155,9 @@ class OrderCustomerInfo extends Component
                     'tracking' => $result['tracking'],
                     'custom_id' => $result['parcelId'] ?? null
                 ]);
+                if($this->activeOrder->Inconfirmation->fsid != 2){
+                    $this->decrementQuantity($this->activeOrder->items);
+                }
                 OrderInconfirmation::where('oid', $this->activeOrder->oid)->delete();
                 OrderWaiting::create(['oid'=>$this->activeOrder->oid,'asid'=>1]);
                 $this->dispatch('notify', type: 'success', message: "Dispatched! Tracking: " . $result['tracking']);
@@ -271,6 +281,25 @@ class OrderCustomerInfo extends Component
             })->implode(' + '),
             'quantity'      => collect($this->activeOrder->items)->sum('quantity'),
         ];
+    }
+
+    public function checkDecrementQuantity($orderItems){
+        \DB::transaction(function () use ($orderItems) {
+            foreach ($orderItems as $item) {
+                $variant = $item->variant;
+
+                if ($variant->quantity < $item->quantity) {
+                        $this->error_shipping_messages = trans('Insufficient stock for product '). $variant->product->name;
+                        $this->setupShippingErrorModal = true;
+                    return;
+                }
+            }
+        });
+    }
+
+    public function closeShippingErrorModal()
+    {
+        $this->setupShippingErrorModal = false;
     }
 
     public function render()
