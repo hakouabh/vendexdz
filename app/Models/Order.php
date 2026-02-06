@@ -91,4 +91,8 @@ class Order extends Model
             ->where('id', '!=', $this->id)
             ->exists();
     }
+
+    public function deliveryCompany(){
+        return $this->belongsTo(SupportedApps::class, 'app_id', 'app_id');
+    }
 }

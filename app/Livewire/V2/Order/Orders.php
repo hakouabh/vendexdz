@@ -56,6 +56,7 @@ class Orders extends Component
     // UI State
    public $isSubmitting = false; // Controls button state
    public $showSuccessModal = false; // Controls visibility
+   public $showDiscountModal = false; // Controls visibility
    public $createdOrder = null; // Holds the order object after creation
    public $createNeworeder =false;
     protected $rules = [
@@ -131,6 +132,8 @@ class Orders extends Component
         if ($currentCommune) {
             switch ((int)$this->companie) {
                 case 1001:
+                case 1002:
+                case 1003:
                     $this->can_use_stopdesk = (bool)($currentCommune['hasPickupPoint'] ?? false);
                     break;
                 case 1010:
@@ -285,6 +288,12 @@ class Orders extends Component
         $this->totalDiscount = $totalDiscount;
     }
 
+    public function updatedDiscount($value){
+        if($value > $this->totalDiscount){
+            $this->showDiscountModal = true;
+        }
+    }
+
     public function createOrder()
     {
         $this->validate();
@@ -380,6 +389,10 @@ class Orders extends Component
         $this->showSuccessModal = false;
         $this->createdOrder = null;
         $this->resetForm();
+    }
+    public function closeDiscountModal()
+    {
+        $this->showDiscountModal = false;
     }
        
     public function setTab($tab)

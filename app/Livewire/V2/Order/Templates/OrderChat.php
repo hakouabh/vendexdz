@@ -30,6 +30,7 @@ class OrderChat extends Component
     }
     public function render()
     {
-        return view('livewire.v2.order.templates.order-chat');
+        $user_id = auth()->id();
+        return view('livewire.v2.order.templates.order-chat', ['user_id' => $user_id]);
     }
 }

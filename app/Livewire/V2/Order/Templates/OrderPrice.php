@@ -14,6 +14,7 @@ class OrderPrice extends Component
     public $order_discount = 0;
     public $order_total = 0;
     public $totalDiscount = 0;
+    public $showDiscountModal = false;
     public Order $order;
 
     protected $listeners = [
@@ -38,6 +39,14 @@ class OrderPrice extends Component
             'discount' => $value
         ]);
         $this->calculateTotal();
+        if($value > $this->totalDiscount){
+            $this->showDiscountModal = true;
+        }
+    }
+
+    public function closeDiscountModal()
+    {
+        $this->showDiscountModal = false;
     }
 
     public function render()

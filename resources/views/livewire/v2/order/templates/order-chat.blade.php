@@ -12,15 +12,14 @@
     <div class="flex-1 p-3 bg-white overflow-y-auto max-h-[250px] custom-scrollbar space-y-4"
         id="chat-container">
         @forelse($activeOrder->chats->sortBy('created_at') as $log)
-        @php $isMe = $log->aid === auth()->id(); @endphp
-        <div class="flex flex-col {{ $isMe ? 'items-start' : 'items-end' }}">
+        <div class="flex flex-col {{ $user_id == $log->uid ? 'items-end' : 'items-start' }}">
             <span class="text-[9px] text-slate-400 mb-1 px-1">
                 {{ $log->user?->name }} • {{ $log->created_at->format('H:i') }}
             </span>
             <div class="max-w-[90%] px-3 py-2 rounded-2xl text-xs shadow-sm
-                {{ $isMe 
-                    ? 'bg-blue-600 text-white rounded-tr-none' 
-                    : 'bg-slate-100 text-slate-700 rounded-tl-none border border-slate-200' 
+                {{ $user_id == $log->uid 
+                ? 'bg-slate-100 text-slate-700 rounded-tl-none border border-slate-200' 
+                : 'bg-blue-600 text-white rounded-tr-none' 
                 }}">
                 {{ $log->text }}
             </div>

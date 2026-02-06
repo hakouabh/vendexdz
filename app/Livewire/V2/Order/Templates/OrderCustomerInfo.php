@@ -165,7 +165,9 @@ class OrderCustomerInfo extends Component
        $currentCommune = collect($this->communes)->firstWhere('name', $value);
         if ($currentCommune) {
             switch ((int)$this->companie) {
-                case 1001: 
+                case 1001:
+                case 1002:
+                case 1003: 
                     $this->can_use_stopdesk = (bool)($currentCommune['hasPickupPoint'] ?? false);
                     break;
                 case 1010: 

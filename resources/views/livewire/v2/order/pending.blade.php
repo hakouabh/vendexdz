@@ -261,6 +261,12 @@
                                 {{ $order->client->address ?? __('Unknown') }}
                             </div>
                         </div>
+                        @if($order->app_id)
+                            <span
+                                class="flex items-center gap-1 rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
+                                <i class="ri-truck-line"></i> {{$order->deliveryCompany->name}}
+                            </span>
+                        @endif
                     </div>
                 </div>
 
