@@ -76,17 +76,24 @@ class OrderItems extends Component
 
             if (!$variant) return;
 
-            OrderItem::where('id', $this->activeOrder->items[$index]['id'])->update([
+            $orderItem = OrderItem::where('id', $this->activeOrder->items[$index]['id'])->update([
                 'vid' => $variant->id,
                 'product_id' => $variant->product_id,
                 'quantity' => $this->items[$index]['quantity'] ?? 1,
             ]);
+            if ($this->activeOrder->Inconfirmation->fsid == 2){
+                $variant->decrement('quantity', 1);
+            }
         }
         else if( str_contains($key, '.quantity')){
             $index = explode('.', $key)[0];
-
-            OrderItem::where('id', $this->activeOrder->items[$index]['id'])->update([
-                'quantity' => $value,
+            $orderItem = OrderItem::where('id', $this->activeOrder->items[$index]['id'])->first();
+            if($this->activeOrder->Inconfirmation->fsid == 2){
+                if($orderItem->variant && $orderItem->variant->quantity == 0) return;
+                    $orderItem->variant->decrement('quantity', 1);
+            }
+            $orderItem->update([
+                'quantity' => $value
             ]);
         }
         $this->calculateTotal();
@@ -95,7 +102,11 @@ class OrderItems extends Component
     public function deleteItem($itemId, $index)
     {
         if(count($this->items) == 1) return;
-        OrderItem::where('id', $itemId)->delete();
+        $orderItem = OrderItem::where('id', $itemId)->first();
+        if($this->activeOrder->Inconfirmation->fsid == 2){
+            $orderItem->variant->increment('quantity', $orderItem->quantity);
+        }
+        $orderItem->delete();
         unset($this->items[$index]);
         $this->items = array_values($this->items);
         $this->calculateTotal();
