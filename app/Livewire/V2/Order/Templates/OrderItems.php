@@ -90,7 +90,10 @@ class OrderItems extends Component
             $orderItem = OrderItem::where('id', $this->activeOrder->items[$index]['id'])->first();
             if($this->activeOrder->Waiting || $this->activeOrder->Inconfirmation->fsid == 2){
                 if($orderItem->variant && $orderItem->variant->quantity == 0) return;
-                    $orderItem->variant->decrement('quantity', 1);
+                    if($value > $orderItem->quantity)
+                        $orderItem->variant->decrement('quantity', 1);
+                    else
+                        $orderItem->variant->increment('quantity', 1);
             }
             $orderItem->update([
                 'quantity' => $value
