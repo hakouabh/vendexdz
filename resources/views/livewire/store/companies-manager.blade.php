@@ -7,7 +7,10 @@
         </div>
         
         <div class="relative w-full md:w-96">
-            <input type="text" wire:model.live="search" class="block w-full pl-4 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 shadow-sm transition" placeholder="@lang('Search delivery company...')" autocomplete="off">
+            <input type="text" wire:model.live="search" class="block w-full pl-4 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 shadow-sm transition" placeholder="@lang('Search delivery company...')" autocomplete="new-password"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false">
         </div>
     </div>
 
