@@ -81,14 +81,14 @@ class OrderItems extends Component
                 'product_id' => $variant->product_id,
                 'quantity' => $this->items[$index]['quantity'] ?? 1,
             ]);
-            if ($this->activeOrder->Inconfirmation->fsid == 2){
+            if ($this->activeOrder->Waiting || $this->activeOrder->Inconfirmation->fsid == 2){
                 $variant->decrement('quantity', 1);
             }
         }
         else if( str_contains($key, '.quantity')){
             $index = explode('.', $key)[0];
             $orderItem = OrderItem::where('id', $this->activeOrder->items[$index]['id'])->first();
-            if($this->activeOrder->Inconfirmation->fsid == 2){
+            if($this->activeOrder->Waiting || $this->activeOrder->Inconfirmation->fsid == 2){
                 if($orderItem->variant && $orderItem->variant->quantity == 0) return;
                     $orderItem->variant->decrement('quantity', 1);
             }
@@ -103,7 +103,7 @@ class OrderItems extends Component
     {
         if(count($this->items) == 1) return;
         $orderItem = OrderItem::where('id', $itemId)->first();
-        if($this->activeOrder->Inconfirmation->fsid == 2){
+        if($this->activeOrder->Waiting || $this->activeOrder->Inconfirmation->fsid == 2){
             $orderItem->variant->increment('quantity', $orderItem->quantity);
         }
         $orderItem->delete();

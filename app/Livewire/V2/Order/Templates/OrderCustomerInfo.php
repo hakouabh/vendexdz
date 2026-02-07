@@ -269,7 +269,7 @@ class OrderCustomerInfo extends Component
             'address'       => $this->address,
             'city'          => $this->city,
             'wilaya'        => $this->wilaya,
-            'total_price'   => $this->total,
+            'total_price'   => $this->activeOrder->details->total,
             'delivery_type' => $this->delivery_type,
             'note'          => $this->Comment,
             'product_name'  => collect($this->activeOrder->items)->map(function($item) {
