@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Services\AndersonServices\AndersonShipOrderService;
+use App\Services\NoestServices\NoestShipOrderService;
 use App\Services\ZRServices\ZRShipOrderService;
 use App\Models\installedApps;
 
@@ -23,6 +24,7 @@ class ShipOrderSwitcher
             1001 => new AndersonShipOrderService($installedApp),
             1002 => new AndersonShipOrderService($installedApp),
             1003 => new AndersonShipOrderService($installedApp),
+            1015 => new NoestShipOrderService($installedApp),
             1010 => new ZRShipOrderService($installedApp->token),
             default => throw new \Exception("Carrier [{$id}] not found."),
         };

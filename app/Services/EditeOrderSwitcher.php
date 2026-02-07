@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Services\AndersonServices\AndersonEditOrderService;
+use App\Services\NoestServices\NoestEditOrderService;
 use App\Services\ZRServices\ZREditOrderService;
 use App\Models\installedApps;
 
@@ -29,6 +30,7 @@ class EditeOrderSwitcher
             1001 => new AndersonEditOrderService($installedApp),
             1002 => new AndersonEditOrderService($installedApp),
             1003 => new AndersonEditOrderService($installedApp),
+            1015 => new NoestEditOrderService($installedApp),
             1010 => new ZREditOrderService($installedApp->token),
             default => throw new \Exception("Carrier Service ID [{$id}] not found in Switcher."),
         };

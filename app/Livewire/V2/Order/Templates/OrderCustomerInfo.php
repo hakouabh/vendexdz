@@ -13,6 +13,7 @@ use App\Models\InstalledApps;
 use App\Livewire\V2\Order\Traits\OrderTrait;
 use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\TerritoryServices\AndersonTerritoryService;
+use App\Services\TerritoryServices\NoestTerritoryService;
 use App\Services\EditeOrderSwitcher;
 
 class OrderCustomerInfo extends Component
@@ -107,10 +108,12 @@ class OrderCustomerInfo extends Component
         
             $result = $switcher->dispatch($this->activeOrder, $standardOrder);
             if ($result['success']) {
-                $this->dispatch('notify', type: 'success', message: $result['message']);
+                $message = isset($result['message']) ? $result['message'] : 'Updated';
+                $this->dispatch('notify', type: 'success', message: $message);
                 $this->dispatch('orderSaved');
             } else {
-                $this->dispatch('notify', type: 'error', message: $result['message']);
+                $message = isset($result['message']) ? $result['message'] : 'error Updating';
+                $this->dispatch('notify', type: 'error', message: $message);
             }
         } catch (\Exception $e) {
                 $this->dispatch('notify', type:'error', message: "Error: " . $e->getMessage());
@@ -178,6 +181,7 @@ class OrderCustomerInfo extends Component
                 case 1001:
                 case 1002:
                 case 1003: 
+                case 1015: 
                     $this->can_use_stopdesk = (bool)($currentCommune['hasPickupPoint'] ?? false);
                     break;
                 case 1010: 
@@ -211,6 +215,11 @@ class OrderCustomerInfo extends Component
             case 1002:
             case 1003:
                 $service = new AndersonTerritoryService($installedApp);
+                $data = $service->getEverythingCached();
+                $this->communes = $data['communes'][$value] ?? [];
+                break;
+            case 1015:
+                $service = new NoestTerritoryService($installedApp);
                 $data = $service->getEverythingCached();
                 $this->communes = $data['communes'][$value] ?? [];
                 break;

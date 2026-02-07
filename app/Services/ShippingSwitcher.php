@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Services\AndersonServices\AndersonCreateOrderService;
+use App\Services\NoestServices\NoestCreateOrderService;
 use App\Services\ZRServices\ZRCreateOrderService;
 use App\Models\installedApps;
 
@@ -40,6 +41,7 @@ class ShippingSwitcher
             1001 => new AndersonCreateOrderService($installedApp),
             1002 => new AndersonCreateOrderService($installedApp),
             1003 => new AndersonCreateOrderService($installedApp),
+            1015 => new NoestCreateOrderService($installedApp),
             1010 => new ZRCreateOrderService($installedApp->token),
             default => throw new \Exception("Carrier Service ID [{$id}] not found in Switcher."),
         };
@@ -54,6 +56,13 @@ class ShippingSwitcher
                 'tracking' => $result['results'][$ref]['tracking'],
             ];
         }
+        if (isset($result['passed'][0]['success']) && $result['passed'][0]['success']) {
+            return [
+                'success' => true,
+                'tracking' => $result['passed'][0]['tracking'],
+            ];
+        }
+
 
         return [
             'success' => false, 

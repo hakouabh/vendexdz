@@ -92,7 +92,7 @@ class Pending extends Component
     {  
         $switcher = new RemoveOrderSwitcher();
         $result = $switcher->validate($this->activeOrder);
-        if (isset($result['delete']) && $result['delete'] == 'success') {
+        if (isset($result['success']) || isset($result['delete']) && $result['delete'] == 'success') {
             OrderWaiting::where('oid', $this->activeOrder->oid)->delete();
             OrderInconfirmation::create(['oid'=>$this->activeOrder->oid,'fsid'=>1]);
             $this->activeOrder->update(['tracking' => null]);

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Services\AndersonServices\AndersonDeleteOrderService;
+use App\Services\NoestServices\NoestDeleteOrderService;
 use App\Services\ZRServices\ZRDeleteOrderService;
 use App\Models\installedApps;
 
@@ -23,6 +24,7 @@ class RemoveOrderSwitcher
             1001 => new AndersonDeleteOrderService($installedApp),
             1002 => new AndersonDeleteOrderService($installedApp),
             1003 => new AndersonDeleteOrderService($installedApp),
+            1015 => new NoestDeleteOrderService($installedApp),
             1010 => new ZRDeleteOrderService($installedApp->token),
             default => throw new \Exception("Carrier [{$id}] not found."),
         };

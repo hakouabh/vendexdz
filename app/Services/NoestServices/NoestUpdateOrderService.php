@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Services\NoestServices;
+
+use Illuminate\Support\Facades\Http;
+
+class NoestUpdateOrderService
+{
+    protected string $baseUrl = 'https://anderson-ecommerce.ecotrack.dz';
+    protected string $apiKey;
+
+    public function __construct($token)
+    {
+        $this->apiKey = $token;
+    }
+     
+    public function addUpdate(string $tracking, string $text)
+    {
+      
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->apiKey,
+        ])->post("{$this->baseUrl}/api/public/add/maj", [
+            'tracking' => $tracking,
+            'content'  => mb_substr($text, 0, 255) 
+        ]);
+
+        return $response->json();
+    }
+}

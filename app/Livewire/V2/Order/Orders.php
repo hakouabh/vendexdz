@@ -16,6 +16,7 @@ use App\Models\fees;
 use App\Models\installedApps;
 use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\TerritoryServices\AndersonTerritoryService;
+use App\Services\TerritoryServices\NoestTerritoryService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
@@ -134,6 +135,7 @@ class Orders extends Component
                 case 1001:
                 case 1002:
                 case 1003:
+                case 1015:
                     $this->can_use_stopdesk = (bool)($currentCommune['hasPickupPoint'] ?? false);
                     break;
                 case 1010:
@@ -172,6 +174,11 @@ class Orders extends Component
             case 1002:
             case 1003:
                 $service = new AndersonTerritoryService($installedApp);
+                $data = $service->getEverythingCached();
+                $this->communes = $data['communes'][$value] ?? [];
+                break;
+            case 1015:
+                $service = new NoestTerritoryService($installedApp);
                 $data = $service->getEverythingCached();
                 $this->communes = $data['communes'][$value] ?? [];
                 break;
