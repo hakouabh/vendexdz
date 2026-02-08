@@ -25,12 +25,6 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($products as $p)
             <div class="bg-white rounded-[24px] p-1 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col h-full relative overflow-hidden group">
-                <div class="absolute top-4 right-4">
-                    <span class="px-3 py-1 bg-slate-50 text-slate-600 text-[10px] font-black rounded-full border border-slate-100 uppercase tracking-wider">
-                        @lang('SKU'): {{ $p->sku }}
-                    </span>
-                </div>
-
                 <div class="p-6 flex-1">
                     <div class="flex items-center gap-4 mb-5">
                         <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
@@ -101,36 +95,36 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Product Name</label>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">@lang('Product Name')</label>
                             <input type="text" wire:model="name" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <x-input-error for="name" class="mt-1" />
                         </div>
                         <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Nickname</label>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">@lang('Nickname')</label>
                             <input type="text" wire:model="nickname" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <x-input-error for="nickname" class="mt-1" />
                         </div>
                         <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Parent SKU</label>
-                            <input type="number" wire:model="sku" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Base Price (DA)</label>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">@lang('Base Price') (DA)</label>
                             <input type="number" wire:model="price" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <x-input-error for="price" class="mt-1" />
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">@lang('Landing URL')</label>
+                            <input type="url" wire:model="url" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold outline-none" placeholder="https://...">
                         </div>
                     </div>
 
                     <div class="space-y-4">
                         <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Category</label>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">@lang('Category')</label>
                             <select wire:model="category_id" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none appearance-none">
-                                <option value="">Select Category</option>
+                                <x-input-error for="category_id" class="mt-1" />
+                                <option value="">@lang('Select Category')</option>
                                 @foreach($categories as $c)
                                     <option value="{{ $c->id }}">{{ $c->name }}</option>
                                 @endforeach
                             </select>
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">Landing URL</label>
-                            <input type="url" wire:model="url" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold outline-none" placeholder="https://...">
                         </div>
                     </div>
                 </div>
@@ -152,6 +146,32 @@
                         @foreach($variants as $index => $v)
                             <div class="grid grid-cols-2 md:grid-cols-6 gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm relative items-end">
                                 <div class="space-y-1">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase">@lang('Sku')</label>
+                                    <input type="text" wire:model="variants.{{$index}}.sku" class="w-full rounded-lg border-none bg-slate-50 p-2.5 text-xs font-bold outline-none">
+                                    <x-input-error for="variants.{{$index}}.sku" class="mt-1" />
+                                </div>
+                                <div class="flex justify-end">
+                                    @if(isset($v['id']))
+                                        <button
+                                            type="button"
+                                            wire:click="destroyVariant({{ $v['id'] }}, {{ $index }})"
+                                            class="h-9 w-9 rounded-lg bg-slate-50 text-slate-300 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
+                                            <i class="ri-delete-bin-line text-base"></i>
+                                        </button>
+                                    @else
+                                        <button
+                                            type="button"
+                                            wire:click="removeVariant({{ $index }})"
+                                            class="h-9 w-9 rounded-lg bg-slate-50 text-slate-300 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
+                                            <i class="ri-delete-bin-line text-base"></i>
+                                        </button>
+                                    @endif
+                                </div>
+                                <div class="space-y-1"></div>
+                                <div class="space-y-1"></div>
+                                <div class="space-y-1"></div>
+                                <div class="space-y-1"></div>
+                                <div class="space-y-1">
                                     <label class="text-[9px] font-black text-slate-400 uppercase">@lang('Color/Var 1')</label>
                                     <input type="text" wire:model="variants.{{$index}}.var_1" class="w-full rounded-lg border-none bg-slate-50 p-2.5 text-xs font-bold outline-none">
                                 </div>
@@ -170,23 +190,6 @@
                                 <div class="space-y-1">
                                     <label class="text-[9px] font-black text-emerald-400 uppercase">@lang('Qty')</label>
                                     <input type="number" wire:model="variants.{{$index}}.quantity" class="w-full rounded-lg border-none bg-emerald-50 p-2.5 text-xs font-black text-emerald-600 outline-none">
-                                </div>
-                                <div class="flex justify-end">
-                                    @if(isset($v['id']))
-                                        <button
-                                            type="button"
-                                            wire:click="destroyVariant({{ $v['id'] }}, {{ $index }})"
-                                            class="h-9 w-9 rounded-lg bg-slate-50 text-slate-300 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
-                                            <i class="ri-delete-bin-line text-base"></i>
-                                        </button>
-                                    @else
-                                        <button
-                                            type="button"
-                                            wire:click="removeVariant({{ $index }})"
-                                            class="h-9 w-9 rounded-lg bg-slate-50 text-slate-300 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
-                                            <i class="ri-delete-bin-line text-base"></i>
-                                        </button>
-                                    @endif
                                 </div>
                             </div>
                         @endforeach

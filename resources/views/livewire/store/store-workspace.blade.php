@@ -4,10 +4,10 @@
         <div class="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
             <div>
                 <div class="flex items-center gap-3 mb-1">
-                    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Performance Dashboard</h1>
+                    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">@lang('Performance Dashboard')</h1>
                     <span
                         class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full border border-green-200 flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Online
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> @lang('Online')
                     </span>
                 </div>
                 <p class="text-slate-500 text-sm font-medium">
@@ -28,13 +28,13 @@
                     class="inline-flex items-center bg-white border border-gray-300 rounded-md shadow-sm divide-x divide-gray-300 focus-within:ring-1 focus-within:ring-indigo-500">
 
                     <div class="flex items-center px-2 py-1">
-                        <span class="text-[8px] uppercase font-bold text-gray-400 mr-2">From</span>
+                        <span class="text-[8px] uppercase font-bold text-gray-400 mr-2">@lang('From')</span>
                         <input type="date" wire:model.live="start_date"
                             class="border-none p-0 text-xs focus:ring-0 w-24 text-gray-700" />
                     </div>
 
                     <div class="flex items-center px-2 py-1">
-                        <span class="text-[8px] uppercase font-bold text-gray-400 mr-2">To</span>
+                        <span class="text-[8px] uppercase font-bold text-gray-400 mr-2">@lang('To')</span>
                         <input type="date" wire:model.live="end_date"
                             class="border-none p-0 text-xs focus:ring-0 w-24 text-gray-700" />
                     </div>
@@ -88,7 +88,7 @@
                                 <!-- All Products Option -->
                                 <div @click="$wire.set('selectedProduct', ''); open = false;"
                                     class="cursor-pointer select-none relative py-2 pl-10 pr-4 hover:bg-gray-100">
-                                    <span class="block text-xs font-medium">All Products</span>
+                                    <span class="block text-xs font-medium">@lang('All Products')</span>
                                     @if(!$selectedProduct)
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-indigo-600">
                                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -106,7 +106,8 @@
                                 <div @click="$wire.set('selectedProduct', '{{ $product->id }}'); open = false;"
                                     class="cursor-pointer select-none relative py-2 pl-10 pr-4 hover:bg-gray-100">
                                     <span class="block truncate">{{ $product->name }}</span>
-                                    <span class="block truncate text-xs text-gray-500">SKU: {{ $product->sku }}</span>
+                                    <!-- TODO SKU -->
+                                    <!-- <span class="block truncate text-xs text-gray-500">SKU: {{ $product->sku }}</span> -->
                                     @if($selectedProduct === $product->id)
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-indigo-600">
                                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -126,11 +127,11 @@
                     <div class="flex items-end gap-2">
                         <button wire:click="$set('selectedDate', '{{ \Carbon\Carbon::today()->format('Y-m-d') }}')"
                             class="px-4 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-green-600 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm">
-                            Today
+                            @lang('Today')
                         </button>
                         <button wire:click="$set('selectedDate', '{{ \Carbon\Carbon::yesterday()->format('Y-m-d') }}')"
                             class="px-4 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm">
-                            Yesterday
+                            @lang('Yesterday')
                         </button>
                     </div>
                 </div>
@@ -146,19 +147,19 @@
                         class="ri-box-3-line text-8xl text-gray-200 transform rotate-12 -translate-y-4 translate-x-4"></i>
                 </div>
                 <div class="relative z-10">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Order</p>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">@lang('Total Order')</p>
                     <div class="flex items-baseline gap-1 mb-2">
                         <h3 class="text-3xl font-black text-slate-900">{{ $orderStats['total'] }}</h3>
-                        <span class="text-sm font-bold text-slate-400">Order</span>
+                        <span class="text-sm font-bold text-slate-400">@lang('Orders')</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span
                             class="bg-yellow-50 text-yellow-700 border border-yellow-100 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="ri-time-line"></i> {{ $performanceData['pending'] }} Pending
+                            <i class="ri-time-line"></i> {{ $performanceData['pending'] }} @lang('Pending')
                         </span>
-                        <span class="text-[10px] text-slate-400">From Total</span>
+                        <span class="text-[10px] text-slate-400">@lang('From Total')</span>
 
-                        <span class="text-[10px] text-slate-400">From Total</span>
+                        <span class="text-[10px] text-slate-400">@lang('From Total')</span>
                     </div>
                 </div>
             </div>
@@ -169,13 +170,13 @@
                         class="ri-checkbox-circle-line text-8xl text-green-200 transform rotate-12 -translate-y-4 translate-x-4"></i>
                 </div>
                 <div class="relative z-10">
-                    <p class="text-xs font-bold text-slate-100 uppercase tracking-wider mb-2">Confirmed</p>
+                    <p class="text-xs font-bold text-slate-100 uppercase tracking-wider mb-2">@lang('Confirmed')</p>
                     <div class="flex items-baseline gap-1 mb-2">
                         <h3 class="text-3xl font-black text-slate-200">{{ $orderStats['confirmed'] }}</h3>
-                        <span class="text-sm font-bold text-slate-400">Order</span>
+                        <span class="text-sm font-bold text-slate-400">@lang('Orders')</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-slate-400">From Total</span>
+                        <span class="text-[10px] text-slate-400">@lang('From Total')</span>
                     </div>
                 </div>
             </div>
@@ -187,23 +188,23 @@
                         class="ri-error-warning-line text-8xl text-yellow-300 transform rotate-12 -translate-y-4 translate-x-4"></i>
                 </div>
                 <div class="relative z-10">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Cancelled</p>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">@lang('Cancelled')</p>
                     <div class="flex items-baseline gap-1 mb-2">
                         <h3 class="text-3xl font-black text-slate-900">{{ $orderStats['cancelled'] }}</h3>
-                        <span class="text-sm font-bold text-slate-400">Order</span>
+                        <span class="text-sm font-bold text-slate-400">@lang('Orders')</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span
                             class="bg-blue-50 text-blue-700 border border-green-100 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="ri-file-copy-line"></i> {{ $performanceData['double'] }} Double
+                            <i class="ri-file-copy-line"></i> {{ $performanceData['double'] }} @lang('Double')
                         </span>
                         <span
                             class="bg-gray-50 text-gray-800 border border-green-100 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="ri-close-circle-line"></i> {{ $performanceData['false_rate'] }} False
+                            <i class="ri-close-circle-line"></i> {{ $performanceData['false_rate'] }} @lang('False')
                         </span>
                         <span
                             class="bg-red-50 text-red-700 border border-green-100 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="ri-truck-line"></i> {{ $performanceData['no_deliv'] }} no deliv
+                            <i class="ri-truck-line"></i> {{ $performanceData['no_deliv'] }} @lang('no deliv')
                         </span>
                     
                     </div>
@@ -216,10 +217,10 @@
                         class="ri-loader-4-line text-8xl text-indigo-200 transform rotate-12 -translate-y-4 translate-x-4"></i>
                 </div>
                 <div class="relative z-10">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">In Process</p>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">@lang('In Process')</p>
                     <div class="flex items-baseline gap-1 mb-2">
                         <h3 class="text-3xl font-black text-slate-900">{{ $orderStats['in_process'] }}</h3>
-                        <span class="text-sm font-bold text-slate-400">Order</span>
+                        <span class="text-sm font-bold text-slate-400">@lang('Orders')</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span
@@ -228,11 +229,11 @@
                         </span>
                         <span
                             class="bg-purple-50 text-purple-800 border border-green-100 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="ri-close-circle-line"></i> {{ $performanceData['reported'] }} REPORTED
+                            <i class="ri-close-circle-line"></i> {{ $performanceData['reported'] }} @lang('REPORTED')
                         </span>
                         <span
                             class="bg-purple-50 text-purple-800 border border-green-100 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="ri-close-circle-line"></i> {{ $performanceData['pre-confirmed'] }} pre-confirmed
+                            <i class="ri-close-circle-line"></i> {{ $performanceData['pre-confirmed'] }} @lang('pre-confirmed')
                         </span>
                     </div>
                 </div>
@@ -244,13 +245,13 @@
                         class="ri-truck-line text-8xl text-green-400 transform rotate-12 -translate-y-4 translate-x-4"></i>
                 </div>
                 <div class="relative z-10">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Delivered</p>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">@lang('Delivered')</p>
                     <div class="flex items-baseline gap-1 mb-2">
                         <h3 class="text-3xl font-black text-slate-900">{{ $orderStats['delivered'] }}</h3>
-                        <span class="text-sm font-bold text-slate-400">Order</span>
+                        <span class="text-sm font-bold text-slate-400">@lang('Orders')</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-slate-400">From Total</span>
+                        <span class="text-[10px] text-slate-400">@lang('From Total')</span>
                     </div>
                 </div>
             </div>
@@ -261,13 +262,13 @@
                         class="ri-arrow-go-back-fill text-8xl text-red-600 transform rotate-12 -translate-y-4 translate-x-4"></i>
                 </div>
                 <div class="relative z-10">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Return</p>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">@lang('Return')</p>
                     <div class="flex items-baseline gap-1 mb-2">
                         <h3 class="text-3xl font-black text-slate-900">{{ $orderStats['returned'] }}</h3>
-                        <span class="text-sm font-bold text-slate-400">Order</span>
+                        <span class="text-sm font-bold text-slate-400">@lang('Orders')</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-slate-400">From Total</span>
+                        <span class="text-[10px] text-slate-400">@lang('From Total')</span>
                     </div>
                 </div>
             </div>
@@ -590,40 +591,21 @@
 
     <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col">
         <h3 class="font-bold text-slate-900 text-lg mb-6 flex items-center gap-2">
-            <i class="ri-map-pin-line text-indigo-500"></i> Top Wilayas
+            <i class="ri-map-pin-line text-indigo-500"></i> @lang('Top Wilayas')
         </h3>
         <div class="flex-1 space-y-5 overflow-y-auto pr-2">
-            <div>
-                <div class="flex justify-between text-sm font-bold text-slate-700 mb-1">
-                    <span>16 - Alger</span>
-                    <span>45%</span>
+            @foreach($topWilayas as $wilaya)
+                <div>
+                    <div class="flex justify-between text-sm font-bold text-slate-700 mb-1">
+                        <span>{{$wilaya->wilaya_id }} - {{$wilaya->wilaya_name}} ({{$wilaya->total_orders}} @lang('Orders'))</span> 
+                        <span>{{$wilaya->delivered_percentage}}%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2.5">
+                        <div class="bg-indigo-900 h-2.5 rounded-full" style="width: {{$wilaya->delivered_percentage}}%"></div>
+                    </div>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-2.5">
-                    <div class="bg-slate-900 h-2.5 rounded-full" style="width: 45%"></div>
-                </div>
-            </div>
-            <div>
-                <div class="flex justify-between text-sm font-bold text-slate-700 mb-1">
-                    <span>31 - Oran</span>
-                    <span>25%</span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-2.5">
-                    <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 25%"></div>
-                </div>
-            </div>
-            <div>
-                <div class="flex justify-between text-sm font-bold text-slate-700 mb-1">
-                    <span>25 - Constantine</span>
-                    <span>15%</span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-2.5">
-                    <div class="bg-indigo-400 h-2.5 rounded-full" style="width: 15%"></div>
-                </div>
-            </div>
+            @endforeach
         </div>
-        <button
-            class="mt-4 w-full py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition">View
-            Map</button>
     </div>
 </div>
 

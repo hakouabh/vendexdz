@@ -9,8 +9,7 @@ class ProductTown extends Model
      protected $fillable = [
         'sku',
         '3PLid',
-        'wid',
-        
+        'wid', 
     ];
           
 }

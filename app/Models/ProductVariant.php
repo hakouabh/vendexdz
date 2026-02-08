@@ -12,8 +12,8 @@ class ProductVariant extends Model
         'var_2',
         'var_3',
         'discount',
-        'quantity'
-        
+        'quantity',
+        'sku'
     ];
     protected $appends = ['label'];
 

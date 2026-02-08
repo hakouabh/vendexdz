@@ -25,13 +25,36 @@ class StoreWorkspace extends Component
     public $dailyProgress;
     public $selectedProductDisplayName = 'All Products';
     public $statusOptions;
+    public $topWilayas;
     protected $listeners = ['refreshComponent' => '$refresh'];
     
     public function mount()
     {
+        $store_id = auth()->user()->userStore->store_id;
         $this->selectedDate = Carbon::today()->format('Y-m-d');
-        $this->products = Product::where('store_id', auth()->user()->userStore->store_id)->get();
+        $this->products = Product::where('store_id', $store_id)->get();
         $this->statusOptions = firstStepStatu::all();
+        $this->topWilayas = DB::table('orders')
+            ->join('clients', 'clients.id', '=', 'orders.cid')
+            ->join('willayas', 'willayas.wid', '=', 'clients.wilaya')
+            ->leftJoin('order_indeliveries', 'order_indeliveries.oid', '=', 'orders.oid')
+            ->where('orders.sid', $store_id)
+            // TODO make delivered
+            ->selectRaw('
+                willayas.wid as wilaya_id,
+                willayas.name as wilaya_name,
+                COUNT(DISTINCT orders.id) as total_orders,
+                SUM(CASE WHEN order_indeliveries.ssid = 1 THEN 1 ELSE 0 END) as delivered_orders,
+                ROUND(
+                    SUM(CASE WHEN order_indeliveries.ssid = 1 THEN 1 ELSE 0 END)
+                    / COUNT(DISTINCT orders.id) * 100
+                ) as delivered_percentage
+            ')
+            
+            ->groupBy('willayas.wid', 'willayas.name')
+            ->orderByDesc('delivered_percentage')
+            ->limit(5)
+            ->get();
         $this->loadData();
     }
     

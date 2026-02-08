@@ -17,10 +17,11 @@ class TerritoriesManager extends Component
     // Listen for a "back" action from the child component
     protected $listeners = ['resetSelection' => 'clearSelection'];
 
-    public function selectProduct($sku)
+    // TODO
+    public function selectProduct($id)
     {
-        $this->selectedSku = $sku;
-        $this->selectedProduct = Product::where('sku', $sku)->first();
+        $this->selectedSku = $id;
+        $this->selectedProduct = Product::find($id);
     }
 
     public function clearSelection()

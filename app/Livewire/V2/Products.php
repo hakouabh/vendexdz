@@ -23,7 +23,6 @@ class Products extends Component
     public $productId;
     public $name;
     public $nickname;
-    public $sku;
     public $price;
     public $url;
     public $category_id;
@@ -57,7 +56,6 @@ class Products extends Component
         $this->productId = $product->id;
         $this->name = $product->name;
         $this->nickname = $product->nickname;
-        $this->sku = $product->sku;
         $this->price = $product->price;
         $this->url = $product->url;
         $this->category_id = $product->category_id;
@@ -65,6 +63,7 @@ class Products extends Component
         $this->variants = $product->variants->map(fn($v) => [
             'id' => $v->id,
             'product_id' => $product->id,
+            'sku' => $v->sku,
             'var_1' => $v->var_1,
             'var_2' => $v->var_2,
             'var_3' => $v->var_3,
@@ -81,6 +80,7 @@ class Products extends Component
         $this->variants[] = [
             'var_1' => null, 'var_2' => null, 'var_3' => null,
             'product_id' => $this->productId ?? null,
+            'sku' => null,
             'discount' => 0, 'quantity' => 0
         ];
     }
@@ -118,7 +118,6 @@ class Products extends Component
             'store_id' => $user->userStore->store_id,
             'name' => $this->name,
             'nickname' => $this->nickname,
-            'sku' => $this->sku,
             'price' => $this->price,
             'url' => $this->url,
             'category_id' => $this->category_id,
@@ -139,7 +138,7 @@ class Products extends Component
     public function resetFields()
     {
         $this->reset([
-            'productId', 'name', 'nickname', 'sku', 'price', 'url', 'category_id', 'variants', 'isEditMode', 'showForm'
+            'productId', 'name', 'nickname', 'price', 'url', 'category_id', 'variants', 'isEditMode', 'showForm'
         ]);
     }
 

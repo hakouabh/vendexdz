@@ -13,14 +13,15 @@
             <div class="divide-y divide-slate-100">
                 @foreach($products as $product)
                     <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition cursor-pointer" 
-                         wire:click="selectProduct('{{ $product->sku }}')">
+                         wire:click="selectProduct('{{ $product->id }}')">
                         <div class="flex items-center gap-4">
                             <div class="h-10 w-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
                                 {{ substr($product->name, 0, 1) }}
                             </div>
                             <div>
                                 <p class="text-sm font-bold text-slate-700">{{ $product->name }}</p>
-                                <p class="text-[10px] text-slate-400 font-black uppercase">SKU: {{ $product->sku }}</p>
+                                <!-- TODO SKU -->
+                                <!-- <p class="text-[10px] text-slate-400 font-black uppercase">SKU: {{ $product->sku }}</p> -->
                             </div>
                         </div>
                         <i class="ri-arrow-right-s-line text-slate-300 text-xl"></i>

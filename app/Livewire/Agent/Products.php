@@ -28,8 +28,9 @@ class Products extends Component
             })
             ->with('variants')
             ->where(function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('sku', 'like', '%' . $this->search . '%');
+                $q->where('name', 'like', '%' . $this->search . '%');
+                // TODO search sku
+                //   ->orWhere('sku', 'like', '%' . $this->search . '%');
             })
             ->get();
 

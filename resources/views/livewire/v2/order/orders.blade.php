@@ -90,7 +90,7 @@
                                             <option value="">-- @lang('Select Variant') --</option>
                                             @if(!empty($item['product_id']))
                                             @foreach($this->getVariants($item['product_id']) as $v)
-                                                <option {{ $v->quantity == 0 ? 'disabled' : '' }} value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }}) 
+                                                <option value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }}) 
                                                     @if($v->quantity == 0)
                                                         <span>@lang('out of stock')</span>
                                                     @endif

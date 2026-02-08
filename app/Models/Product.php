@@ -12,18 +12,16 @@ class Product extends Model
         'name',
         'nickname',
         'url',
-        'sku',
         'category_id',
         'price',
     ];
 
     public static $rules = [
         'name' => 'required|string|max:255',
-        'sku' => 'required|numeric',
         'price' => 'required|numeric|min:0',
         'variants.*.quantity' => 'required|integer|min:0',
         'variants.*.discount' => 'required|integer|min:0',
-        'variants.*.sku' => 'nullable|string',
+        'variants.*.sku' => 'required|string',
     ];
 
     public function variants() {

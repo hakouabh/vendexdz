@@ -20,6 +20,7 @@ class OrderItems extends Component
         'orderItemsUpdated' => 'syncItems',
     ];
 
+    // TODO
     public function mount(Order $activeOrder, $availableProducts, $canUpdate = true)
     {
         $this->activeOrder = $activeOrder;
