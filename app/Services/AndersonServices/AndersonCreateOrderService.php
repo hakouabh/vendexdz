@@ -24,18 +24,17 @@ class AndersonCreateOrderService
      */
     public function sendOrders($standardOrders)
     { 
-    $formattedOrders = [];
-    foreach ($standardOrders as $order) {
-        $formattedOrders[] = $this->formatOrder($order);
-    }
+        $formattedOrders = [];
+        foreach ($standardOrders as $order) {
+            $formattedOrders[] = $this->formatOrder($order);
+        }
 
-    $response = Http::withHeaders([
-        'Accept' => 'application/json',
-        'Authorization' => 'Bearer ' . $this->apiKey,
-    ])->post("{$this->baseUrl}/api/v1/create/orders", ['orders' => $formattedOrders]);
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->apiKey,
+        ])->post("{$this->baseUrl}/api/v1/create/orders", ['orders' => $formattedOrders]);
 
-    $data = $response->json();
-
+        $data = $response->json();
         return $data;
     }
 

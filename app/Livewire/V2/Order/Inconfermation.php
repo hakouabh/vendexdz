@@ -85,11 +85,14 @@ class Inconfermation extends Component
     }
 
     public function sendAllToShipping()
-    { 
+    {
+        return;
+        $user = auth()->user();
+
         $ordersToSend = Order::whereHas('Inconfirmation.firstStepStatu', function ($query) {
-                $query->where('fsid', 2) 
-                    ->where('aid', auth()->id()); 
+                $query->where('fsid', 2); 
             })
+            ->whereIn('sid', $user->stores->pluck('id'))
             ->with(['client', 'details', 'items.variant.product'])
             ->get();
 
@@ -97,62 +100,66 @@ class Inconfermation extends Component
             session()->flash('error', 'No confirmed orders found to dispatch.');
             return;
         }
-        $groupedOrders = $ordersToSend->groupBy('app_id');
+        $storesOrders = $ordersToSend->groupBy('sid');
 
-        $totalSuccess = 0;
-        $totalErrors = 0;
+        foreach ($storesOrders as $storeOrders){
+            $groupedOrders = $storeOrders->groupBy('app_id');
+        
+            $totalSuccess = 0;
+            $totalErrors = 0;
 
-        try {
-            $switcher = new \App\Services\ShippingSwitcher();
+            try {
+                $switcher = new \App\Services\ShippingSwitcher();
 
-            foreach ($groupedOrders as $appId => $ordersInGroup) {
-                $standardizedOrders = $ordersInGroup->map(function($order) {
-                    $this->activeOrder = $order;
-                    return $this->getLocalStandardizedData();
-                })->toArray();
-            
-                $bulkResult = $switcher->dispatch($standardizedOrders, $this->activeOrder);
-    
-                foreach ($bulkResult['results'] as $ref => $result) {
-                    if (($result['success'] ?? false) === true) {
-                    $id = str_replace('VN-', '', $result['reference']);
-                    $order = Order::find($id);
+                foreach ($groupedOrders as $appId => $ordersInGroup) {
+                    $standardizedOrders = $ordersInGroup->map(function($order) {
+                        $this->activeOrder = $order;
+                        return $this->getLocalStandardizedData();
+                    })->toArray();
+                
+                    $bulkResult = $switcher->dispatch($standardizedOrders, $this->activeOrder);
+        
+                    foreach ($bulkResult['results'] as $ref => $result) {
+                        if (($result['success'] ?? false) === true) {
+                        $id = str_replace('VN-', '', $result['reference']);
+                        $order = Order::find($id);
 
-                    if (!$order) {
-                        \Log::warning("Order #{$id} not found in DB.");
+                        if (!$order) {
+                            \Log::warning("Order #{$id} not found in DB.");
+                            continue;
+                        }
+
+                        $order->update([
+                            'tracking'  => $result['tracking'],
+                            'custom_id' =>  $result['parcelId'] ?? null,
+                        ]);
+
+                        OrderInconfirmation::where('oid', $order->oid)->delete();
+                        OrderWaiting::create([
+                            'oid'  => $order->oid,
+                            'asid' => 1
+                        ]);
+
+                        $this->dispatch(
+                            'notify',
+                            type: 'success',
+                            message: "Dispatched! Tracking: {$result['tracking']}"
+                        );
+
+                        $totalSuccess++;
                         continue;
-                    }
-
-                    $order->update([
-                        'tracking'  => $result['tracking'],
-                        'custom_id' =>  $result['parcelId'] ?? null,
-                    ]);
-
-                    OrderInconfirmation::where('oid', $order->oid)->delete();
-                    OrderWaiting::create([
-                        'oid'  => $order->oid,
-                        'asid' => 1
-                    ]);
-
-                    $this->dispatch(
-                        'notify',
-                        type: 'success',
-                        message: "Dispatched! Tracking: {$result['tracking']}"
-                    );
-
-                    $totalSuccess++;
-                    continue;
-                    }
-                    else {
-                        $totalErrors++;
-                        \Log::warning("Order #{$ref} (App: {$appId}) not found in bulk response.");
+                        }
+                        else {
+                            $totalErrors++;
+                            \Log::warning("Order #{$ref} (App: {$appId}) not found in bulk response.");
+                        }
                     }
                 }
+                $this->dispatch('notify', type: 'success', message: "Process Finished: $totalSuccess orders sent. $totalErrors failed.");
+            } catch (\Exception $e) {
+                \Log::error("Critical Bulk Shipping Error: " . $e->getMessage());
+                $this->dispatch('notify', type: 'error', message: "Error: " . $e->getMessage());
             }
-            $this->dispatch('notify', type: 'success', message: "Process Finished: $totalSuccess orders sent. $totalErrors failed.");
-        } catch (\Exception $e) {
-            \Log::error("Critical Bulk Shipping Error: " . $e->getMessage());
-            $this->dispatch('notify', type: 'error', message: "Error: " . $e->getMessage());
         }
     }
 

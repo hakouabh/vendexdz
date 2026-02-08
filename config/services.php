@@ -41,10 +41,8 @@ return [
     'tenant_id' => env('ZR_TENANT_ID'),
      ],
     'eco' => [
-    'anderson_token'   => env('ANDERSON_API_KEY'),
-    'tenant_id' => env('ZR_TENANT_ID'),
-     ],
-    //
-     
-
+        'anderson_token'   => env('ANDERSON_API_KEY'),
+        'tenant_id' => env('ZR_TENANT_ID'),
+        '17track' => env('17TRACKAPIKEY')
+    ],
 ];

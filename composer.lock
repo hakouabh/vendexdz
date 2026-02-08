@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c6a9d81b244348439726da7f9b23c33",
+    "content-hash": "739c27ba5ba0bd9389c08363192f2b1d",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4992,6 +4992,53 @@
                 "source": "https://github.com/ramsey/uuid/tree/4.9.2"
             },
             "time": "2025-12-14T04:43:48+00:00"
+        },
+        {
+            "name": "sch-group/17track",
+            "version": "v2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sch-group/17track.git",
+                "reference": "235606ddac93964df3d06f8af640bb2d4b9100b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sch-group/17track/zipball/235606ddac93964df3d06f8af640bb2d4b9100b1",
+                "reference": "235606ddac93964df3d06f8af640bb2d4b9100b1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": ">=6.2",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^6.2",
+                "phpunit/phpunit": "~6.5.5",
+                "piwik/ini": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SchGroup\\SeventeenTrack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "aahmetgaliev",
+                    "email": "ainur_ahmetgalie@mail.ru"
+                }
+            ],
+            "description": "17Track (SeventeenTrack) api connector",
+            "support": {
+                "issues": "https://github.com/sch-group/17track/issues",
+                "source": "https://github.com/sch-group/17track/tree/v2.0"
+            },
+            "time": "2021-09-07T08:44:09+00:00"
         },
         {
             "name": "symfony/clock",
