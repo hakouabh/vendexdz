@@ -26,6 +26,8 @@ class StoreWorkspace extends Component
     public $selectedProductDisplayName = 'All Products';
     public $statusOptions;
     public $topWilayas;
+    public $pipeLineFlow;
+    public $topProducts;
     protected $listeners = ['refreshComponent' => '$refresh'];
     
     public function mount()
@@ -54,6 +56,76 @@ class StoreWorkspace extends Component
             ->groupBy('willayas.wid', 'willayas.name')
             ->orderByDesc('delivered_percentage')
             ->limit(5)
+            ->get();
+        $pipeLineStats = DB::table('orders as o')
+        ->leftJoin('order_inconfirmations as c', 'c.oid', '=', 'o.oid')
+        ->leftJoin('order_indeliveries as s', 's.oid', '=', 'o.oid')
+        ->leftJoin('order_dones as d', 'd.oid', '=', 'o.oid')
+
+        ->where('o.sid', $store_id)
+
+        ->selectRaw('
+            COUNT(DISTINCT o.oid) as total_orders,
+
+            -- confirmed OR shipped OR delivered
+            COUNT(DISTINCT CASE 
+                WHEN c.fsid IN (2,3) 
+                OR s.oid IS NOT NULL
+                OR d.oid IS NOT NULL
+                THEN o.oid 
+            END) as confirmed_orders,
+
+            -- shipped OR delivered
+            COUNT(DISTINCT CASE 
+                WHEN s.oid IS NOT NULL
+                OR d.oid IS NOT NULL
+                THEN o.oid 
+            END) as shipped_orders,
+
+            -- delivered only
+            COUNT(DISTINCT CASE 
+                WHEN d.oid IS NOT NULL 
+                THEN o.oid 
+            END) as delivered_orders
+        ')
+        
+        ->first();
+
+        $pipeLineTotal = $pipeLineStats->total_orders ?: 1;
+        $this->pipeLineFlow = [
+            'total' => $pipeLineStats->total_orders,
+
+            'confirmed' => [
+                'count' => $pipeLineStats->confirmed_orders,
+                'percent' => round($pipeLineStats->confirmed_orders / $pipeLineTotal * 100, 2),
+            ],
+
+            'shipped' => [
+                'count' => $pipeLineStats->shipped_orders,
+                'percent' => round($pipeLineStats->shipped_orders / $pipeLineTotal * 100, 2),
+            ],
+
+            'delivered' => [
+                'count' => $pipeLineStats->delivered_orders,
+                'percent' => round($pipeLineStats->delivered_orders / $pipeLineTotal * 100, 2),
+            ],
+        ];
+        $this->topProducts = DB::table('order_items as oi')
+            ->join('orders as o', 'o.oid', '=', 'oi.oid')
+            ->join('products as p', 'p.id', '=', 'oi.product_id')
+
+            ->where('o.sid', $store_id)
+
+            ->selectRaw('
+                p.id,
+                p.name,
+                SUM(oi.quantity) as total_qty_sold,
+                COUNT(DISTINCT o.oid) as total_orders
+            ')
+
+            ->groupBy('p.id', 'p.name')
+            ->orderByDesc('total_qty_sold')
+            ->limit(4)
             ->get();
         $this->loadData();
     }

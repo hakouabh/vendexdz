@@ -30,6 +30,8 @@
                                     <option {{ $v->quantity == 0 ? 'disabled' : '' }} value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }}) 
                                         @if($v->quantity == 0)
                                             <span>@lang('out of stock')</span>
+                                        @else
+                                            <span> - qty:{{$v->quantity}}</span>
                                         @endif
                                     </option>
                                 @endforeach

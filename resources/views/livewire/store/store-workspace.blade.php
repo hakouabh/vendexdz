@@ -808,56 +808,56 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
     <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">
-        <h3 class="font-bold text-slate-900 text-lg mb-6">Pipeline Flow</h3>
+        <h3 class="font-bold text-slate-900 text-lg mb-6">@lang('Pipeline Flow') {{$pipeLineFlow['total']}} @lang('Orders')</h3>
         <div class="space-y-1">
             <div class="relative group">
                 <div
-                    class="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-lg border-l-4 border-blue-600 z-10 relative">
+                    class="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-lg border-l-4 border-blue-600 z-10 relative w-[{{$pipeLineFlow['confirmed']['percent']+50}}%]">
                     <div class="flex items-center gap-3">
                         <div
                             class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shadow-sm">
                             <i class="ri-shopping-cart-2-line"></i>
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-slate-500 uppercase">Confirmed</p>
-                            <p class="text-sm font-bold text-slate-900">1,500 Orders</p>
+                            <p class="text-xs font-bold text-slate-500 uppercase">@lang('Confirmed')</p>
+                            <p class="text-sm font-bold text-slate-900">{{$pipeLineFlow['confirmed']['count']}} @lang('Orders')</p>
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-slate-400">100%</span>
+                    <span class="text-xs font-bold text-slate-400">{{$pipeLineFlow['confirmed']['percent']}}%</span>
                 </div>
             </div>
             <div class="flex justify-center -my-2 relative z-0"><i class="ri-arrow-down-line text-slate-300"></i></div>
             <div class="relative group">
                 <div
-                    class="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-lg border-l-4 border-indigo-500 z-10 relative w-[95%] mx-auto">
+                    class="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-lg border-l-4 border-indigo-500 z-10 relative w-[{{$pipeLineFlow['shipped']['percent']+50}}%]">
                     <div class="flex items-center gap-3">
                         <div
                             class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-indigo-500 shadow-sm">
                             <i class="ri-truck-line"></i>
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-slate-500 uppercase">Shipped</p>
-                            <p class="text-sm font-bold text-slate-900">1,420 Orders</p>
+                            <p class="text-xs font-bold text-slate-500 uppercase">@lang('Shipped')</p>
+                            <p class="text-sm font-bold text-slate-900">{{$pipeLineFlow['shipped']['count']}} @lang('Orders')</p>
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-slate-400">94%</span>
+                    <span class="text-xs font-bold text-slate-400">{{$pipeLineFlow['shipped']['percent']}}%</span>
                 </div>
             </div>
             <div class="flex justify-center -my-2 relative z-0"><i class="ri-arrow-down-line text-slate-300"></i></div>
             <div class="relative group">
                 <div
-                    class="flex items-center justify-between px-4 py-3 bg-green-50 rounded-lg border-l-4 border-green-500 z-10 relative w-[90%] mx-auto">
+                    class="flex items-center justify-between px-4 py-3 bg-green-50 rounded-lg border-l-4 border-green-500 z-10 relative w-[{{$pipeLineFlow['delivered']['percent']+50}}%]">
                     <div class="flex items-center gap-3">
                         <div
                             class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-green-600 shadow-sm">
                             <i class="ri-home-smile-fill"></i>
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-green-700 uppercase">Delivered</p>
-                            <p class="text-sm font-bold text-slate-900">1,200 Orders</p>
+                            <p class="text-xs font-bold text-green-700 uppercase">@lang('Delivered')</p>
+                            <p class="text-sm font-bold text-slate-900">{{$pipeLineFlow['delivered']['count']}} @lang('Orders')</p>
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-green-700">80%</span>
+                    <span class="text-xs font-bold text-green-700">{{$pipeLineFlow['delivered']['percent']}}%</span>
                 </div>
             </div>
         </div>
@@ -865,50 +865,22 @@
 
     <div class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="font-bold text-slate-900 text-lg">Inventory Movers</h3>
-            <a href="#" class="text-xs font-bold text-indigo-600 hover:underline">View All</a>
+            <h3 class="font-bold text-slate-900 text-lg">@lang('Inventory Movers')</h3>
         </div>
 
         <div class="space-y-4">
-            <div
-                class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-2xl transition group cursor-pointer border border-transparent hover:border-slate-100">
-                <div class="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden relative">
-                    <div class="w-full h-full bg-slate-200 flex items-center justify-center text-xl">👟</div>
-                    <div class="absolute top-0 right-0 bg-yellow-400 text-[8px] font-bold px-1.5 py-0.5 rounded-bl-lg">
-                        #1</div>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">Nike Air Force 1</h4>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">SKU:
-                            NK-001</span>
-                        <span class="text-[10px] text-green-600 font-bold">In Stock</span>
+            @foreach($topProducts as $product)
+                <div
+                    class="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-2xl transition group cursor-pointer border border-transparent hover:border-slate-100">
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">{{$product->name}}</h4>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-black text-slate-900">{{$product->total_qty_sold}}</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">@lang('Sold')</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <p class="text-sm font-black text-slate-900">450</p>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">Sold</p>
-                </div>
-            </div>
-
-            <div
-                class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-2xl transition group cursor-pointer border border-transparent hover:border-slate-100">
-                <div class="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden relative">
-                    <div class="w-full h-full bg-slate-200 flex items-center justify-center text-xl">⌚</div>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">Smart Watch Ultra</h4>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">SKU:
-                            SW-99</span>
-                        <span class="text-[10px] text-orange-500 font-bold">Low Stock</span>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="text-sm font-black text-slate-900">210</p>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">Sold</p>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </div>
