@@ -35,7 +35,9 @@ class TerritoriesManager extends Component
         $products = Product::where('store_id', auth()->user()->userStore->store_id)
             ->where(function($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('sku', 'like', '%' . $this->search . '%');
+                    ->orWhereHas('variants', function ($vq) {
+                    $vq->where('sku', 'like', '%' . $this->search . '%');
+                });
             })
             ->paginate(10);
         return view('livewire.store.territories-manager', [

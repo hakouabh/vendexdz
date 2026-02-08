@@ -67,10 +67,6 @@
                     <div class="group bg-white rounded-[2rem] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100 flex flex-col overflow-hidden">
                         
                         <div class="p-6 pb-0 flex justify-between items-start">
-                            <!-- TODO SKU -->
-                            <!-- <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                                {{ $product->sku }}
-                            </span> -->
                             @if($assignment)
                                 <div class="text-right">
                                     <p class="text-[9px] text-slate-400 uppercase font-black tracking-tighter">@lang('Commition')</p>

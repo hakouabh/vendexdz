@@ -143,8 +143,6 @@
                                 <div @click="$wire.set('selectedProduct', '{{ $product->id }}'); open = false;"
                                     class="cursor-pointer select-none relative py-2 pl-10 pr-4 hover:bg-gray-100">
                                     <span class="block truncate">{{ $product->name }}</span>
-                                    <!-- TODO SKU
-                                    <span class="block truncate text-xs text-gray-500">SKU: {{ $product->sku }}</span> -->
                                     @if($selectedProduct === $product->id)
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-indigo-600">
                                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"

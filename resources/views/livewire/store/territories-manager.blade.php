@@ -20,8 +20,6 @@
                             </div>
                             <div>
                                 <p class="text-sm font-bold text-slate-700">{{ $product->name }}</p>
-                                <!-- TODO SKU -->
-                                <!-- <p class="text-[10px] text-slate-400 font-black uppercase">SKU: {{ $product->sku }}</p> -->
                             </div>
                         </div>
                         <i class="ri-arrow-right-s-line text-slate-300 text-xl"></i>

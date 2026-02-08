@@ -4,8 +4,6 @@
             <h3 class="text-xs font-black uppercase text-slate-700 tracking-widest">
                 @lang('Shipping Manager'): <span class="text-indigo-600">{{ $product->name }}</span>
             </h3>
-            <!-- TODO SKU -->
-            <!-- <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">@lang('SKU'): {{ $product->sku }}</p> -->
         </div>
         <div class="flex gap-2">
             <button wire:click="syncAll" class="px-3 py-1.5 text-[10px] font-bold bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition">
