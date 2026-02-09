@@ -10,6 +10,7 @@ use App\Models\order_logs;
 use App\Models\firstStepStatu;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +23,7 @@ class StoreWorkspace extends Component
     public $end_date;
     public $orderStats = [];
     public $performanceData = [];
-    public $deleveryData = [];
+    public $deliveryData = [];
     public $dailyProgress;
     public $selectedProductDisplayName = 'All Products';
     public $statusOptions;
@@ -30,6 +31,9 @@ class StoreWorkspace extends Component
     public $pipeLineFlow;
     public $topProducts;
     protected $listeners = ['refreshComponent' => '$refresh'];
+
+    public $range = 'day';
+    public $chartData = [];
     
     public function mount()
     {
@@ -37,6 +41,7 @@ class StoreWorkspace extends Component
         $this->selectedDate = Carbon::today()->format('Y-m-d');
         $this->products = Product::where('store_id', $store_id)->get();
         $this->statusOptions = firstStepStatu::all();
+        $this->loadChart();
         $this->topWilayas = DB::table('orders')
             ->join('clients', 'clients.id', '=', 'orders.cid')
             ->join('willayas', 'willayas.wid', '=', 'clients.wilaya')
@@ -294,8 +299,8 @@ class StoreWorkspace extends Component
         
         $this->orderStats = $stats;
         $this->performanceData = $performance;
-        $this->deleveryData = [
-            'delivered' => 0, 'suspended' => 0,'return'=>0, 'in_delivery' => 0 ,'in_return'=>0
+        $this->deliveryData = [
+            'delivered' => 0, 'suspended' => 0,'return'=>0, 'in_delivery' => 0 ,'in_route'=>0
         ];
 
         $this->dailyProgress = $this->orderStats['total'];
@@ -310,11 +315,78 @@ class StoreWorkspace extends Component
             'confirmed' => 0, 'cancelled' => 0, 'no_answer' => 0, 'pending' =>0,
             'reported' => 0, 'double' => 0,'no_deliv'=>0, 'false_rate' => 0 ,'pre-confirmed'=>0
         ];
-        $this->deleveryData = [
-            'delivered' => 0, 'suspended' => 0,'return'=>0, 'in_delivery' => 0 ,'in_return'=>0
+        $this->deliveryData = [
+            'delivered' => 0, 'suspended' => 0,'return'=>0, 'in_delivery' => 0 ,'in_route'=>0
         ];
         $this->dailyProgress = 0;
     }
+
+    private function getPeriods($range)
+    {
+        $end = now();
+        $start = match($range) {
+            'day' => $end->copy()->subDays(30),     // 7 days total
+            'week' => $end->copy()->subWeeks(3),   // 4 weeks total
+            'month' => $end->copy()->subMonths(3), // 4 months total
+        };
+
+        $period = match($range) {
+            'day' => CarbonPeriod::create($start, '1 day', $end),
+            'week' => CarbonPeriod::create($start->startOfWeek(), '1 week', $end->endOfWeek()),
+            'month' => CarbonPeriod::create($start->startOfMonth(), '1 month', $end->endOfMonth()),
+        };
+
+        return collect($period)->map(fn($d) => match($range) {
+            'day' => $d->format('Y-m-d'),
+            'week' => $d->format('o-W'), // ISO week
+            'month' => $d->format('Y-m'),
+        });
+    }
+
+    public function setRange($range)
+    {
+        $this->range = $range;
+        $this->loadChart();
+        $this->dispatch('chartUpdated', $this->chartData);
+    }
+
+    private function loadChart()
+    {
+        $store_id = auth()->user()->userStore->store_id;
+
+        $format = match ($this->range) {
+            'week'  => '%Y-%u',
+            'month' => '%Y-%m',
+            default => '%Y-%m-%d',
+        };
+
+        $confirmed = DB::table('order_inconfirmations as c')
+            ->join('orders as o','o.oid','=','c.oid')
+            ->where('o.sid', $store_id)
+            ->whereIn('c.fsid',[2,3])
+            ->selectRaw("DATE_FORMAT(c.created_at,'{$format}') as period, COUNT(*) as total")
+            ->groupBy('period')
+            ->pluck('total','period');
+        // TODO delivered
+        $delivered = DB::table('order_indeliveries as d')
+            ->join('orders as o','o.oid','=','d.oid')
+            ->where('o.sid', $store_id)
+            ->selectRaw("DATE_FORMAT(d.created_at,'{$format}') as period, COUNT(*) as total")
+            ->groupBy('period')
+            ->pluck('total','period');
+
+        $labels = $this->getPeriods($this->range);
+
+        $confirmedData = $labels->map(fn($label) => $confirmed[$label] ?? 0);
+        $deliveredData = $labels->map(fn($label) => $delivered[$label] ?? 0);
+
+        $this->chartData = [
+            'labels' => $labels->toArray(),
+            'confirmed' => $confirmedData->toArray(),
+            'delivered' => $deliveredData->toArray(),
+        ];
+    }
+
     
     public function render()
     {

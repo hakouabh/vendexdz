@@ -123,7 +123,7 @@ class StatuManager extends Component
         // Dynamic Validation
         $this->validate([
             'asid' => [
-                'required', 'string', 'max:255',
+                'required', 'max:255',
                 // Unique check: ignore current record if editing
                 Rule::unique($tableName, $codeColumn)->ignore($this->itemId, $codeColumn)
             ],

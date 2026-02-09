@@ -271,320 +271,37 @@
                 </div>
             </div>
         </div>
-        @if(false)
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-    <div x-data="{
-    chart: null,
-    combinedData: {
-        labels: ['Dec 01', 'Dec 10', 'Dec 15', 'Dec 20', 'Dec 26'],
-        datasets: [
-            {
-                label: 'Revenue',
-                data: [420, 580, 690, 750, 820],
-                borderColor: '#4f46e5',
-                backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#4f46e5',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointHoverBackgroundColor: '#4f46e5',
-                pointHoverBorderColor: '#ffffff',
-                pointHoverBorderWidth: 2,
-                yAxisID: 'y'
-            },
-            {
-                label: 'Orders',
-                data: [120, 190, 150, 250, 220],
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#10b981',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointHoverBackgroundColor: '#10b981',
-                pointHoverBorderColor: '#ffffff',
-                pointHoverBorderWidth: 2,
-                yAxisID: 'y1'
-            }
-        ]
-    },
-    
-    init() {
-        this.$nextTick(() => {
-            const ctx = this.$refs.chartCanvas.getContext('2d');
-            this.chart = new Chart(ctx, {
-                type: 'line',
-                data: this.combinedData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            align: 'end',
-                            labels: {
-                                usePointStyle: true,
-                                boxWidth: 8,
-                                padding: 20,
-                                font: {
-                                    family: 'sans-serif',
-                                    size: 12,
-                                    weight: 'bold'
-                                },
-                                color: '#475569'
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            titleColor: '#ffffff',
-                            bodyColor: '#ffffff',
-                            titleFont: {
-                                family: 'sans-serif',
-                                weight: 'bold',
-                                size: 12
-                            },
-                            bodyFont: {
-                                family: 'sans-serif',
-                                weight: 'bold',
-                                size: 12
-                            },
-                            padding: 12,
-                            cornerRadius: 8,
-                            displayColors: true,
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    const value = context.parsed.y;
-                                    label += context.dataset.label === 'Revenue' ? value + 'k' : value;
-                                    return label;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                font: {
-                                    family: 'sans-serif',
-                                    size: 10,
-                                    weight: 'bold'
-                                },
-                                color: '#94a3b8'
-                            }
-                        },
-                        y: {
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
-                            beginAtZero: true,
-                            grid: {
-                                borderDash: [5, 5],
-                                color: '#f1f5f9'
-                            },
-                            ticks: {
-                                font: {
-                                    family: 'sans-serif',
-                                    size: 10,
-                                    weight: 'bold'
-                                },
-                                color: '#4f46e5',
-                                callback: function(value) {
-                                    return value + 'k';
-                                }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Revenue (k)',
-                                color: '#4f46e5',
-                                font: {
-                                    family: 'sans-serif',
-                                    size: 10,
-                                    weight: 'bold'
-                                }
-                            }
-                        },
-                        y1: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            beginAtZero: true,
-                            grid: {
-                                drawOnChartArea: false, // only show the grid for the left axis
-                            },
-                            ticks: {
-                                font: {
-                                    family: 'sans-serif',
-                                    size: 10,
-                                    weight: 'bold'
-                                },
-                                color: '#10b981'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Orders',
-                                color: '#10b981',
-                                font: {
-                                    family: 'sans-serif',
-                                    size: 10,
-                                    weight: 'bold'
-                                }
-                            }
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeOutQuart'
-                    }
-                }
-            });
-            
-            // Simulate data updates every 5 seconds
-            setInterval(() => {
-                this.updateData();
-            }, 5000);
-        });
-    },
-    
-    updateData() {
-        // Update Revenue Data
-        const newRevenueData = this.combinedData.datasets[0].data.map(() => 
-            Math.floor(Math.random() * 500) + 400
-        );
-        this.chart.data.datasets[0].data = newRevenueData;
-        
-        // Update Orders Data
-        const newOrdersData = this.combinedData.datasets[1].data.map(() => 
-            Math.floor(Math.random() * 200) + 100
-        );
-        this.chart.data.datasets[1].data = newOrdersData;
-        
-        // Update chart with animation
-        this.chart.update('active');
-        
-        // Update stats
-        this.updateStats();
-    },
-    
-    updateStats() {
-        // Update Revenue Stats
-        const revenueData = this.chart.data.datasets[0].data;
-        this.$refs.revenueTotal.textContent = revenueData.reduce((sum, value) => sum + value, 0) + 'k';
-        this.$refs.revenueAverage.textContent = Math.round(revenueData.reduce((sum, value) => sum + value, 0) / revenueData.length) + 'k';
-        this.$refs.revenuePeak.textContent = Math.max(...revenueData) + 'k';
-        
-        // Update Orders Stats
-        const ordersData = this.chart.data.datasets[1].data;
-        this.$refs.ordersTotal.textContent = ordersData.reduce((sum, value) => sum + value, 0);
-        this.$refs.ordersAverage.textContent = Math.round(ordersData.reduce((sum, value) => sum + value, 0) / ordersData.length);
-        this.$refs.ordersPeak.textContent = Math.max(...ordersData);
-    },
-    
-    refreshData() {
-        this.updateData();
-    }
-}" class="bg-white col-span-2 p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300">
+            <div class="bg-white col-span-2 p-6 rounded-[24px] border border-slate-100 shadow-sm">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-slate-900 text-lg">
+                        @lang('Confirmation & Delivery Overview')
+                    </h3>
 
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="font-bold text-slate-900 text-lg">Revenue & Orders Overview</h3>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-xs font-bold text-slate-500">Live Data</span>
+                    <!-- Range buttons -->
+                    <div class="flex gap-2">
+                        <button disabled wire:click="setRange('day')" class="px-3 py-1 text-xs bg-slate-100 rounded-lg">
+                            @lang('Day')
+                        </button>
+                        <button disabled wire:click="setRange('week')" class="px-3 py-1 text-xs bg-slate-100 rounded-lg">
+                            @lang('Week')
+                        </button>
+                        <button disabled wire:click="setRange('month')" class="px-3 py-1 text-xs bg-slate-100 rounded-lg">
+                            @lang('Month')
+                        </button>
+                    </div>
                 </div>
-                <button @click="refreshData()"
-                    class="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-indigo-500 transition-all duration-300">
-                    <i class="ri-refresh-line text-sm"></i>
-                </button>
-            </div>
-        </div>
 
-        <!-- Chart -->
-        <div class="relative h-64 w-full">
-            <canvas x-ref="chartCanvas"></canvas>
-        </div>
-
-        <!-- Combined Stats -->
-        <div class="grid grid-cols-2 gap-6 mt-6">
-            <!-- Revenue Stats -->
-            <div class="space-y-3">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
-                    <span class="text-xs font-bold text-slate-600 uppercase">Revenue Metrics</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div
-                        class="text-center p-2 rounded-lg bg-indigo-50 transition-all duration-300 hover:bg-indigo-100">
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Total</span>
-                        <span class="block text-sm font-black text-indigo-700 mt-1" x-ref="revenueTotal"
-                            x-text="combinedData.datasets[0].data.reduce((sum, item) => sum + item, 0) + 'k'"></span>
-                    </div>
-                    <div
-                        class="text-center p-2 rounded-lg bg-indigo-50 transition-all duration-300 hover:bg-indigo-100">
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Average</span>
-                        <span class="block text-sm font-black text-indigo-700 mt-1" x-ref="revenueAverage"
-                            x-text="Math.round(combinedData.datasets[0].data.reduce((sum, item) => sum + item, 0) / combinedData.datasets[0].data.length) + 'k'"></span>
-                    </div>
-                    <div
-                        class="text-center p-2 rounded-lg bg-indigo-50 transition-all duration-300 hover:bg-indigo-100">
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Peak</span>
-                        <span class="block text-sm font-black text-indigo-700 mt-1" x-ref="revenuePeak"
-                            x-text="Math.max(...combinedData.datasets[0].data) + 'k'"></span>
-                    </div>
+                <!-- Chart -->
+                <div
+                    x-data="confirmationChart(window.chartData)"
+                    x-init="init()"
+                    class="relative h-72"
+                >
+                    <canvas x-ref="chartCanvas"></canvas>
                 </div>
             </div>
-
-            <!-- Orders Stats -->
-            <div class="space-y-3">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-                    <span class="text-xs font-bold text-slate-600 uppercase">Orders Metrics</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div
-                        class="text-center p-2 rounded-lg bg-emerald-50 transition-all duration-300 hover:bg-emerald-100">
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Total</span>
-                        <span class="block text-sm font-black text-emerald-700 mt-1" x-ref="ordersTotal"
-                            x-text="combinedData.datasets[1].data.reduce((sum, item) => sum + item, 0)"></span>
-                    </div>
-                    <div
-                        class="text-center p-2 rounded-lg bg-emerald-50 transition-all duration-300 hover:bg-emerald-100">
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Average</span>
-                        <span class="block text-sm font-black text-emerald-700 mt-1" x-ref="ordersAverage"
-                            x-text="Math.round(combinedData.datasets[1].data.reduce((sum, item) => sum + item, 0) / combinedData.datasets[1].data.length)"></span>
-                    </div>
-                    <div
-                        class="text-center p-2 rounded-lg bg-emerald-50 transition-all duration-300 hover:bg-emerald-100">
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Peak</span>
-                        <span class="block text-sm font-black text-emerald-700 mt-1" x-ref="ordersPeak"
-                            x-text="Math.max(...combinedData.datasets[1].data)"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
 
     <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -692,7 +409,7 @@
                 </div>
 
                 <!-- Second Chart (Performance) -->
-                <div x-data="deleveryChart(window.deleveryData)"
+                <div x-data="deliveryChart(window.deliveryData)"
                     class="group bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col items-center hover:shadow-xl transition-all duration-500 w-full max-w-sm transform hover:-translate-y-1">
                     <div
                         class="absolute inset-0 rounded-[24px]  opacity-0 group-hover:opacity-20 transition-opacity duration-500">
@@ -700,7 +417,7 @@
 
                     <!-- Header with refresh icon -->
                     <div class="flex items-center justify-between w-full mb-4 relative z-10">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">@lang('Delevery Rate')
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">@lang('Delivery Rate')
                         </h4>
                         <div
                             class="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-indigo-500 transition-all duration-500 hover:rotate-180">
@@ -742,7 +459,7 @@
 
                     <!-- Second row of stats -->
                     <div class="grid grid-cols-3 gap-2 w-full mt-2 px-4">
-                        <template x-for="(item, key) in { in_return: in_return, rReturn: rReturn }">
+                        <template x-for="(item, key) in { in_route: in_route, rReturn: rReturn }">
                             <div class="text-center transition-all duration-500 cursor-pointer transform hover:scale-105"
                                 @click="item.show = !item.show"
                                 :class="item.show ? 'opacity-100' : 'opacity-40 grayscale'">
@@ -868,9 +585,16 @@
         </div>
 
         <div class="space-y-4">
-            @foreach($topProducts as $product)
+            @foreach($topProducts as $key => $product)
                 <div
                     class="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-2xl transition group cursor-pointer border border-transparent hover:border-slate-100">
+                    <div class="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden relative">
+                        <div class="w-full h-full bg-slate-200 flex items-center justify-center text-xl"><i class="ri-archive-line"></i></div>
+                        @if($key == 0)
+                            <div class="absolute top-0 right-0 bg-yellow-400 text-[8px] font-bold px-1.5 py-0.5 rounded-bl-lg">
+                            #1 @lang('Top')</div>
+                        @endif
+                    </div>
                     <div class="flex-1">
                         <h4 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">{{$product->name}}</h4>
                     </div>
@@ -885,7 +609,8 @@
 </div>
     <script>
         window.performanceData = @json($performanceData);
-        window.deleveryData = @json($deleveryData);
+        window.deliveryData = @json($deliveryData);
+        window.chartData = @json($chartData);
     </script>
     <script>
         const translations = {
@@ -899,7 +624,7 @@
             suspended: "{{ __('Suspended') }}",
             rReturn: "{{ __('Return') }}",
             in_delivery: "{{ __('In Delivery') }}",
-            in_return: "{{ __('In Return') }}"
+            in_route: "{{ __('In Route') }}"
         };
         function performanceChart(initialData) {
             return {
@@ -1016,7 +741,7 @@
                 }
             }
         }
-        function deleveryChart(initialData) {
+        function deliveryChart(initialData) {
             return {
                 delivered: {
                     val: initialData.delivered,
@@ -1042,11 +767,11 @@
                     color: '#3b82f6',
                     label: translations.in_delivery
                 },
-                in_return: {
-                    val: initialData.in_return,
+                in_route: {
+                    val: initialData.in_route,
                     show: true,
                     color: '#f59e0b',
-                    label: translations.in_return
+                    label: translations.in_route
                 },
 
                 getTotal() {
@@ -1054,7 +779,7 @@
                         (this.suspended.show ? this.suspended.val : 0) +
                         (this.rReturn.show ? this.rReturn.val : 0) +
                         (this.in_delivery.show ? this.in_delivery.val : 0) +
-                        (this.in_return.show ? this.in_return.val : 0);
+                        (this.in_route.show ? this.in_route.val : 0);
                 },
 
                 getAngles() {
@@ -1065,14 +790,14 @@
                     let p2 = p1 + (this.suspended.show ? (this.suspended.val / total) * 100 : 0);
                     let p3 = p2 + (this.rReturn.show ? (this.rReturn.val / total) * 100 : 0);
                     let p4 = p3 + (this.in_delivery.show ? (this.in_delivery.val / total) * 100 : 0);
-                    let p5 = p4 + (this.in_return.show ? (this.in_return.val / total) * 100 : 0);
+                    let p5 = p4 + (this.in_route.show ? (this.in_route.val / total) * 100 : 0);
 
                     return `conic-gradient(
                     ${this.delivered.color} 0% ${p1}%, 
                     ${this.suspended.color} ${p1}% ${p2}%, 
                     ${this.rReturn.color} ${p2}% ${p3}%,
                     ${this.in_delivery.color} ${p3}% ${p4}%,
-                    ${this.in_return.color} ${p4}% 100%
+                    ${this.in_route.color} ${p4}% 100%
                 )`;
                 },
 
@@ -1098,10 +823,10 @@
                             label: this.in_delivery.label,
                             color: this.in_delivery.color
                         } : null,
-                        this.in_return.show ? {
-                            val: this.in_return.val,
-                            label: this.in_return.label,
-                            color: this.in_return.color
+                        this.in_route.show ? {
+                            val: this.in_route.val,
+                            label: this.in_route.label,
+                            color: this.in_route.color
                         } : null
                     ].filter(item => item !== null);
 
@@ -1118,7 +843,80 @@
                 }
             }
         }
-        </script>
+    </script>
+    <script>
+        function confirmationChart(initialData) {
+            return {
+                chart: null,
+
+                init() {
+                    const ctx = this.$refs.chartCanvas.getContext('2d');
+
+                    this.chart = new Chart(ctx, {
+                        type: 'line',
+                        data: this.formatData(initialData),
+
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    align: 'end'
+                                }
+                            },
+
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                },
+
+                formatData(data) {
+                    return {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: "{{ __('Confirmation') }}",
+                                data: data.confirmed,
+                                borderColor: '#4f46e5',
+                                backgroundColor: 'rgba(79,70,229,0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: "{{ __('Delivery') }}",
+                                data: data.delivered,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16,185,129,0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4
+                            }
+                        ]
+                    };
+                },
+
+                updateChart(data) {
+                    console.log(data);
+                    
+                    this.chart.data = this.formatData(data);
+                    this.chart.update();
+                }
+            }
+        }
+    </script>
+
 
         <!-- Keep the existing styles -->
         <style>
