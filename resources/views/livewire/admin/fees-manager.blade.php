@@ -26,7 +26,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($pricings as $price)
-                            <tr class="hover:bg-gray-50 transition">
+                            <tr wire:key="price-{{ $price->id }}" class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-3">
                                         <div class="h-8 w-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
