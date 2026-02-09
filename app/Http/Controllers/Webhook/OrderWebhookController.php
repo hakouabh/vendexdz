@@ -280,6 +280,7 @@ protected function determineLightFunnelsDeliveryType($orderData)
    protected function handleAyorWebhook(Request $request, $platform)
 { 
     $payload = $request->all();
+    \Log::alert($payload);
     
     // Log the raw payload structure
     Log::info("Ayor Webhook Received", [
@@ -677,14 +678,11 @@ protected function formatAyorItems($orderLines)
             );
 
             // Get app_id from first item
-            $firstItemSku = $data['items'][0]['sku'] ?? null;
+            $variant = ProductVariant::where('sku', $data['items'][0]['sku'])->first();
             $app_id = 0;
 
-            $distributor = new OrderDistributorService();
-            $assignedAgentId = $distributor->getNextAgentId($firstItemSku);
-
-            if ($firstItemSku) {
-                $fee = fees::where('pid', $firstItemSku)
+            if ($variant) {
+                $fee = fees::where('product_id', $variant->product_id)
                     ->where('wid', $data['wilaya'])
                     ->first();
                 
@@ -701,11 +699,8 @@ protected function formatAyorItems($orderLines)
                 'oid' => $orderId,
                 'cid' => $client->id,
                 'sid' => $user->userStore->store_id,
-                'aid' => $assignedAgentId,
                 'app_id' => $app_id,
                 'from' => $platform
-             
-              
            ]);
 
             // Calculate totals in local currency
@@ -714,8 +709,8 @@ protected function formatAyorItems($orderLines)
             $deliveryPrice = 0;
 
             // Get delivery price
-            if ($firstItemSku && $data['wilaya']) {
-                $fee = fees::where('pid', $firstItemSku)
+            if ($variant && $data['wilaya']) {
+                $fee = fees::where('product_id', $variant->product_id)
                     ->where('wid', $data['wilaya'])
                     ->first();
                 
@@ -746,7 +741,8 @@ protected function formatAyorItems($orderLines)
                 
                 OrderItems::create([
                     'oid' => $order->oid,
-                    'sku' => $item['sku'] ?? 'N/A',
+                    'sku' => $item['sku'],
+                    'product_id' => $variant->product_id,
                     'vid' => $variant?->id ?? 0,
                     'quantity' => $item['quantity'],
                     'price' => $variant?->product->price ?? 0,
