@@ -41,7 +41,7 @@
 
                 <tbody class="divide-y divide-gray-100 text-sm">
                     @foreach($managers as $manager)
-                    <tr class="hover:bg-gray-50/80 transition duration-150 group">
+                    <tr wire:key="manager-{{ $manager->id }}" class="hover:bg-gray-50/80 transition duration-150 group">
                         <td class="px-6 py-4">
                             <input type="checkbox"
                                 class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">

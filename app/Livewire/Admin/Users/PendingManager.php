@@ -6,8 +6,12 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Order;
+use Livewire\WithPagination;
+
 class PendingManager extends Component
 {
+    use WithPagination;
+    protected $pageName = 'inPage';
     public $isEditModalOpen = false;
     public $editingPendingId = null;
     

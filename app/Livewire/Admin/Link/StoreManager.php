@@ -6,9 +6,12 @@ use Livewire\Component;
 use App\Models\Store;
 use App\Models\User;
 use App\Models\UserStore;
+use Livewire\WithPagination;
 
 class StoreManager extends Component
 {  
+    use WithPagination;
+    protected $pageName = 'inPage';
     public $store_id = null;
     public $selectedAgentId = '';
     public $selectedManagerId = '';

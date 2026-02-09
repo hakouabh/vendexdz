@@ -12,7 +12,7 @@
 
             <div class="divide-y divide-slate-100">
                 @foreach($products as $product)
-                    <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition cursor-pointer" 
+                    <div wire:key="product-{{ $product->id }}" class="p-4 flex items-center justify-between hover:bg-slate-50 transition cursor-pointer" 
                          wire:click="selectProduct('{{ $product->id }}')">
                         <div class="flex items-center gap-4">
                             <div class="h-10 w-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold">

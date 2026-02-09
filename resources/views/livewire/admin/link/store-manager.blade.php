@@ -25,7 +25,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100 text-sm">
                             @foreach($stores as $store)
-                                <tr wire:click="SelectStore({{$store->id}})" class="transition duration-150 group {{ $selectedStore?->id == $store->id ? 'bg-indigo-50' : 'hover:bg-gray-50/80' }}" style="cursor: pointer;">
+                                <tr wire:key="store-{{ $store->id }}" wire:click="SelectStore({{$store->id}})" class="transition duration-150 group {{ $selectedStore?->id == $store->id ? 'bg-indigo-50' : 'hover:bg-gray-50/80' }}" style="cursor: pointer;">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">

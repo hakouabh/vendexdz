@@ -24,7 +24,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($products as $p)
-            <div class="bg-white rounded-[24px] p-1 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col h-full relative overflow-hidden group">
+            <div wire:key="product-{{ $p->id }}" class="bg-white rounded-[24px] p-1 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col h-full relative overflow-hidden group">
                 <div class="p-6 flex-1">
                     <div class="flex items-center gap-4 mb-5">
                         <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">

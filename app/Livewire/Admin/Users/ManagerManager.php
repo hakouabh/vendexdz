@@ -4,8 +4,12 @@ namespace App\Livewire\Admin\Users;
 
 use Livewire\Component;
 use App\Models\User;
+use Livewire\WithPagination;
+
 class ManagerManager extends Component
 {
+    use WithPagination;
+    protected $pageName = 'inPage';
     public $isEditModalOpen = false;
     public $editingManagerId = null;
     

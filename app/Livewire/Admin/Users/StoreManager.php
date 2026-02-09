@@ -6,8 +6,12 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Store;
+use Livewire\WithPagination;
+
 class StoreManager extends Component
 {
+    use WithPagination;
+    protected $pageName = 'inPage';
     public $isEditModalOpen = false;
     public $editingStoreId = null;
     
