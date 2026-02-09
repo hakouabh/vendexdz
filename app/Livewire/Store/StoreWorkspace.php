@@ -22,6 +22,7 @@ class StoreWorkspace extends Component
     public $end_date;
     public $orderStats = [];
     public $performanceData = [];
+    public $deleveryData = [];
     public $dailyProgress;
     public $selectedProductDisplayName = 'All Products';
     public $statusOptions;
@@ -293,6 +294,9 @@ class StoreWorkspace extends Component
         
         $this->orderStats = $stats;
         $this->performanceData = $performance;
+        $this->deleveryData = [
+            'delivered' => 0, 'suspended' => 0,'return'=>0, 'in_delivery' => 0 ,'in_return'=>0
+        ];
 
         $this->dailyProgress = $this->orderStats['total'];
     }
@@ -305,6 +309,9 @@ class StoreWorkspace extends Component
         $this->performanceData = [
             'confirmed' => 0, 'cancelled' => 0, 'no_answer' => 0, 'pending' =>0,
             'reported' => 0, 'double' => 0,'no_deliv'=>0, 'false_rate' => 0 ,'pre-confirmed'=>0
+        ];
+        $this->deleveryData = [
+            'delivered' => 0, 'suspended' => 0,'return'=>0, 'in_delivery' => 0 ,'in_return'=>0
         ];
         $this->dailyProgress = 0;
     }

@@ -271,6 +271,7 @@
                 </div>
             </div>
         </div>
+        @if(false)
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
     <div x-data="{
@@ -583,6 +584,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -609,7 +611,7 @@
 
 <!-- Performance Cycles Section -->
         <div class="mb-8">
-            <h3 class="text-lg font-bold text-slate-900 mb-4 ml-1">Performance Cycles</h3>
+            <h3 class="text-lg font-bold text-slate-900 mb-4 ml-1">@lang('Performance Cycles')</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Confirmation Chart -->
@@ -624,7 +626,7 @@
                     <!-- Header with refresh icon -->
                     <div class="flex items-center justify-between w-full mb-4 relative z-10">
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
-                            Confirmation</h4>
+                            @lang('Confirmation Rate')</h4>
                         <div
                             class="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-indigo-500 transition-all duration-500 hover:rotate-180">
                             <i class="ri-refresh-line text-sm animate-spin-slow"></i>
@@ -641,7 +643,7 @@
 
                         <div class="absolute w-32 h-32 bg-white rounded-full flex flex-col items-center justify-center shadow-inner transition-all duration-500 hover:shadow-lg"
                             style="transform: rotate(90deg)">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Rate</span>
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">@lang('Rate')</span>
                             <span class="text-lg font-black mt-1 transition-all duration-500 animate-pulse"
                                 :style="{ color: getTopReason().color }" x-text="getTopReason().label"></span>
                             <div class="h-1.5 w-8 mt-2 rounded-full transition-all duration-500"
@@ -679,19 +681,19 @@
                     <!-- Footer with enhanced live indicator -->
                     <div
                         class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between w-full relative z-10">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Live
-                            Data</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">@lang('Live Data')</span>
                         <div
                             class="flex items-center gap-2 bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1 rounded-full border border-green-200">
                             <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
                             <span class="w-1.5 h-1.5 bg-green-500 rounded-full absolute"></span>
-                            <span class="text-[9px] font-bold text-green-700 uppercase">Updating</span>
+                            <span class="text-[9px] font-bold text-green-700 uppercase">@lang('Updating')</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Second Chart (Performance) -->
-                <div x-data="performanceChart(window.performanceData)"
+                 @if(false)
+                <div x-data="deleveryChart(window.deleveryData)"
                     class="group bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col items-center hover:shadow-xl transition-all duration-500 w-full max-w-sm transform hover:-translate-y-1">
 
                     <!-- Animated border effect -->
@@ -701,7 +703,7 @@
 
                     <!-- Header with refresh icon -->
                     <div class="flex items-center justify-between w-full mb-4 relative z-10">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Performance
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">@lang('Delevery Rate')
                         </h4>
                         <div
                             class="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-indigo-500 transition-all duration-500 hover:rotate-180">
@@ -719,7 +721,7 @@
 
                         <div class="absolute w-32 h-32 bg-white rounded-full flex flex-col items-center justify-center shadow-inner transition-all duration-500 hover:shadow-lg"
                             style="transform: rotate(90deg)">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Rate</span>
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">@lang('Rate')</span>
                             <span class="text-lg font-black mt-1 transition-all duration-500 animate-pulse"
                                 :style="{ color: getTopReason().color }" x-text="getTopReason().label"></span>
                             <div class="h-1.5 w-8 mt-2 rounded-full transition-all duration-500"
@@ -730,7 +732,7 @@
                     <!-- Stats display with animations -->
                     <div class="grid grid-cols-3 gap-2 w-full mt-6 px-4">
                         <template
-                            x-for="(item, key) in { confirmed: confirmed, cancelled: cancelled, noAnswer: noAnswer }">
+                            x-for="(item, key) in { delivered: delivered, suspended: suspended, return: return }">
                             <div class="text-center transition-all duration-500 cursor-pointer transform hover:scale-105"
                                 @click="item.show = !item.show"
                                 :class="item.show ? 'opacity-100' : 'opacity-40 grayscale'">
@@ -743,7 +745,7 @@
 
                     <!-- Second row of stats -->
                     <div class="grid grid-cols-3 gap-2 w-full mt-2 px-4">
-                        <template x-for="(item, key) in { reported: reported, double: double, falserate: falserate }">
+                        <template x-for="(item, key) in { in_delivery: in_delivery, in_return: in_return }">
                             <div class="text-center transition-all duration-500 cursor-pointer transform hover:scale-105"
                                 @click="item.show = !item.show"
                                 :class="item.show ? 'opacity-100' : 'opacity-40 grayscale'">
@@ -767,6 +769,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <!-- Third Chart - Failure Reasons (Static) -->
                 <div
@@ -886,45 +889,59 @@
 </div>
     <script>
         window.performanceData = @json($performanceData);
+        window.deleveryData = @json($deleveryData);
     </script>
     <script>
+        const translations = {
+            confirmed: "{{ __('Confirmed') }}",
+            cancelled: "{{ __('Cancelled') }}",
+            no_answer: "{{ __('No Answer') }}",
+            reported: "{{ __('Reported') }}",
+            double: "{{ __('Double') }}",
+            false_rate: "{{ __('False Rate') }}",
+            delivered: "{{ __('Delivered') }}",
+            suspended: "{{ __('Suspended') }}",
+            return: "{{ __('Return') }}",
+            in_delivery: "{{ __('In Delivery') }}",
+            in_return: "{{ __('In Return') }}"
+        };
         function performanceChart(initialData) {
             return {
                 confirmed: {
                     val: initialData.confirmed,
                     show: true,
                     color: '#10b981',
-                    label: 'Confirmed'
+                    label: translations.confirmed
                 },
                 cancelled: {
                     val: initialData.cancelled,
                     show: true,
                     color: '#ef4444',
-                    label: 'Cancelled'
+                    label: translations.cancelled
                 },
                 noAnswer: {
                     val: initialData.no_answer,
                     show: true,
                     color: '#7bff00ff',
-                    label: 'No Answer'
+                    label: translations.no_answer
                 },
                 reported: {
                     val: initialData.reported,
                     show: true,
                     color: '#3b82f6',
-                    label: 'Reported'
+                    label: translations.reported
                 },
                 double: {
                     val: initialData.double,
                     show: true,
                     color: '#f59e0b',
-                    label: 'Double'
+                    label: translations.double
                 },
                 falserate: {
                     val: initialData.false_rate,
                     show: true,
                     color: '#8b5cf6',
-                    label: 'False Rate'
+                    label: translations.false_rate
                 },
 
                 getTotal() {
@@ -987,6 +1004,108 @@
                             val: this.falserate.val,
                             label: this.falserate.label,
                             color: this.falserate.color
+                        } : null
+                    ].filter(item => item !== null);
+
+                    if (items.length === 0) return {
+                        label: 'No Data',
+                        color: '#94a3b8'
+                    };
+
+                    items.sort((a, b) => b.val - a.val);
+                    return {
+                        label: items[0].label,
+                        color: items[0].color
+                    };
+                }
+            }
+        }
+        function deleveryChart(initialData) {
+            return {
+                delivered: {
+                    val: initialData.delivered,
+                    show: true,
+                    color: '#10b981',
+                    label: translations.delivered
+                },
+                suspended: {
+                    val: initialData.suspended,
+                    show: true,
+                    color: '#ef4444',
+                    label: translations.suspended
+                },
+                return: {
+                    val: initialData.return,
+                    show: true,
+                    color: '#7bff00ff',
+                    label: translations.return
+                },
+                in_delivery: {
+                    val: initialData.in_delivery,
+                    show: true,
+                    color: '#3b82f6',
+                    label: translations.in_delivery
+                },
+                in_return: {
+                    val: initialData.in_return,
+                    show: true,
+                    color: '#f59e0b',
+                    label: translations.in_return
+                },
+
+                getTotal() {
+                    return (this.delivered.show ? this.delivered.val : 0) +
+                        (this.suspended.show ? this.suspended.val : 0) +
+                        (this.return.show ? this.return.val : 0) +
+                        (this.in_delivery.show ? this.in_delivery.val : 0) +
+                        (this.in_return.show ? this.in_return.val : 0);
+                },
+
+                getAngles() {
+                    let total = this.getTotal();
+                    if (total === 0) return 'conic-gradient(#f1f5f9 0% 100%)';
+
+                    let p1 = this.delivered.show ? (this.delivered.val / total) * 100 : 0;
+                    let p2 = p1 + (this.suspended.show ? (this.suspended.val / total) * 100 : 0);
+                    let p3 = p2 + (this.return.show ? (this.return.val / total) * 100 : 0);
+                    let p4 = p3 + (this.in_delivery.show ? (this.in_delivery.val / total) * 100 : 0);
+                    let p5 = p4 + (this.in_return.show ? (this.in_return.val / total) * 100 : 0);
+
+                    return `conic-gradient(
+                    ${this.delivered.color} 0% ${p1}%, 
+                    ${this.suspended.color} ${p1}% ${p2}%, 
+                    ${this.return.color} ${p2}% ${p3}%,
+                    ${this.in_delivery.color} ${p3}% ${p4}%,
+                    ${this.in_return.color} ${p4}% 100%
+                )`;
+                },
+
+                getTopReason() {
+                    let items = [
+                        this.delivered.show ? {
+                            val: this.delivered.val,
+                            label: this.delivered.label,
+                            color: this.delivered.color
+                        } : null,
+                        this.suspended.show ? {
+                            val: this.suspended.val,
+                            label: this.suspended.label,
+                            color: this.suspended.color
+                        } : null,
+                        this.return.show ? {
+                            val: this.return.val,
+                            label: this.return.label,
+                            color: this.return.color
+                        } : null,
+                        this.in_delivery.show ? {
+                            val: this.in_delivery.val,
+                            label: this.in_delivery.label,
+                            color: this.in_delivery.color
+                        } : null,
+                        this.in_return.show ? {
+                            val: this.in_return.val,
+                            label: this.in_return.label,
+                            color: this.in_return.color
                         } : null
                     ].filter(item => item !== null);
 

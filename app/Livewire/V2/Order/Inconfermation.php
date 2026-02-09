@@ -13,10 +13,12 @@ use Illuminate\Validation\Rule;
 use App\Livewire\V2\Order\Traits\OrderTrait;
 use App\Models\OrderWaiting;
 use App\Models\OrderInconfirmation;
+use Livewire\WithPagination;
 
 class Inconfermation extends Component
 {
-    use OrderTrait;
+    use OrderTrait, WithPagination;
+    protected $pageName = 'inPage';
     public $showTimerModal = false;
     public $tempStatusId;
     public $tempOrderId;

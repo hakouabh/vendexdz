@@ -13,10 +13,12 @@ use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule;     
 use App\Livewire\V2\Order\Traits\OrderTrait;
+use Livewire\WithPagination;
 
 class Reported extends Component
 {
-    use OrderTrait;
+    use OrderTrait, WithPagination;
+    protected $pageName = 'inPage';
     public $showTimerModal = false;
     public $tempStatusId;
     public $tempOrderId;

@@ -18,10 +18,12 @@ use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule; 
-use App\Livewire\V2\Order\Traits\OrderTrait;    
+use App\Livewire\V2\Order\Traits\OrderTrait; 
+use Livewire\WithPagination;   
 class Indelivery extends Component
 {
-    use OrderTrait;
+    use OrderTrait, WithPagination;
+    protected $pageName = 'inPage';
     public $showTimerModal = false;
     public $tempStatusId;
     public $tempOrderId;

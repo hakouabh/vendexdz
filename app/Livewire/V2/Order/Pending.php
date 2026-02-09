@@ -23,10 +23,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;     
 use App\Services\RemoveOrderSwitcher;
 use App\Services\ShipOrderSwitcher;
+use Livewire\WithPagination;
+use App\Livewire\V2\Order\Traits\OrderTrait;
 
 class Pending extends Component
 {
-    use \App\Livewire\V2\Order\Traits\OrderTrait;
+    use OrderTrait, WithPagination;
+    protected $pageName = 'inPage';
 
     public $showTimerModal = false;
     public $tempStatusId;

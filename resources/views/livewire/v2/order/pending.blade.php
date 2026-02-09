@@ -208,7 +208,7 @@
         <div class="col-span-1"></div>
     </div>
     @foreach($orders as $order)
-    <div class="space-y-3">
+    <div wire:key="order-{{ $order->oid }}" class="space-y-3">
         <div class="group relative overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-600 to-indigo-600"></div>
             <div class="relative z-10 grid cursor-pointer grid-cols-12 items-center gap-4 py-4 pl-6 pr-4 transition-colors hover:bg-gray-50/50">
