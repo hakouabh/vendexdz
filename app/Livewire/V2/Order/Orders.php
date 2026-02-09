@@ -99,7 +99,6 @@ class Orders extends Component
         $this->initializeOrder();
         $this->loadAvailableProducts();
     }
-    // TODO
 
     private function initializeOrder()
     {

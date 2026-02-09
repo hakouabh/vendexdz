@@ -17,7 +17,6 @@ class TerritoriesManager extends Component
     // Listen for a "back" action from the child component
     protected $listeners = ['resetSelection' => 'clearSelection'];
 
-    // TODO
     public function selectProduct($id)
     {
         $this->selectedSku = $id;

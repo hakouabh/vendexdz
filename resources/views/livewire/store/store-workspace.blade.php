@@ -692,11 +692,8 @@
                 </div>
 
                 <!-- Second Chart (Performance) -->
-                 @if(false)
                 <div x-data="deleveryChart(window.deleveryData)"
                     class="group bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col items-center hover:shadow-xl transition-all duration-500 w-full max-w-sm transform hover:-translate-y-1">
-
-                    <!-- Animated border effect -->
                     <div
                         class="absolute inset-0 rounded-[24px]  opacity-0 group-hover:opacity-20 transition-opacity duration-500">
                     </div>
@@ -732,7 +729,7 @@
                     <!-- Stats display with animations -->
                     <div class="grid grid-cols-3 gap-2 w-full mt-6 px-4">
                         <template
-                            x-for="(item, key) in { delivered: delivered, suspended: suspended, return: return }">
+                            x-for="(item, key) in { in_delivery: in_delivery, delivered: delivered, suspended: suspended }">
                             <div class="text-center transition-all duration-500 cursor-pointer transform hover:scale-105"
                                 @click="item.show = !item.show"
                                 :class="item.show ? 'opacity-100' : 'opacity-40 grayscale'">
@@ -745,7 +742,7 @@
 
                     <!-- Second row of stats -->
                     <div class="grid grid-cols-3 gap-2 w-full mt-2 px-4">
-                        <template x-for="(item, key) in { in_delivery: in_delivery, in_return: in_return }">
+                        <template x-for="(item, key) in { in_return: in_return, rReturn: rReturn }">
                             <div class="text-center transition-all duration-500 cursor-pointer transform hover:scale-105"
                                 @click="item.show = !item.show"
                                 :class="item.show ? 'opacity-100' : 'opacity-40 grayscale'">
@@ -769,7 +766,6 @@
                         </div>
                     </div>
                 </div>
-                @endif
 
                 <!-- Third Chart - Failure Reasons (Static) -->
                 <div
@@ -901,7 +897,7 @@
             false_rate: "{{ __('False Rate') }}",
             delivered: "{{ __('Delivered') }}",
             suspended: "{{ __('Suspended') }}",
-            return: "{{ __('Return') }}",
+            rReturn: "{{ __('Return') }}",
             in_delivery: "{{ __('In Delivery') }}",
             in_return: "{{ __('In Return') }}"
         };
@@ -1034,11 +1030,11 @@
                     color: '#ef4444',
                     label: translations.suspended
                 },
-                return: {
+                rReturn: {
                     val: initialData.return,
                     show: true,
                     color: '#7bff00ff',
-                    label: translations.return
+                    label: translations.rReturn
                 },
                 in_delivery: {
                     val: initialData.in_delivery,
@@ -1056,7 +1052,7 @@
                 getTotal() {
                     return (this.delivered.show ? this.delivered.val : 0) +
                         (this.suspended.show ? this.suspended.val : 0) +
-                        (this.return.show ? this.return.val : 0) +
+                        (this.rReturn.show ? this.rReturn.val : 0) +
                         (this.in_delivery.show ? this.in_delivery.val : 0) +
                         (this.in_return.show ? this.in_return.val : 0);
                 },
@@ -1067,14 +1063,14 @@
 
                     let p1 = this.delivered.show ? (this.delivered.val / total) * 100 : 0;
                     let p2 = p1 + (this.suspended.show ? (this.suspended.val / total) * 100 : 0);
-                    let p3 = p2 + (this.return.show ? (this.return.val / total) * 100 : 0);
+                    let p3 = p2 + (this.rReturn.show ? (this.rReturn.val / total) * 100 : 0);
                     let p4 = p3 + (this.in_delivery.show ? (this.in_delivery.val / total) * 100 : 0);
                     let p5 = p4 + (this.in_return.show ? (this.in_return.val / total) * 100 : 0);
 
                     return `conic-gradient(
                     ${this.delivered.color} 0% ${p1}%, 
                     ${this.suspended.color} ${p1}% ${p2}%, 
-                    ${this.return.color} ${p2}% ${p3}%,
+                    ${this.rReturn.color} ${p2}% ${p3}%,
                     ${this.in_delivery.color} ${p3}% ${p4}%,
                     ${this.in_return.color} ${p4}% 100%
                 )`;
@@ -1092,10 +1088,10 @@
                             label: this.suspended.label,
                             color: this.suspended.color
                         } : null,
-                        this.return.show ? {
-                            val: this.return.val,
-                            label: this.return.label,
-                            color: this.return.color
+                        this.rReturn.show ? {
+                            val: this.rReturn.val,
+                            label: this.rReturn.label,
+                            color: this.rReturn.color
                         } : null,
                         this.in_delivery.show ? {
                             val: this.in_delivery.val,

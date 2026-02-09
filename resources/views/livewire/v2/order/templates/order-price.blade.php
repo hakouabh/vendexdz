@@ -1,7 +1,6 @@
 <div class="space-y-4">
     <h5 class="text-[11px] font-bold uppercase text-gray-400">@lang('Order Price')</h5>
     <div class="sm:col-span-1">
-        <!-- // TODO calculated discount -->
         <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">@lang('Discount') <br>
         <span class="text-red-600">(@lang('You can discount up to') ) {{$totalDiscount}} DZD</span>
         </label>
