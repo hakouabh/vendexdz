@@ -25,7 +25,6 @@ class ShippingSwitcher
         $result = $service->sendOrders($orderList);
 
         // 4. If we sent multiple, return the raw result to the component for bulk processing
-        \Log::alert($result);
         if (is_array($orders)) {
             
             return $result;
@@ -51,7 +50,6 @@ class ShippingSwitcher
 
     protected function processResponse($ref, $result)
     {
-        \Log::alert($result);
         // EcoTrack structure check: result -> results -> {ref} -> success
         if (isset($result['results'][$ref]['success']) && $result['results'][$ref]['success']) {
             return [

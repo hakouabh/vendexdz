@@ -177,6 +177,8 @@ trait OrderTrait
 
         $order = Order::find($this->tempOrderId);
 
+        $authUser = auth()->user();
+
         if ($order && $order->Inconfirmation) {
             // 1. Capture the CURRENT status before we change it (for the logs)
             $oldStatusId = $order->Inconfirmation->fsid;
@@ -188,7 +190,7 @@ trait OrderTrait
             $order->Inconfirmation->update(['fsid' => $this->tempStatusId]);
 
             $order->update([
-                'aid' => auth()->id(),
+                'aid' => $authUser->id,
             ]);
 
             // 4. Create the Timer entry with the FULL Date/Time
@@ -200,10 +202,10 @@ trait OrderTrait
             // 5. IMPORTANT: Add the Log entry so you don't get the 'statu_old' error
             \App\Models\order_logs::create([
                 'oid'       => $order->oid,
-                'aid'       => auth()->id(),
+                'aid'       => $authUser->id,
                 'statu_old' => $oldStatusId,
                 'statu_new' => $this->tempStatusId,
-                'text'      => 'Follow-up scheduled for: ' . $formattedTime,
+                'text'      => trans('Follow-up scheduled for: ') . $formattedTime,
             ]);
 
             // Sync UI
@@ -245,7 +247,7 @@ trait OrderTrait
                 'aid'       => auth()->id(),
                 'statu_old' => $oldStatusId,
                 'statu_new' => $statusId,
-                'text'      => 'Status updated via confirmation manager.',
+                'text'      => trans('Status updated'),
             ]);
 
             $this->selectedStatu = $statusId;

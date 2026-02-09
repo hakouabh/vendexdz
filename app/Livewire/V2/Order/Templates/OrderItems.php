@@ -32,7 +32,7 @@ class OrderItems extends Component
             'product_id' => $item->product_id,
             'original' => $item->variant?->product->price ?? 0,
             'product_name' => $item->variant?->product->name ?? '',
-            'variant_info' => trim(($item->variant?->var_1 ?? '').' '.($item->variant?->var_2 ?? '')),
+            'variant_info' => trim($item->variant?->label ?? ''),
         ])->toArray();
         
         $this->availableProducts = $availableProducts;

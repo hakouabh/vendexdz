@@ -192,9 +192,9 @@
                             class="bg-yellow-50 text-yellow-700 border border-yellow-100 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                             <i class="ri-time-line"></i> {{ $performanceData['pending'] }} Pending
                         </span>
-                        <span class="text-[10px] text-slate-400">From Total</span>
+                        <!-- <span class="text-[10px] text-slate-400">From Total</span>
 
-                        <span class="text-[10px] text-slate-400">From Total</span>
+                        <span class="text-[10px] text-slate-400">From Total</span> -->
                     </div>
                 </div>
             </div>
@@ -210,9 +210,9 @@
                         <h3 class="text-3xl font-black text-slate-200">{{ $orderStats['confirmed'] }}</h3>
                         <span class="text-sm font-bold text-slate-400">Order</span>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <!-- <div class="flex items-center gap-2">
                         <span class="text-[10px] text-slate-400">From Total</span>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -285,9 +285,9 @@
                         <h3 class="text-3xl font-black text-slate-900">{{ $orderStats['delivered'] }}</h3>
                         <span class="text-sm font-bold text-slate-400">Order</span>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <!-- <div class="flex items-center gap-2">
                         <span class="text-[10px] text-slate-400">From Total</span>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -302,9 +302,9 @@
                         <h3 class="text-3xl font-black text-slate-900">{{ $orderStats['returned'] }}</h3>
                         <span class="text-sm font-bold text-slate-400">Order</span>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <!-- <div class="flex items-center gap-2">
                         <span class="text-[10px] text-slate-400">From Total</span>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

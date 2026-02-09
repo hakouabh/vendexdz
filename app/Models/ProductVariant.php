@@ -22,9 +22,12 @@ class ProductVariant extends Model
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function getLabelAttribute(){
-       return collect([$this->var_1, $this->var_2, $this->var_3])
-        ->filter()
-        ->implode(' ');
+    public function getLabelAttribute()
+    {
+        $label = collect([$this->var_1, $this->var_2, $this->var_3])
+            ->filter()
+            ->implode(' ');
+
+        return $label ?: $this->sku;
     } 
 }

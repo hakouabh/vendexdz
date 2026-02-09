@@ -71,26 +71,25 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                     <div>
                                         <label
-                                            class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Product</label>
+                                            class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Product')</label>
                                         <select wire:model.live="items.{{ $index }}.product_id"
                                             class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
                                             <option value="">-- @lang('Select Product') --</option>
                                             @foreach($availableProducts as $prod)
-                                            <option value="{{ $prod->id }}">{{ $prod->name }}</option>
+                                                <option value="{{ $prod->id }}">{{ $prod->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
-
                                     <div>
                                         <label
                                             class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Variant')</label>
                                         <select wire:model.live="items.{{ $index }}.vid"
                                             {{ empty($item['product_id']) ? 'disabled' : '' }}
-                                            class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold {{ empty($item['sku']) ? 'text-slate-300' : 'text-slate-700' }} focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
+                                            class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
                                             <option value="">-- @lang('Select Variant') --</option>
                                             @if(!empty($item['product_id']))
                                             @foreach($this->getVariants($item['product_id']) as $v)
-                                                <option value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }}) 
+                                                <option value="{{ $v->id }}">{{ $v->label }}
                                                     @if($v->quantity == 0)
                                                         <span>@lang('out of stock')</span>
                                                     @else
@@ -115,15 +114,15 @@
                                 </div>
 
                                 @if(!empty($item['product_id']))
-                                <div class="mt-2 flex items-center gap-2 px-2">
-                                    <span
-                                        class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">
-                                        {{ $item['product_name'] }}
-                                    </span>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase italic truncate">
-                                        {{ $item['variant_info'] }}
-                                    </span>
-                                </div>
+                                    <div class="mt-2 flex items-center gap-2 px-2">
+                                        <span
+                                            class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                                            {{ $item['product_name'] }}
+                                        </span>
+                                        <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                                            {{ $item['variant_info'] }}
+                                        </span>
+                                    </div>
                                 @endif
                             </div>
                             @endforeach

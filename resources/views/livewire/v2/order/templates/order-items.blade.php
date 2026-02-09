@@ -23,11 +23,11 @@
                         <select wire:model.live="items.{{ $index }}.vid"
                             {{ $canUpdate ? '' : 'disabled' }}
                             {{ empty($item['product_id']) ? 'disabled' : '' }}
-                            class="w-full rounded-xl border-none bg-slate-50 p-2 text-[11px] font-bold {{ empty($item['product_id']) ? 'text-slate-300' : 'text-slate-700' }} focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
+                            class="w-full rounded-xl border-none bg-slate-50 p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
                             <option value="">-- @lang('Variant') --</option>
                             @if(!empty($item['product_id']))
                                 @foreach($this->getVariants($item['product_id']) as $v)
-                                    <option {{ $v->quantity == 0 ? 'disabled' : '' }} value="{{ $v->id }}">{{ $v->var_1 }} ({{ $v->var_2 }}) 
+                                    <option {{ $v->quantity == 0 ? 'disabled' : '' }} value="{{ $v->id }}">{{ $v->label }} 
                                         @if($v->quantity == 0)
                                             <span>@lang('out of stock')</span>
                                         @else
@@ -59,7 +59,7 @@
                         class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">
                         {{ $item['product_name'] }}
                     </span>
-                    <span class="text-[9px] font-bold text-slate-400 uppercase italic truncate">
+                    <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">
                         {{ $item['variant_info'] }}
                     </span>
                 </div>

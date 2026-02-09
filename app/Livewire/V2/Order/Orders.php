@@ -111,8 +111,8 @@ class Orders extends Component
                 'sku' => '',
                 'quantity' => 1,
                 'original' => 0,
-                'product_name' => 'Select Product',
-                'variant_info' => 'Select Variant',
+                'product_name' => trans('Product Selected'),
+                'variant_info' => trans('Please Select Variant'),
             ]
         ];
     }
@@ -219,7 +219,7 @@ class Orders extends Component
                 $this->items[$index]['sku'] = $variant->sku;
                 $this->items[$index]['product_id'] = $variant->product_id;
                 $this->items[$index]['product_name'] = $variant->product->name;
-                $this->items[$index]['variant_info'] = $variant->var_1 . ' ' . $variant->var_2;
+                $this->items[$index]['variant_info'] = $variant->label;
                 
                 $this->calculateTotal();
             }
@@ -246,8 +246,8 @@ class Orders extends Component
             'discount' => 0,
             'quantity' => 1,
             'original' => 0,
-            'product_name' => 'Select Product',
-            'variant_info' => 'Select Variant',
+            'product_name' => trans('Product Selected'),
+            'variant_info' => trans('Please Select Variant'),
         ];
     }
     public function deleteItem($index)
@@ -351,6 +351,13 @@ class Orders extends Component
                 'delivery_price' => $this->delivery_price,
                 'commenter' => $this->comment,
                 'stopdesk' => $this->delivery_type,
+            ]);
+            \App\Models\order_logs::create([
+                'oid'       => $order->oid,
+                'aid'       => auth()->id(),
+                'statu_old' => 1,
+                'statu_new' => 1,
+                'text'      => trans('Order created'),
             ]);
     
             foreach ($this->items as $item) {

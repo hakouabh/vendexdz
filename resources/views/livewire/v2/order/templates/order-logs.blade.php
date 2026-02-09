@@ -35,7 +35,7 @@
                         @lang('by') <span class="font-semibold text-slate-700">{{ $log->user?->name ?? __('System') }}</span>
                         @if($log->statu_new != $log->statu_old)
                         <span class="opacity-50 italic ml-1">
-                            (from {{ $log->statusOld?->name ?? __('Initial') }} @lang('to')
+                            (@lang('From') {{ $log->statusOld?->name ?? __('Initial') }} @lang('to')
                             {{ $log->statusNew?->name }})
                         </span>
                         @endif
