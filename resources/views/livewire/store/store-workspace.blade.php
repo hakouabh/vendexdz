@@ -752,13 +752,13 @@
                 suspended: {
                     val: initialData.suspended,
                     show: true,
-                    color: '#ef4444',
+                    color: '#f59e0b',
                     label: translations.suspended
                 },
                 rReturn: {
                     val: initialData.return,
                     show: true,
-                    color: '#7bff00ff',
+                    color: '#ef4444',
                     label: translations.rReturn
                 },
                 in_delivery: {
@@ -770,7 +770,7 @@
                 in_route: {
                     val: initialData.in_route,
                     show: true,
-                    color: '#f59e0b',
+                    color: '#4c58f6',
                     label: translations.in_route
                 },
 

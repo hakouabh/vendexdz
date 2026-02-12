@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Store;
+use App\Models\UserStore;
 use Livewire\WithPagination;
 
 class PendingManager extends Component
@@ -74,14 +76,18 @@ class PendingManager extends Component
     public function deletePending($id)
     {
         $Pending = User::find($id);
+        $store = Store::where('created_by', $id)->first();
         $Models = [
             Order::class,
         ];
-        $result = canDelete($Models, 'sid', $Pending->userStore->store_id);
+        $result = canDelete($Models, 'sid', $store->id);
+        UserStore::where('store_id', $store->id)->delete();
+        $store->delete();
         if ($result) {
             $this->dispatch('notify', message: __('Cannot delete user because it is associated with existing orders.'), type: 'error');
             return;
         }
         $Pending->delete();
+        $this->isEditModalOpen = false;
     }
 }
