@@ -9,7 +9,7 @@
             <div class="bg-gray-100 p-1 rounded-lg flex text-xs font-medium">
                 <div
                     class="flex-1 text-gray-500 py-1.5 rounded-md hover:text-gray-700 flex items-center justify-center gap-2 transition">
-                    <i class="ri-store-2-line"></i> Store Panel
+                    <i class="ri-store-2-line"></i> @lang('Store Panel')
                 </div>
 
             </div>
@@ -20,29 +20,29 @@
 
             <x-responsive-sidebar-link href="{{ route('store-dashboard') }}"
                 :active="request()->routeIs('store-dashboard')">
-                <i class="ri-home-4-line text-sm"></i> dashboard
+                <i class="ri-home-4-line text-sm"></i> @lang('Dashboard')
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('store.orders') }}" :active="request()->routeIs('store.orders')">
-                <i class="ri-box-3-line text-sm"></i> Orders
+                <i class="ri-box-3-line text-sm"></i> @lang('Orders')
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('store.products') }}"
                 :active="request()->routeIs('store.products')">
-                <i class="ri-price-tag-3-line text-sm"></i> Products
+                <i class="ri-price-tag-3-line text-sm"></i> @lang('Products')
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('store.companies') }}"
                 :active="request()->routeIs('store.companies')">
-                <i class="ri-truck-line text-sm"></i> delivery company
+                <i class="ri-truck-line text-sm"></i> @lang('Delivery company')
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('store.territories') }}"
                 :active="request()->routeIs('store.territories')">
-                <i class="ri-map-2-line text-sm"></i> territories & fees
+                <i class="ri-map-2-line text-sm"></i> @lang('territories & fees')
             </x-responsive-sidebar-link>
             <!-- <x-responsive-sidebar-link href="{{ route('store.bills') }}" :active="request()->routeIs('store.bills')">
                 <i class="ri-coins-line text-sm"></i> Bills
             </x-responsive-sidebar-link> -->
             <x-responsive-sidebar-link href="{{ route('api-tokens.index') }}"
                 :active="request()->routeIs('api-tokens.index')">
-                <i class="ri-key-2-line text-sm"></i> Api Token
+                <i class="ri-key-2-line text-sm"></i> @lang('Webhooks')
             </x-responsive-sidebar-link>
         </nav>
     </div>
@@ -58,7 +58,7 @@
                 <img src="/storage/{{ Auth::user()->profile_photo_path }}" alt="{{ Auth::user()->name }}"
                     class="w-full h-full rounded-full object-cover">
                 @else
-                {{ collect(explode(' ', Auth::user()->name))->map(fn($n) => mb_substr($n, 0, 1))->join('') }}
+                {{ Auth::user()->short_name }}
                 @endif
             </div>
 
@@ -73,21 +73,22 @@
                 class="ri-arrow-right-s-line text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all"></i>
         </a>
 
-        <div class="flex justify-between mt-2 px-2 text-gray-400">
-             <button>
+        <div class="flex justify-center mt-2 px-2 text-gray-400">
+             <!-- <button>
              <i class="ri-settings-4-line hover:text-gray-600 cursor-pointer text-sm"></i>
             </button>  
             
             <button>
              <i class="ri-translate-2 hover:text-gray-600 cursor-pointer text-sm"></i>
-            </button>  
+            </button>   -->
             
             <form method="POST" action="{{ route('logout') }}" x-data>
-                                @csrf
-                                <button href="{{ route('logout') }}"
-                                         @click.prevent="$root.submit();">
-                                 <i class="ri-logout-box-line hover:text-gray-600 cursor-pointer text-sm"></i>
-                                </button>
+                @csrf
+                <button href="{{ route('logout') }}" class="w-full justify-center px-6 py-2 bg-gray-700 hover:bg-gray-900 active:bg-indigo-800 rounded-xl shadow-md transition ease-in-out duration-150 text-white font-semibold tracking-wide"
+                            @click.prevent="$root.submit();">
+                        @lang('Logout')
+                    <i class="ri-logout-box-line hover:text-gray-600 cursor-pointer text-sm"></i>
+                </button>
             </form>
            
         </div>

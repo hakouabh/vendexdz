@@ -9,7 +9,7 @@
             <div class="bg-gray-100 p-1 rounded-lg flex text-xs font-medium">
                 <button
                     class="flex-1 text-gray-500 py-1.5 rounded-md hover:text-gray-700 flex items-center justify-center gap-2 transition">
-                    <i class="ri-filter-3-line"></i> Funnels
+                    <i class="ri-filter-3-line"></i> @lang('Admin Panel')
                 </button>
 
             </div>
@@ -19,25 +19,25 @@
 
 
             <x-responsive-sidebar-link href="{{ route('admin-dashboard') }}" :active="request()->routeIs('admin-dashboard')">
-                <i class="ri-home-4-line text-sm"></i> dashboard
+                <i class="ri-home-4-line text-sm"></i> @lang('Dashboard')
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('admin.link') }}" :active="request()->routeIs('admin.link')">
-                <i class="ri-pulse-line text-sm"></i> Links
+                <i class="ri-pulse-line text-sm"></i> @lang('Links')
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('admin.users') }}" :active="request()->routeIs('admin.users')">
-                <i class="ri-group-line text-sm"></i> Users
+                <i class="ri-group-line text-sm"></i> @lang('Users')
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('admin.status') }}" :active="request()->routeIs('admin.status')">
-                <i class="ri-store-2-line text-sm"></i> Status
+                <i class="ri-store-2-line text-sm"></i> @lang('Status')
             </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('admin.orders') }}" :active="request()->routeIs('admin.orders')">
-                <i class="ri-box-3-line text-sm"></i> Orders
+                <i class="ri-box-3-line text-sm"></i> @lang('Orders')
             </x-responsive-sidebar-link>
-            <x-responsive-sidebar-link href="{{ route('admin-dashboard') }}" :active="request()->routeIs('admin-dashboard')">
-                <i class="ri-price-tag-3-line text-sm"></i> Products
-            </x-responsive-sidebar-link>
+            <!-- <x-responsive-sidebar-link href="{{ route('admin-dashboard') }}" :active="request()->routeIs('admin-dashboard')">
+                <i class="ri-price-tag-3-line text-sm"></i> @lang('Products')
+            </x-responsive-sidebar-link> -->
             <x-responsive-sidebar-link href="{{ route('admin.fees') }}" :active="request()->routeIs('admin.fees')">
-                <i class="ri-coins-line text-sm"></i> Fees
+                <i class="ri-coins-line text-sm"></i> @lang('Fees')
             </x-responsive-sidebar-link>
 
         </nav>
@@ -45,7 +45,7 @@
 
     <div class="p-4 border-t border-gray-100">
 
-        <a href="{{ route('profile.show') }}"
+        <a href="#"
             class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl cursor-pointer transition-all duration-200 group border border-transparent hover:border-slate-100">
             <div
                 class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold shadow-sm group-hover:scale-105 transition-transform">
@@ -53,7 +53,7 @@
                 <img src="/storage/{{ Auth::user()->profile_photo_path }}" alt="{{ Auth::user()->name }}"
                     class="w-full h-full rounded-full object-cover">
                 @else
-                {{ collect(explode(' ', Auth::user()->name))->map(fn($n) => mb_substr($n, 0, 1))->join('') }}
+                {{ Auth::user()->short_name }}
                 @endif
             </div>
 
@@ -69,21 +69,22 @@
         </a>
 
 
-        <div class="flex justify-between mt-2 px-2 text-gray-400">
-             <button>
+        <div class="flex justify-center mt-2 px-2 text-gray-400">
+             <!-- <button>
              <i class="ri-settings-4-line hover:text-gray-600 cursor-pointer text-sm"></i>
             </button>  
             
             <button>
              <i class="ri-translate-2 hover:text-gray-600 cursor-pointer text-sm"></i>
-            </button>  
+            </button>   -->
             
             <form method="POST" action="{{ route('logout') }}" x-data>
-                                @csrf
-                                <button href="{{ route('logout') }}"
-                                         @click.prevent="$root.submit();">
-                                 <i class="ri-logout-box-line hover:text-gray-600 cursor-pointer text-sm"></i>
-                                </button>
+            @csrf
+            <button href="{{ route('logout') }}" class="w-full justify-center px-6 py-2 bg-gray-700 hover:bg-gray-900 active:bg-indigo-800 rounded-xl shadow-md transition ease-in-out duration-150 text-white font-semibold tracking-wide"
+                        @click.prevent="$root.submit();">
+                        @lang('Logout')
+                <i class="ri-logout-box-line hover:text-gray-600 cursor-pointer text-sm"></i>
+            </button>
             </form>
            
         </div>

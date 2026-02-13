@@ -39,20 +39,9 @@ class OrderWebhookController extends Controller
     public function orderCreated(Request $request, $platform =null)
     
     {   
-        
-        try {
-        $logFile = storage_path('logs/raw_http_requests.txt');
-        $rawHttpContent = $request;
-
-        file_put_contents($logFile, $data, FILE_APPEND);
-    } catch (\Exception $e) {
-        Log::error("Failed to write raw request to file: " . $e->getMessage());
-    }
-
-        if (!$platform) {
-        $platform = $request->segment(3); 
-      }
-        // Validate Sanctum token
+        if (!$platform)
+            $platform = $request->segment(3); 
+      
         $token = $this->validateSanctumToken($request);
         
         if (!$token) {
@@ -280,7 +269,6 @@ protected function determineLightFunnelsDeliveryType($orderData)
    protected function handleAyorWebhook(Request $request, $platform)
 { 
     $payload = $request->all();
-    \Log::alert($payload);
     
     // Log the raw payload structure
     Log::info("Ayor Webhook Received", [
@@ -347,6 +335,7 @@ protected function determineLightFunnelsDeliveryType($orderData)
     }
 
     $orderData = isset($data['client_info']) ? $data : ($data['data'] ?? $data);
+    \Log::alert($orderData);
 
     // Add platform_order_id to your return array
     return [

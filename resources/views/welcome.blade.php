@@ -507,7 +507,7 @@
                        <a href="/login" class="px-4 py-2 text-gray-900 hover:text-green-700 transition-colors">Sign In</a>
                     <a href="/register"
                         class="px-6 py-2 bg-gray-900  text-white rounded-full hover:shadow-lg transition-all hover-scale">
-                        Get Started
+                        @lang('Get Started')
                     </a>
                      
                     @endauth
