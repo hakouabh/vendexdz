@@ -316,13 +316,14 @@ protected function determineLightFunnelsDeliveryType($orderData)
         }
 
         $orderData = isset($data['client_info']) ? $data : ($data['data'] ?? $data);
+        $cities = $this->getAyorCitiesByState($orderData['client_info']['state']);
         return [
             'platform_order_id' => $orderData['order_id'] ?? $orderData['display_id'] ?? null, // ADD THIS
             'client_name'       => $orderData['client_info']['full_name'] ?? 'Unknown',
             'phone1'            => $orderData['client_info']['phone_number'] ?? '',
             'phone2'            => '', 
-            'wilaya'            => $this->parseAyorWilaya($orderData['client_info']['state'] ?? '1'),
-            'city'              => $orderData['client_info']['city'] ?? 'adrar',
+            'wilaya'            => $this->parseAyorWilaya($orderData['client_info']['state']),
+            'city'              => $cities->firstWhere('id', $orderData['client_info']['city'])['name'] ?? null,
             'address'           => $this->extractAyorAddress($orderData),
             'items'             => $this->formatAyorItems($orderData['order_lines'] ?? []),
             'delivery_type'     => ($orderData['is_stop_desk'] ?? false) ? 1 : 0,
@@ -387,6 +388,24 @@ protected function parseAyorWilaya($stateString)
 {
     return config("ayor_states.$stateString");
 }
+
+    protected static function getAyorCitiesByState($stateId)
+    {
+        return Cache::remember(
+            "ayor_cities_state_$stateId",
+            now()->addMonths(6),
+            function () use ($stateId) {
+
+                $response = Http::get("https://backend.ayor.ai/api/states/{$stateId}/cities/");
+
+                if ($response->successful()) {
+                    return collect($response->json());
+                }
+
+                return [];
+            }
+        );
+    }
 
 /**
  * استخراج العنوان من الحقول المخصصة (Custom Fields)
