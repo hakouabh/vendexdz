@@ -35,7 +35,7 @@ class OrderWebhookController extends Controller
         'foorweb' => 'handleFoorwebWebhook',
         'custom' => 'handleCustomWebhook',
     ];
-    
+
     public function orderCreated(Request $request, $platform =null) 
     {   
         if (!$platform)
@@ -114,65 +114,193 @@ protected function handleFoorwebWebhook(Request $request, $platform)
      * Handle Shopify webhooks
      */
     /**
- * Handle LightFunnels webhooks
- * Documentation: https://developer.lightfunnels.com/webhooks
- */
-protected function handleLightFunnelsWebhook(Request $request, $platform)
-{
-    try {
-        $logFile = storage_path('logs/raw_http_requests.txt');
-        $rawHttpContent = $request;
+     * Handle LightFunnels webhooks
+     * Documentation: https://developer.lightfunnels.com/webhooks
+     */
+    protected function handleLightFunnelsWebhook(Request $request, $platform)
+    {
+        try {
+            $logFile = storage_path('logs/raw_http_requests.txt');
+            $rawHttpContent = $request;
 
-        file_put_contents($logFile, $rawHttpContent, FILE_APPEND);
-    } catch (\Exception $e) {
-        Log::error("Failed to write raw request to file: " . $e->getMessage());
-    }
-    $payload = $request->all();
+            file_put_contents($logFile, $rawHttpContent, FILE_APPEND);
+        } catch (\Exception $e) {
+            Log::error("Failed to write raw request to file: " . $e->getMessage());
+        }
+        $payload = $request->all();
 
-    Log::info("LightFunnels Webhook Processing", ['order_name' => $payload['node']['name'] ?? 'unknown']);
-
-
-    $orderData = $payload['node'] ?? [];
-
-    if (empty($orderData)) {
-        Log::error("LightFunnels Webhook: Node key missing");
-        return null;
-    }
-
-    $customer = $orderData['customer'] ?? [];
-    $shipping = $orderData['shipping_address'] ?? [];
-    $billing = $orderData['billing_address'] ?? $shipping;
+        Log::info("LightFunnels Webhook Processing", ['order_name' => $payload['node']['name'] ?? 'unknown']);
 
 
-    $items = [];
-    foreach ($orderData['items'] ?? [] as $item) {
-        $items[] = [
-            'sku'      => $item['sku'] ?? 'N/A',
-            'quantity' => 1, 
-            'price'    => $item['price'] ?? 0,
-            'name'     => $item['title'] ?? '',
+        $orderData = $payload['node'] ?? [];
+
+        if (empty($orderData)) {
+            Log::error("LightFunnels Webhook: Node key missing");
+            return null;
+        }
+
+        $customer = $orderData['customer'] ?? [];
+        $shipping = $orderData['shipping_address'] ?? [];
+        $billing = $orderData['billing_address'] ?? $shipping;
+
+
+        $items = [];
+        foreach ($orderData['items'] ?? [] as $item) {
+            $items[] = [
+                'sku'      => $item['sku'] ?? 'N/A',
+                'quantity' => 1, 
+                'price'    => $item['price'] ?? 0,
+                'name'     => $item['title'] ?? '',
+            ];
+        }
+
+        return [
+            'platform_order_id' => $orderData['name'] ?? $orderData['_id'] ?? time(),
+            'client_name'       => $customer['full_name'] ?? trim(($shipping['first_name'] ?? '') . ' ' . ($shipping['last_name'] ?? '')),
+            'phone1'            => $shipping['phone'] ?? $customer['phone'] ?? '',
+            'phone2'            => '',
+            'email'             => $orderData['email'] ?? $customer['email'] ?? '',
+            'wilaya'            => $this->extractWilayaFromLightFunnels($shipping) ?? 16,
+            'city'              => $shipping['city'] ?? '',
+            'address'           => ($shipping['line1'] ?? '') . ' ' . ($shipping['line2'] ?? ''),
+            'items'             => $items,
+            'delivery_type'     => ($orderData['shipping'] == 0) ? 1 : 0, 
+            'comment'           => $orderData['notes'] ?? '',
+            'discount'          => $orderData['discount_value'] ?? 0,
+            'subtotal'          => $orderData['subtotal'] ?? 0,
+            'total'             => $orderData['total'] ?? 0,
+            'currency'          => $orderData['currency'] ?? 'DZD',
+            'platform_data'     => $orderData
         ];
     }
 
-    return [
-        'platform_order_id' => $orderData['name'] ?? $orderData['_id'] ?? time(),
-        'client_name'       => $customer['full_name'] ?? trim(($shipping['first_name'] ?? '') . ' ' . ($shipping['last_name'] ?? '')),
-        'phone1'            => $shipping['phone'] ?? $customer['phone'] ?? '',
-        'phone2'            => '',
-        'email'             => $orderData['email'] ?? $customer['email'] ?? '',
-        'wilaya'            => $this->extractWilayaFromLightFunnels($shipping) ?? 16,
-        'city'              => $shipping['city'] ?? '',
-        'address'           => ($shipping['line1'] ?? '') . ' ' . ($shipping['line2'] ?? ''),
-        'items'             => $items,
-        'delivery_type'     => ($orderData['shipping'] == 0) ? 1 : 0, 
-        'comment'           => $orderData['notes'] ?? '',
-        'discount'          => $orderData['discount_value'] ?? 0,
-        'subtotal'          => $orderData['subtotal'] ?? 0,
-        'total'             => $orderData['total'] ?? 0,
-        'currency'          => $orderData['currency'] ?? 'DZD',
-        'platform_data'     => $orderData
-    ];
-}
+    /**
+     * Handle Shopify webhooks
+     */
+    /**
+     * Handle LightFunnels webhooks
+     * Documentation: https://developer.lightfunnels.com/webhooks
+     */
+    protected function handleShopifyWebhook(Request $request, $platform)
+    {
+        $data = $request->all();
+        $province = $data['shipping_address']['province'] ?? null;
+
+        [$wilayaCode, $wilayaName] = $this->mapAlgeriaWilaya($province);
+        return [
+            'platform_order_id' => $data['id'] ?? null,
+
+            'client_name' => trim(($data['shipping_address']['first_name'] ?? '') . ' ' . ($data['shipping_address']['last_name'] ?? '')),
+
+            'phone1' => $data['shipping_address']['phone'] ?? $data['phone'] ?? null,
+            'phone2' => null,
+
+            'email' => $data['email'] ?? null,
+
+            'wilaya' => $wilayaCode ?? null,
+            'city' => $data['shipping_address']['city'] ?? null,
+            'address' => $data['shipping_address']['address1'] ?? null,
+
+            'delivery_type' => $data['shipping_lines'][0]['title'] ?? null,
+
+            'comment' => $data['note'] ?? null,
+
+            'discount' => $data['total_discounts'] ?? 0,
+            'subtotal' => $data['subtotal_price'] ?? 0,
+            'total' => $data['total_price'] ?? 0,
+            'currency' => $data['currency'] ?? null,
+
+            'items' => collect($data['line_items'] ?? [])->map(function ($item) {
+                return [
+                    'sku' => $item['sku'],
+                    'name' => $item['name'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                ];
+            })->values()->toArray(),
+
+            'platform_data' => $data 
+        ];
+    }
+
+    private function mapAlgeriaWilaya(?string $province): array
+    {
+        if (!$province) {
+            return [null, null];
+        }
+
+        $map = [
+            '01' => 'Adrar',
+            '02' => 'Chlef',
+            '03' => 'Laghouat',
+            '04' => 'Oum El Bouaghi',
+            '05' => 'Batna',
+            '06' => 'Béjaïa',
+            '07' => 'Biskra',
+            '08' => 'Béchar',
+            '09' => 'Blida',
+            '10' => 'Bouira',
+            '11' => 'Tamanrasset',
+            '12' => 'Tébessa',
+            '13' => 'Tlemcen',
+            '14' => 'Tiaret',
+            '15' => 'Tizi Ouzou',
+            '16' => 'Alger',
+            '17' => 'Djelfa',
+            '18' => 'Jijel',
+            '19' => 'Sétif',
+            '20' => 'Saïda',
+            '21' => 'Skikda',
+            '22' => 'Sidi Bel Abbès',
+            '23' => 'Annaba',
+            '24' => 'Guelma',
+            '25' => 'Constantine',
+            '26' => 'Médéa',
+            '27' => 'Mostaganem',
+            '28' => 'M’Sila',
+            '29' => 'Mascara',
+            '30' => 'Ouargla',
+            '31' => 'Oran',
+            '32' => 'El Bayadh',
+            '33' => 'Illizi',
+            '34' => 'Bordj Bou Arreridj',
+            '35' => 'Boumerdès',
+            '36' => 'El Tarf',
+            '37' => 'Tindouf',
+            '38' => 'Tissemsilt',
+            '39' => 'El Oued',
+            '40' => 'Khenchela',
+            '41' => 'Souk Ahras',
+            '42' => 'Tipaza',
+            '43' => 'Mila',
+            '44' => 'Aïn Defla',
+            '45' => 'Naâma',
+            '46' => 'Aïn Témouchent',
+            '47' => 'Ghardaïa',
+            '48' => 'Relizane',
+            '49' => 'Timimoun',
+            '50' => 'Bordj Badji Mokhtar',
+            '51' => 'Ouled Djellal',
+            '52' => 'Béni Abbès',
+            '53' => 'In Salah',
+            '54' => 'In Guezzam',
+            '55' => 'Touggourt',
+            '56' => 'Djanet',
+            '57' => 'El M’Ghair',
+            '58' => 'El Meniaa',
+        ];
+
+        $province = strtolower(trim($province));
+
+        foreach ($map as $code => $name) {
+            if (strtolower($name) === $province) {
+                return [$code, $name];
+            }
+        }
+
+        return [null, $province];
+    }
+
 
 /**
  * Format LightFunnels address
@@ -265,7 +393,7 @@ protected function determineLightFunnelsDeliveryType($orderData)
     
     return 0; // Home delivery
 }
-   protected function handleAyorWebhook(Request $request, $platform)
+    protected function handleAyorWebhook(Request $request, $platform)
     { 
         $payload = $request->all();
         
@@ -338,6 +466,8 @@ protected function determineLightFunnelsDeliveryType($orderData)
             ]
         ];
     }
+
+
 
 protected function getPayloadStructure($payload, $depth = 0)
 {

@@ -35,7 +35,7 @@ Route::prefix('webhook')->group(function () {
     //ayor
     Route::post('/ayor/created', [OrderWebhookController::class, 'orderCreated']);
     //lightfunnels
-    Route::post('/webhook/order/lightfunnels', [OrderWebhookController::class, 'orderCreated'])
+    Route::post('/lightfunnels/created', [OrderWebhookController::class, 'orderCreated'])
     ->name('webhook.lightfunnels.created');
 
      Route::post('/webhook/order/foorweb', [OrderWebhookController::class, 'orderCreated'])
