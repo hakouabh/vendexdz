@@ -267,99 +267,77 @@ protected function determineLightFunnelsDeliveryType($orderData)
     return 0; // Home delivery
 }
    protected function handleAyorWebhook(Request $request, $platform)
-{ 
-    $payload = $request->all();
-    
-    // Log the raw payload structure
-    Log::info("Ayor Webhook Received", [
-        'payload_keys' => array_keys($payload),
-        'has_message' => isset($payload['message']),
-        'has_data' => isset($payload['data']),
-        'token_in_query' => $request->query('token') ? 'YES' : 'NO',
-    ]);
-    
-    $data = null;
+    { 
+        $payload = $request->all();
+        
+        $data = null;
 
-    if (isset($payload['message']['data'])) {
-        $raw = $payload['message']['data'];
-        
-        // Log the base64 data info
-        Log::info("Found base64 encoded data in message.data", [
-            'data_length' => strlen($raw),
-            'is_base64' => base64_decode($raw, true) !== false,
-        ]);
-        
-        if (is_string($raw)) {
-            $decodedString = base64_decode($raw);
+        if (isset($payload['message']['data'])) {
+            $raw = $payload['message']['data'];
             
-            if ($decodedString !== false) {
-                $decoded = json_decode($decodedString, true);
-    
-                if (json_last_error() === JSON_ERROR_NONE) {
-                    $data = $decoded['data'] ?? $decoded;
-                    
-                    Log::info("Successfully decoded Ayor data", [
-                        'has_data_key' => isset($decoded['data']),
-                        'keys_in_decoded' => array_keys($decoded),
-                    ]);
+            if (is_string($raw)) {
+                $decodedString = base64_decode($raw);
+                
+                if ($decodedString !== false) {
+                    $decoded = json_decode($decodedString, true);
+        
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $data = $decoded['data'] ?? $decoded;
+                    } else {
+                        Log::error("Ayor Webhook: Invalid JSON after base64 decode", [
+                            'decoded_string' => substr($decodedString, 0, 200),
+                            'json_error' => json_last_error_msg()
+                        ]);
+                    }
                 } else {
-                    Log::error("Ayor Webhook: Invalid JSON after base64 decode", [
-                        'decoded_string' => substr($decodedString, 0, 200),
-                        'json_error' => json_last_error_msg()
+                    Log::error("Ayor Webhook: Base64 decode failed", [
+                        'raw_data_length' => strlen($raw),
+                        'raw_data_sample' => substr($raw, 0, 100)
                     ]);
                 }
             } else {
-                Log::error("Ayor Webhook: Base64 decode failed", [
-                    'raw_data_length' => strlen($raw),
-                    'raw_data_sample' => substr($raw, 0, 100)
-                ]);
+                $data = $raw;
             }
-        } else {
-            $data = $raw;
+        } 
+        else {
+            $data = $payload['data'] ?? $payload;
         }
-    } 
-    else {
-        $data = $payload['data'] ?? $payload;
+
+        if (!isset($data['client_info'])) {
+            $data = $this->findKeyRecursively($payload, 'client_info');
+        }
+
+        if (!$data || !isset($data['client_info'])) {
+            Log::error("Ayor Webhook Failure: Data structure unrecognized.", [
+                'available_keys' => $data ? array_keys($data) : 'NO_DATA',
+                'payload_structure' => $this->getPayloadStructure($payload)
+            ]);
+            return null;
+        }
+
+        $orderData = isset($data['client_info']) ? $data : ($data['data'] ?? $data);
+        return [
+            'platform_order_id' => $orderData['order_id'] ?? $orderData['display_id'] ?? null, // ADD THIS
+            'client_name'       => $orderData['client_info']['full_name'] ?? 'Unknown',
+            'phone1'            => $orderData['client_info']['phone_number'] ?? '',
+            'phone2'            => '', 
+            'wilaya'            => $this->parseAyorWilaya($orderData['client_info']['state'] ?? '1'),
+            'city'              => $orderData['client_info']['city'] ?? 'adrar',
+            'address'           => $this->extractAyorAddress($orderData),
+            'items'             => $this->formatAyorItems($orderData['order_lines'] ?? []),
+            'delivery_type'     => ($orderData['is_stop_desk'] ?? false) ? 1 : 0,
+            'comment'           => $orderData['client_note'] ?? '',
+            'discount'          => $this->calculateAyorDiscount($orderData['order_lines'] ?? []),
+            'subtotal'          => $orderData['total_price'] ?? 0,
+            'total'             => $orderData['total_price'] ?? 0,
+            'currency'          => $orderData['currency'] ?? 'DZD',
+            'platform_data'     => [ // ADD platform_data
+                'event_id' => $payload['message']['attributes']['event_id'] ?? null,
+                'event_type' => $payload['message']['attributes']['event_type'] ?? null,
+                'user_id' => $payload['message']['attributes']['user_id'] ?? null,
+            ]
+        ];
     }
-
-    if (!isset($data['client_info'])) {
-        $data = $this->findKeyRecursively($payload, 'client_info');
-    }
-
-    if (!$data || !isset($data['client_info'])) {
-        Log::error("Ayor Webhook Failure: Data structure unrecognized.", [
-            'available_keys' => $data ? array_keys($data) : 'NO_DATA',
-            'payload_structure' => $this->getPayloadStructure($payload)
-        ]);
-        return null;
-    }
-
-    $orderData = isset($data['client_info']) ? $data : ($data['data'] ?? $data);
-    \Log::alert($orderData);
-
-    // Add platform_order_id to your return array
-    return [
-        'platform_order_id' => $orderData['order_id'] ?? $orderData['display_id'] ?? null, // ADD THIS
-        'client_name'       => $orderData['client_info']['full_name'] ?? 'Unknown',
-        'phone1'            => $orderData['client_info']['phone_number'] ?? '',
-        'phone2'            => '', 
-        'wilaya'            => $this->parseAyorWilaya($orderData['client_info']['state'] ?? '1'),
-        'city'              => $orderData['client_info']['city'] ?? 'adrar',
-        'address'           => $this->extractAyorAddress($orderData),
-        'items'             => $this->formatAyorItems($orderData['order_lines'] ?? []),
-        'delivery_type'     => ($orderData['is_stop_desk'] ?? false) ? 1 : 0,
-        'comment'           => $orderData['client_note'] ?? '',
-        'discount'          => $this->calculateAyorDiscount($orderData['order_lines'] ?? []),
-        'subtotal'          => $orderData['total_price'] ?? 0,
-        'total'             => $orderData['total_price'] ?? 0,
-        'currency'          => $orderData['currency'] ?? 'DZD',
-        'platform_data'     => [ // ADD platform_data
-            'event_id' => $payload['message']['attributes']['event_id'] ?? null,
-            'event_type' => $payload['message']['attributes']['event_type'] ?? null,
-            'user_id' => $payload['message']['attributes']['user_id'] ?? null,
-        ]
-    ];
-}
 
 protected function getPayloadStructure($payload, $depth = 0)
 {
@@ -405,14 +383,9 @@ private function findKeyRecursively($array, $key)
     return null;
 }
 
-/**
- * دالة استخراج الولاية (مثلاً: "12 - Tébessa" تصبح "12")
- */
 protected function parseAyorWilaya($stateString)
 {
-    if (empty($stateString)) return '';
-    preg_match('/^\d+/', $stateString, $matches);
-    return $matches[0] ?? $stateString;
+    return config("ayor_states.$stateString");
 }
 
 /**
@@ -744,14 +717,6 @@ protected function formatAyorItems($orderLines)
                 'aid' => $user->id,
             ]);
 
-            Log::info("Order created via webhook from {$platform}", [
-                'order_id' => $order->oid,
-                'user_id' => $user->id,
-                'client' => $client->full_name,
-                'total' => $total,
-                'currency' => $data['currency'] ?? 'USD'
-            ]);
-
             DB::commit();
 
             return response()->json([
@@ -963,13 +928,6 @@ protected function formatAyorItems($orderLines)
     
     // Clean up the token - remove any whitespace
     $tokenString = trim($tokenString);
-    
-    // Log for debugging
-    Log::info('Token being validated', [
-        'token_first_20_chars' => substr($tokenString, 0, 20) . '...',
-        'token_length' => strlen($tokenString),
-        'contains_pipe' => str_contains($tokenString, '|'),
-    ]);
     
     // Find the token using Sanctum's method
     $token = PersonalAccessToken::findToken($tokenString);
