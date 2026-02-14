@@ -649,9 +649,9 @@ protected function formatAyorItems($orderLines)
 
         try {
             // Create or update client
-            $client = Client::Create(
+            $client = Client::updateOrCreate(
+                ['phone_number_1' => $this->phone1],
                 [  
-                    'phone_number_1' => $data['phone1'],
                     'full_name' => $data['client_name'],
                     'phone_number_2' => $data['phone2'] ?? '',
                     'email' => $data['email'] ?? '',
@@ -991,12 +991,6 @@ protected function formatAyorItems($orderLines)
         ]);
         return null;
     }
-    
-    Log::info('Token validated successfully', [
-        'token_id' => $token->id,
-        'user_id' => $token->tokenable_id,
-        'user_type' => $token->tokenable_type
-    ]);
     
     return $token;
 }
