@@ -35,12 +35,8 @@ class OrderWebhookController extends Controller
         'foorweb' => 'handleFoorwebWebhook',
         'custom' => 'handleCustomWebhook',
     ];
-
-    /**
-     * Main webhook entry point
-     */
-    public function orderCreated(Request $request, $platform =null)
     
+    public function orderCreated(Request $request, $platform =null) 
     {   
         if (!$platform)
             $platform = $request->segment(3); 
