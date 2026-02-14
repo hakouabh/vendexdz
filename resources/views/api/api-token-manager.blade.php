@@ -10,7 +10,6 @@
         </x-slot>
 
         <x-slot name="form">
-            <!-- Token Name -->
             <div class="col-span-6 sm:col-span-4">
                 <x-label for="name" value="{{ __('Token Name') }}" />
                 <x-input id="name" type="text" class="mt-1 block w-full" wire:model="createApiTokenForm.name" autofocus />
@@ -65,7 +64,8 @@
                         @foreach ($this->user->tokens->sortBy('name') as $token)
                             <div class="flex items-center justify-between">
                                 <div class="break-all">
-                                    {{ $token->name }}
+                                    {{ $token->name }} <br>
+                                    URL:{{url('/')}}/api/webhook/{platform}/created?token={your_token}
                                 </div>
 
                                 <div class="flex items-center ms-2">

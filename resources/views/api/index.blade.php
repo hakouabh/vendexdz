@@ -7,15 +7,15 @@
         
         <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">API Tokens</h1>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">@lang('Webhooks Tokens')</h1>
                 <p class="text-slate-500 text-sm mt-2 font-medium">
-                    Create and manage access keys for third-party integrations.
+                    @lang('Create and manage access keys for webhooks integrations.')
                 </p>
             </div>
             
             <div class="flex items-center gap-2 px-4 py-2 bg-indigo-50 rounded-xl border border-indigo-100 text-indigo-700 font-bold text-xs">
                 <i class="ri-shield-keyhole-line text-lg"></i>
-                <span>Secure Zone</span>
+                <span>@lang('Secure Zone')</span>
             </div>
         </div>
 
@@ -30,15 +30,14 @@
                         <i class="ri-terminal-box-line"></i>
                     </div>
                     <div>
-                        <h2 class="text-2xl font-bold text-white">Manage API Keys</h2>
-                        <p class="text-slate-400 text-sm mt-1">Tokens allow third-party services to authenticate with our application on your behalf.</p>
+                        <h2 class="text-2xl font-bold text-white">@lang('Manage Webhook Keys')</h2>
+                        <p class="text-slate-400 text-sm mt-1">@lang('Tokens allow Webhooks to authenticate with our application on your behalf.')</p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-xl border border-slate-200/20 p-6 lg:p-8">
                     @livewire('api.api-token-manager')
                 </div>
-
              </div>
         </div>
     </div>
