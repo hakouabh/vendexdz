@@ -127,6 +127,7 @@ protected function handleFoorwebWebhook(Request $request, $platform)
             Log::error("LightFunnels Webhook: Node key missing");
             return null;
         }
+        Log::alert($orderData);
 
         $customer = $orderData['customer'] ?? [];
         $shipping = $orderData['shipping_address'] ?? [];
