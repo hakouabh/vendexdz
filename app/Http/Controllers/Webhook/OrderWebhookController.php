@@ -179,22 +179,15 @@ protected function handleFoorwebWebhook(Request $request, $platform)
         [$wilayaCode, $wilayaName] = $this->mapAlgeriaWilaya($province);
         return [
             'platform_order_id' => $data['id'] ?? null,
-
             'client_name' => trim(($data['shipping_address']['first_name'] ?? '') . ' ' . ($data['shipping_address']['last_name'] ?? '')),
-
             'phone1' => $data['shipping_address']['phone'] ?? $data['phone'] ?? null,
             'phone2' => null,
-
             'email' => $data['email'] ?? null,
-
             'wilaya' => $wilayaCode ?? null,
             'city' => $data['shipping_address']['city'] ?? null,
             'address' => $data['shipping_address']['address1'] ?? null,
-
             'delivery_type' => $data['shipping_lines'][0]['title'] ?? null,
-
             'comment' => $data['note'] ?? null,
-
             'discount' => $data['total_discounts'] ?? 0,
             'subtotal' => $data['subtotal_price'] ?? 0,
             'total' => $data['total_price'] ?? 0,
@@ -203,7 +196,7 @@ protected function handleFoorwebWebhook(Request $request, $platform)
             'items' => collect($data['line_items'] ?? [])->map(function ($item) {
                 return [
                     'sku' => $item['sku'],
-                    'name' => $item['name'],
+                    'name' => $item['title'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                 ];
