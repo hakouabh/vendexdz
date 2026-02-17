@@ -10,7 +10,7 @@ use App\Models\ProductVariant;
 use App\Models\fees;
 use App\Models\Inconfirmation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\PersonalAccessToken;
