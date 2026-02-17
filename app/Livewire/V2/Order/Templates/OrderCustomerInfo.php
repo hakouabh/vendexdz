@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Order;
 use App\Models\OrderWaiting;
 use App\Models\OrderInconfirmation;
-use App\Models\Willaya;
+use App\Models\willaya;
 use App\Models\Client;
 use App\Models\fees;
 use App\Models\installedApps;
@@ -313,7 +313,7 @@ class OrderCustomerInfo extends Component
 
     public function render()
     {
-        $willayas = Willaya::all();
+        $willayas = willaya::all();
         return view('livewire.v2.order.templates.order-customer-info',['wilayas'=>$willayas]);
     }
 }

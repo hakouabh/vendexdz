@@ -122,7 +122,6 @@ protected function handleFoorwebWebhook(Request $request, $platform)
         $payload = $request->all();
 
         $orderData = $payload['node'] ?? [];
-        Log::alert($orderData);
 
         if (empty($orderData)) {
             Log::error("LightFunnels Webhook: Node key missing");
