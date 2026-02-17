@@ -16,7 +16,7 @@ Route::get('/ping', function () {
 
 Route::prefix('webhook')->group(function () {
     
-    Route::post('/shopify/created', [OrderWebhookController::class, 'orderCreated'])->withoutMiddleware([\Illuminate\Auth\Middleware\Authenticate::class]);
+    Route::post('/shopify/created', [OrderWebhookController::class, 'orderCreated']);
     
     // WooCommerce
     Route::post('/woocommerce/created', [OrderWebhookController::class, 'orderCreated']);

@@ -173,6 +173,7 @@ protected function handleFoorwebWebhook(Request $request, $platform)
     protected function handleShopifyWebhook(Request $request, $platform)
     {
         $data = $request->all();
+        \Log::alert($data);
         $province = $data['shipping_address']['province'] ?? null;
 
         [$wilayaCode, $wilayaName] = $this->mapAlgeriaWilaya($province);
