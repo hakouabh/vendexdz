@@ -816,7 +816,7 @@ protected function formatAyorItems($orderLines)
         try {
             // Create or update client
             $client = Client::updateOrCreate(
-                ['phone_number_1' => $this->phone1],
+                ['phone_number_1' => $data['phone1']],
                 [  
                     'full_name' => $data['client_name'],
                     'phone_number_2' => $data['phone2'] ?? '',
