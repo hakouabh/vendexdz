@@ -38,6 +38,6 @@ Route::prefix('webhook')->group(function () {
     Route::post('/lightfunnels/created', [OrderWebhookController::class, 'orderCreated'])
     ->name('webhook.lightfunnels.created');
 
-     Route::post('/webhook/order/foorweb', [OrderWebhookController::class, 'orderCreated'])
+     Route::post('/foorweb/created', [OrderWebhookController::class, 'orderCreated'])
     ->name('webhook.foorweb.created');
 });
