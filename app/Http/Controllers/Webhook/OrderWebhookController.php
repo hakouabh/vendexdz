@@ -98,18 +98,41 @@ class OrderWebhookController extends Controller
             ], 500);
         }
     }
-protected function handleFoorwebWebhook(Request $request, $platform)
-{
-    try {
-        $logFile = storage_path('logs/raw_http_requests.txt');
-        $rawHttpContent = $request;
+    protected function handleFoorwebWebhook(Request $request, $platform)
+    {
+        $orderData = $request->all();
 
-        file_put_contents($logFile, $rawHttpContent, FILE_APPEND);
-    } catch (\Exception $e) {
-        Log::error("Failed to write raw request to file: " . $e->getMessage());
+        if (empty($orderData)) {
+            Log::error("Foorweb Webhook: Data missing");
+            return null;
+        }
+        $items = [];
+        foreach ($orderData['items'] ?? [] as $item) {
+            $items[] = [
+                'sku'      => $item['sku'] ?? 'N/A',
+                'quantity' => $item['sku'], 
+                'price'    => $item['price'] ?? 0,
+                'name'     => $item['title'] ?? '',
+            ];
+        }
+        return [
+            'platform_order_id' => $orderData['order_id'],
+            'client_name'       => $orderData['full_name'] ?? 'Unknown',
+            'phone1'            => $orderData['phone'] ?? '',
+            'phone2'            => $orderData['phone2'] ?? '', 
+            'wilaya'            => $orderData['wilaya_id'], // required number between 1 58
+            'city'              => $orderData['commune'], // string 
+            'address'           => $orderData['address'],
+            'items'             => $items,
+            'delivery_type'     => ($orderData['is_stop_desk'] ?? false) ? 1 : 0,
+            'comment'           => $orderData['client_note'] ?? '',
+            'discount'          => $orderData['discount']?? 0,
+            'subtotal'          => $orderData['subtotal']?? 0,
+            'total'             => $orderData['total'] ?? 0,
+            'currency'          => 'DZD',
+            'platform_data'     => $orderData['custom_data']
+        ];
     }
-    
-}
     /**
      * Handle Shopify webhooks
      */
