@@ -196,10 +196,21 @@ class OrderWebhookController extends Controller
     protected function handleShopifyWebhook(Request $request, $platform)
     {
         $data = $request->all();
-        \Log::alert($data);
         $province = $data['shipping_address']['province'] ?? null;
 
+        if (!$province) {
+            $province = $this->extractProvinceFromNotes($data['note_attributes'] ?? []);
+        }
+
         [$wilayaCode, $wilayaName] = $this->mapAlgeriaWilaya($province);
+
+        if (!$wilayaCode) {
+            $wilayaCode = $this->extractWilayaCode($province);
+        }
+
+        $shippingTitle = $data['shipping_lines'][0]['title'] ?? null;
+        $deliveryType = $this->mapDeliveryType($shippingTitle);
+
         return [
             'platform_order_id' => $data['id'] ?? null,
             'client_name' => trim(($data['shipping_address']['first_name'] ?? '') . ' ' . ($data['shipping_address']['last_name'] ?? '')),
@@ -209,7 +220,7 @@ class OrderWebhookController extends Controller
             'wilaya' => $wilayaCode ?? null,
             'city' => $data['shipping_address']['city'] ?? null,
             'address' => $data['shipping_address']['address1'] ?? null,
-            'delivery_type' => $data['shipping_lines'][0]['title'] ?? null,
+            'delivery_type' => $deliveryType,
             'comment' => $data['note'] ?? null,
             'discount' => $data['total_discounts'] ?? 0,
             'subtotal' => $data['subtotal_price'] ?? 0,
@@ -227,6 +238,40 @@ class OrderWebhookController extends Controller
 
             'platform_data' => $data 
         ];
+    }
+
+    private function extractWilayaCode(?string $province): ?string
+    {
+        if (!$province) return 16;
+
+        preg_match('/\d+/', $province, $matches);
+
+        return $matches[0] ?? 16;
+    }
+
+    private function mapDeliveryType(?string $shippingTitle): ?string
+    {
+        if (!$shippingTitle) return null;
+
+        $title = strtolower(trim($shippingTitle));
+
+        $map = [
+            'door delivery' => 0,
+            'home delivery'  => 1
+        ];
+
+        return $map[$title] ?? 0;
+    }
+
+    private function extractProvinceFromNotes(array $notes): ?string
+    {
+        foreach ($notes as $note) {
+            if (strtolower($note['name']) === 'province') {
+                return $note['value']; // "35 بومرداس"
+            }
+        }
+
+        return null;
     }
 
     private function mapAlgeriaWilaya(?string $province): array
@@ -806,8 +851,6 @@ protected function formatAyorItems($orderLines)
      */
     protected function createOrderFromNormalizedData($data, $platform, $user)
     {
-        
-        // Validate normalized data
         $validator = Validator::make($data, [
             'client_name' => 'required|string|min:3',
             'phone1' => 'required|string|min:10',
@@ -830,6 +873,7 @@ protected function formatAyorItems($orderLines)
         DB::beginTransaction();
 
         try {
+            $variant = ProductVariant::where('sku', $data['items'][0]['sku'])->firstOrFail();
             // Create or update client
             $client = Client::updateOrCreate(
                 ['phone_number_1' => $data['phone1']],
@@ -844,7 +888,7 @@ protected function formatAyorItems($orderLines)
             );
 
             // Get app_id from first item
-            $variant = ProductVariant::where('sku', $data['items'][0]['sku'])->first();
+            
             $app_id = 0;
 
             if ($variant) {
@@ -904,7 +948,7 @@ protected function formatAyorItems($orderLines)
             // Create order items
             foreach ($data['items'] as $item) {
                 $variant = ProductVariant::where('sku', $item['sku'])->first();
-                
+                if($variant)
                 OrderItems::create([
                     'oid' => $order->oid,
                     'sku' => $item['sku'],
