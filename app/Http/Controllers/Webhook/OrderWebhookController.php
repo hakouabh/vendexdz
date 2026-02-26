@@ -110,7 +110,7 @@ class OrderWebhookController extends Controller
         foreach ($orderData['items'] ?? [] as $item) {
             $items[] = [
                 'sku'      => $item['sku'] ?? 'N/A',
-                'quantity' => $item['sku'], 
+                'quantity' => $item['quantity'], 
                 'price'    => $item['price'] ?? 0,
                 'name'     => $item['title'] ?? '',
             ];
