@@ -24,6 +24,9 @@
             <x-responsive-sidebar-link href="{{ route('admin.link') }}" :active="request()->routeIs('admin.link')">
                 <i class="ri-pulse-line text-sm"></i> @lang('Links')
             </x-responsive-sidebar-link>
+            <x-responsive-sidebar-link href="{{ route('log-viewer') }}" :active="request()->routeIs('log-viewer')">
+                <i class="ri-newspaper-line text-sm"></i> @lang('Logs')
+            </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('admin.users') }}" :active="request()->routeIs('admin.users')">
                 <i class="ri-group-line text-sm"></i> @lang('Users')
             </x-responsive-sidebar-link>

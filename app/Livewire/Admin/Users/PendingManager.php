@@ -76,17 +76,6 @@ class PendingManager extends Component
     public function deletePending($id)
     {
         $Pending = User::find($id);
-        $store = Store::where('created_by', $id)->first();
-        $Models = [
-            Order::class,
-        ];
-        $result = canDelete($Models, 'sid', $store->id);
-        UserStore::where('store_id', $store->id)->delete();
-        $store->delete();
-        if ($result) {
-            $this->dispatch('notify', message: __('Cannot delete user because it is associated with existing orders.'), type: 'error');
-            return;
-        }
         $Pending->delete();
         $this->isEditModalOpen = false;
     }

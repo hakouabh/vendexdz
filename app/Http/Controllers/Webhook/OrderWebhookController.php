@@ -10,7 +10,7 @@ use App\Models\ProductVariant;
 use App\Models\fees;
 use App\Models\Inconfirmation;
 use Illuminate\Http\Request;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -85,13 +85,15 @@ class OrderWebhookController extends Controller
             return $this->createOrderFromNormalizedData($normalizedData, $platform, $user);
 
         } catch (\Exception $e) {
-            Log::error("Webhook processing failed for {$platform}", [
+            Log::build([
+                'driver' => 'single',
+                'path' => storage_path("logs/{$platform}.log"),
+            ])->error("Webhook processing failed for {$platform}", [
                 'error' => $e->getMessage(),
                 'platform' => $platform,
                 'user_id' => $user->id,
-                'request_data' => $request->all()
+                'request_data' => $request->all(),
             ]);
-
             return response()->json([
                 'success' => false,
                 'message' => 'Webhook processing failed: ' . $e->getMessage()
@@ -103,7 +105,6 @@ class OrderWebhookController extends Controller
         $orderData = $request->all();
 
         if (empty($orderData)) {
-            Log::error("Foorweb Webhook: Data missing");
             return null;
         }
         $items = [];
@@ -120,14 +121,14 @@ class OrderWebhookController extends Controller
             'client_name'       => $orderData['full_name'] ?? 'Unknown',
             'phone1'            => $orderData['phone'] ?? '',
             'phone2'            => $orderData['phone2'] ?? '', 
-            'wilaya'            => $orderData['wilaya_id'], // required number between 1 58
-            'city'              => $orderData['commune'], // string 
+            'wilaya'            => $orderData['wilaya_id'],
+            'city'              => $orderData['commune'],
             'address'           => $orderData['address'],
             'items'             => $items,
             'delivery_type'     => ($orderData['is_stop_desk'] ?? false) ? 1 : 0,
             'comment'           => $orderData['client_note'] ?? '',
-            'discount'          => $orderData['discount']?? 0,
-            'subtotal'          => $orderData['subtotal']?? 0,
+            'discount'          => $orderData['discount'] ?? 0,
+            'subtotal'          => $orderData['subtotal'] ?? 0,
             'total'             => $orderData['total'] ?? 0,
             'currency'          => 'DZD',
             'platform_data'     => $orderData['custom_data']
@@ -147,7 +148,6 @@ class OrderWebhookController extends Controller
         $orderData = $payload['node'] ?? [];
 
         if (empty($orderData)) {
-            Log::error("LightFunnels Webhook: Node key missing");
             return null;
         }
 
@@ -512,13 +512,19 @@ protected function determineLightFunnelsDeliveryType($orderData)
                     if (json_last_error() === JSON_ERROR_NONE) {
                         $data = $decoded['data'] ?? $decoded;
                     } else {
-                        Log::error("Ayor Webhook: Invalid JSON after base64 decode", [
+                        Log::build([
+                            'driver' => 'single',
+                            'path' => storage_path("logs/{$platform}.log"),
+                        ])->error("Ayor Webhook: Invalid JSON after base64 decode", [
                             'decoded_string' => substr($decodedString, 0, 200),
                             'json_error' => json_last_error_msg()
                         ]);
                     }
                 } else {
-                    Log::error("Ayor Webhook: Base64 decode failed", [
+                    Log::build([
+                        'driver' => 'single',
+                        'path' => storage_path("logs/{$platform}.log"),
+                    ])->error("Ayor Webhook: Base64 decode failed", [
                         'raw_data_length' => strlen($raw),
                         'raw_data_sample' => substr($raw, 0, 100)
                     ]);
@@ -536,7 +542,7 @@ protected function determineLightFunnelsDeliveryType($orderData)
         }
 
         if (!$data || !isset($data['client_info'])) {
-            Log::error("Ayor Webhook Failure: Data structure unrecognized.", [
+            Log::build([
                 'available_keys' => $data ? array_keys($data) : 'NO_DATA',
                 'payload_structure' => $this->getPayloadStructure($payload)
             ]);
@@ -986,7 +992,10 @@ protected function formatAyorItems($orderLines)
         } catch (\Exception $e) {
             DB::rollBack();
             
-            Log::error("Order creation failed from {$platform}", [
+            Log::build([
+                'driver' => 'single',
+                'path' => storage_path("logs/{$platform}.log"),
+            ])->error("Order creation failed from {$platform}", [
                 'error' => $e->getMessage(),
                 'data' => $data
             ]);
@@ -1153,73 +1162,73 @@ protected function formatAyorItems($orderLines)
     }
 
     protected function validateSanctumToken(Request $request)
-{
-    // Get token from all possible sources
-    $tokenString = $request->bearerToken(); // Authorization: Bearer ...
-    
-    if (!$tokenString) {
-        $tokenString = $request->query('token'); // ?token=...
-    }
-    
-    if (!$tokenString) {
-        $tokenString = $request->input('token'); // JSON body
-    }
-    
-    if (!$tokenString) {
-        Log::error('No token found in request');
-        return null;
-    }
-    
-    // URL decode the token if it came from query parameter
-    // Converts %7C back to |
-    $tokenString = urldecode($tokenString);
-    
-    // Clean up the token - remove any whitespace
-    $tokenString = trim($tokenString);
-    
-    // Find the token using Sanctum's method
-    $token = PersonalAccessToken::findToken($tokenString);
-    
-    if (!$token) {
-        Log::error('Token not found in database', [
-            'token_sample' => substr($tokenString, 0, 20) . '...'
-        ]);
+    {
+        // Get token from all possible sources
+        $tokenString = $request->bearerToken(); // Authorization: Bearer ...
         
-        // Alternative: Try to find token by ID only
-        if (str_contains($tokenString, '|')) {
-            $parts = explode('|', $tokenString, 2);
-            if (count($parts) === 2) {
-                $tokenId = $parts[0];
-                $plainToken = $parts[1];
-                
-                // Try to find token by ID
-                $tokenById = PersonalAccessToken::find($tokenId);
-                if ($tokenById) {
-                    Log::info('Token found by ID', ['token_id' => $tokenId]);
-                    // Verify the plain text token against hashed token
-                    // Note: Sanctum hashes the second part, so we need to check differently
-                    // In most cases, findToken() should work with the full "id|token" string
-                    $token = $tokenById;
+        if (!$tokenString) {
+            $tokenString = $request->query('token'); // ?token=...
+        }
+        
+        if (!$tokenString) {
+            $tokenString = $request->input('token'); // JSON body
+        }
+        
+        if (!$tokenString) {
+            Log::error('No token found in request');
+            return null;
+        }
+        
+        // URL decode the token if it came from query parameter
+        // Converts %7C back to |
+        $tokenString = urldecode($tokenString);
+        
+        // Clean up the token - remove any whitespace
+        $tokenString = trim($tokenString);
+        
+        // Find the token using Sanctum's method
+        $token = PersonalAccessToken::findToken($tokenString);
+        
+        if (!$token) {
+            Log::error('Token not found in database', [
+                'token_sample' => substr($tokenString, 0, 20) . '...'
+            ]);
+            
+            // Alternative: Try to find token by ID only
+            if (str_contains($tokenString, '|')) {
+                $parts = explode('|', $tokenString, 2);
+                if (count($parts) === 2) {
+                    $tokenId = $parts[0];
+                    $plainToken = $parts[1];
+                    
+                    // Try to find token by ID
+                    $tokenById = PersonalAccessToken::find($tokenId);
+                    if ($tokenById) {
+                        Log::info('Token found by ID', ['token_id' => $tokenId]);
+                        // Verify the plain text token against hashed token
+                        // Note: Sanctum hashes the second part, so we need to check differently
+                        // In most cases, findToken() should work with the full "id|token" string
+                        $token = $tokenById;
+                    }
                 }
+            }
+            
+            if (!$token) {
+                return null;
             }
         }
         
-        if (!$token) {
+        // Check if token is expired
+        if ($token->expires_at && $token->expires_at->isPast()) {
+            Log::error('Token expired', [
+                'token_id' => $token->id,
+                'expires_at' => $token->expires_at->format('Y-m-d H:i:s')
+            ]);
             return null;
         }
+        
+        return $token;
     }
-    
-    // Check if token is expired
-    if ($token->expires_at && $token->expires_at->isPast()) {
-        Log::error('Token expired', [
-            'token_id' => $token->id,
-            'expires_at' => $token->expires_at->format('Y-m-d H:i:s')
-        ]);
-        return null;
-    }
-    
-    return $token;
-}
 
     protected function generateOrderId()
     {

@@ -76,22 +76,7 @@ class StoreManager extends Component
     public function deleteStore($id)
     {
         $Store = User::find($id);
-        $Models = [
-            Order::class,
-        ];
-        $result = canDelete($Models, 'sid', $Store->userStore->store_id);
-        if ($result) {
-            $this->dispatch('notify', message: __('Cannot delete user because it is associated with existing orders.'), type: 'error');
-            return;
-        }
-        $Models = [
-            Store::class,
-        ];
-        $result = canDelete($Models, 'created_by', $Store->id);
-        if ($result) {
-            $this->dispatch('notify', message: __('Cannot delete user because it is associated with existing store.'), type: 'error');
-            return;
-        }
         $Store->delete();
+        $this->isEditModalOpen = false;
     }
 }

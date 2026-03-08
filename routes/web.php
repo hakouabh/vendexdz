@@ -66,6 +66,7 @@ Route::middleware([
       Route::get('/admin/status', [ManagerStatuController::class, 'index'])->name('admin.status');
       Route::get('/admin/fees', [ManagerFeesController::class, 'index'])->name('admin.fees');
       Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
+      Route::get('/admin/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->name('log-viewer');
     });
     Route::middleware(['auth', 'role:4'])->group(function () {
       Route::get('/agent/dashboard', function () {return view('agent.agent-dashboard');})->name('agent-dashboard');
