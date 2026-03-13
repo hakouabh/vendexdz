@@ -1,4 +1,5 @@
-<aside class="w-64 bg-white border-r border-gray-100 flex flex-col justify-between flex-shrink-0 z-20 hidden lg:flex">
+<aside id="sidebar"
+    class="fixed lg:static inset-y-0 left-0 w-64 bg-white border-r border-gray-100 flex flex-col justify-between flex-shrink-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
     <div>
         <div class="h-16 flex items-center px-6 gap-2">
             <x-application-vector class="w-10 h-10"></x-application-vector>
@@ -73,23 +74,23 @@
 
 
         <div class="flex justify-center mt-2 px-2 text-gray-400">
-             <!-- <button>
+            <!-- <button>
              <i class="ri-settings-4-line hover:text-gray-600 cursor-pointer text-sm"></i>
             </button>  
             
             <button>
              <i class="ri-translate-2 hover:text-gray-600 cursor-pointer text-sm"></i>
             </button>   -->
-            
+
             <form method="POST" action="{{ route('logout') }}" x-data>
-            @csrf
-            <button href="{{ route('logout') }}" class="w-full justify-center px-6 py-2 bg-gray-700 hover:bg-gray-900 active:bg-indigo-800 rounded-xl shadow-md transition ease-in-out duration-150 text-white font-semibold tracking-wide"
-                        @click.prevent="$root.submit();">
-                        @lang('Logout')
-                <i class="ri-logout-box-line hover:text-gray-600 cursor-pointer text-sm"></i>
-            </button>
+                @csrf
+                <button href="{{ route('logout') }}" class="w-full justify-center px-6 py-2 bg-gray-700 hover:bg-gray-900 active:bg-indigo-800 rounded-xl shadow-md transition ease-in-out duration-150 text-white font-semibold tracking-wide"
+                    @click.prevent="$root.submit();">
+                    @lang('Logout')
+                    <i class="ri-logout-box-line hover:text-gray-600 cursor-pointer text-sm"></i>
+                </button>
             </form>
-           
+
         </div>
     </div>
 </aside>
