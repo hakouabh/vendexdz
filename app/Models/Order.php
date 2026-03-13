@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'oid',
         'tracking',
         'cid',
@@ -16,7 +16,6 @@ class Order extends Model
         'custom_id',
         'from',
         'type'
-        
     ];
 
     protected $apends = ['duplicated'];
@@ -52,12 +51,12 @@ class Order extends Model
     {
         return $this->belongsTo(Client::class, 'cid', 'id');
     }
-    
+
     public function details()
     {
         return $this->hasOne(OrderDetails::class, 'oid', 'oid');
     }
-    
+
     public function Inconfirmation()
     {
         return $this->hasOne(OrderInconfirmation::class, 'oid', 'oid');
@@ -92,7 +91,8 @@ class Order extends Model
             ->exists();
     }
 
-    public function deliveryCompany(){
+    public function deliveryCompany()
+    {
         return $this->belongsTo(SupportedApps::class, 'app_id', 'app_id');
     }
 }
