@@ -1,5 +1,5 @@
-
-<aside class="w-64 bg-white border-r border-gray-100 flex flex-col justify-between flex-shrink-0 z-20 hidden lg:flex">
+<aside id="sidebar"
+    class="fixed lg:static inset-y-0 left-0 w-64 bg-white border-r border-gray-100 flex flex-col justify-between flex-shrink-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
     <div>
         <div class="h-16 flex items-center px-6 gap-2">
             <x-application-vector class="w-10 h-10"></x-application-vector>
@@ -11,12 +11,12 @@
                 <button class="flex-1 text-gray-500 py-1.5 rounded-md hover:text-gray-700 flex items-center justify-center gap-2 transition">
                     <i class="ri-customer-service-2-fill"></i> Agent Panel
                 </button>
-         
+
             </div>
         </div>
 
         <nav class="px-3 space-y-0.5  capitalize">
-        
+
 
             <x-responsive-sidebar-link href="{{ route('agent-dashboard') }}" :active="request()->routeIs('agent-dashboard')">
                 <i class="ri-home-4-line text-sm"></i> dashboard
@@ -30,14 +30,14 @@
             <x-responsive-sidebar-link href="{{ route('agent.bills') }}" :active="request()->routeIs('agent.bills')">
                 <i class="ri-coins-line text-sm"></i> Bills
             </x-responsive-sidebar-link>
-             <x-responsive-sidebar-link href="{{ route('agent.report') }}" :active="request()->routeIs('agent.report')">
+            <x-responsive-sidebar-link href="{{ route('agent.report') }}" :active="request()->routeIs('agent.report')">
                 <i class="ri-file-chart-line text-sm"></i> Raport
             </x-responsive-sidebar-link>
         </nav>
     </div>
 
     <div class="p-4 border-t border-gray-100">
-        
+
 
         <a href="{{ route('profile.show') }}"
             class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl cursor-pointer transition-all duration-200 group border border-transparent hover:border-slate-100">
@@ -63,22 +63,22 @@
         </a>
 
         <div class="flex justify-between mt-2 px-2 text-gray-400">
-             <button>
-             <i class="ri-settings-4-line hover:text-gray-600 cursor-pointer text-sm"></i>
-            </button>  
-            
             <button>
-             <i class="ri-translate-2 hover:text-gray-600 cursor-pointer text-sm"></i>
-            </button>  
-            
+                <i class="ri-settings-4-line hover:text-gray-600 cursor-pointer text-sm"></i>
+            </button>
+
+            <button>
+                <i class="ri-translate-2 hover:text-gray-600 cursor-pointer text-sm"></i>
+            </button>
+
             <form method="POST" action="{{ route('logout') }}" x-data>
-                                @csrf
-                                <button href="{{ route('logout') }}"
-                                         @click.prevent="$root.submit();">
-                                 <i class="ri-logout-box-line hover:text-gray-600 cursor-pointer text-sm"></i>
-                                </button>
+                @csrf
+                <button href="{{ route('logout') }}"
+                    @click.prevent="$root.submit();">
+                    <i class="ri-logout-box-line hover:text-gray-600 cursor-pointer text-sm"></i>
+                </button>
             </form>
-           
+
         </div>
     </div>
 </aside>
