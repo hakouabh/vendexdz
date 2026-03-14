@@ -603,7 +603,7 @@
                     <span class="flex h-2 w-2">
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
                     </span>
-                    <span class="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest">the best orders confirmation service</span>
+                    <span class="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest">@lang('The best orders confirmation service')</span>
                 </div>
 
                 <h1 class="text-4xl sm:text-5xl lg:text-[74px] font-black leading-[1.1] lg:leading-[0.9] tracking-tighter text-slate-900 mb-8">
@@ -614,18 +614,18 @@
                 </h1>
 
                 <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10 font-medium block">
-                    Reduce <span class="text-slate-900 font-bold  decoration-4  ">Cancelled Orders</span>, and boost your confirmation rate with
+                    @lang('Reduce') <span class="text-slate-900 font-bold  decoration-4  ">@lang('Cancelled Orders')</span> @lang('and boost your confirmation rate with')
                     <span class="inline-flex items-baseline gap-1.5 font-extrabold text-slate-950">
                         <span class="w-2 h-2 bg-[#10F0B2] rounded-full animate-pulse"></span>
                         VENDEX
                     </span>,
-                    the fastest confirmation service
+                    @lang('the fastest confirmation service')
                 </p>
 
                 <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-12">
                     <a href="/register"
                         class="px-10 py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-purple-600 transition-all shadow-xl hover:-translate-y-1 text-center">
-                        Start With Us
+                        @lang('Start With Us')
                     </a>
                 </div>
 
@@ -635,7 +635,7 @@
                         <div class="w-8 h-8 rounded-full bg-[#10F0B260] border-2 border-white"></div>
                         <div class="w-8 h-8 rounded-full bg-[#10F0B280] border-2 border-white"></div>
                     </div>
-                    <p class="text-xs md:text-sm font-bold text-slate-400 uppercase tracking-tighter">Trusted by +70 Stores</p>
+                    <p class="text-xs md:text-sm font-bold text-slate-400 uppercase tracking-tighter">@lang('Trusted by +70 Stores')</p>
                 </div>
             </div>
         </div>
@@ -665,15 +665,15 @@
                             <div class="col-span-11">
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-10">
                                     <div class="p-3 md:p-5 bg-slate-50 rounded-xl md:rounded-2xl border border-slate-100">
-                                        <div class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase mb-1">Return</div>
+                                        <div class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase mb-1">@lang('Return')</div>
                                         <div class="text-sm md:text-2xl font-black text-red-500">13.7%</div>
                                     </div>
                                     <div class="p-3 md:p-5 bg-gray-900 rounded-xl md:rounded-2xl text-white shadow-xl">
-                                        <div class="text-[8px] md:text-[10px] font-bold opacity-80 text-white uppercase mb-1">Confirmed</div>
+                                        <div class="text-[8px] md:text-[10px] font-bold opacity-80 text-white uppercase mb-1">@lang('Confirmed')</div>
                                         <div class="text-sm md:text-2xl font-black text-white tracking-tighter">84.9%</div>
                                     </div>
                                     <div class="p-3 md:p-5 bg-slate-50 rounded-xl md:rounded-2xl border border-slate-100 col-span-2 sm:col-span-1">
-                                        <div class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase mb-1">benefits</div>
+                                        <div class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase mb-1">@lang('Benefits')</div>
                                         <div class="text-sm md:text-2xl font-black">+120k DZD</div>
                                     </div>
                                 </div>
@@ -696,8 +696,8 @@
                             <span class="relative inline-flex rounded-full h-2 md:h-3 w-2 md:w-3 bg-green-500"></span>
                         </div>
                         <div>
-                            <p class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Real-time Feed</p>
-                            <p class="text-[9px] md:text-xs font-bold whitespace-nowrap">New order is confirmed <span class="text-[#10F0B2]">Now!</span></p>
+                            <p class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">@lang('Real-time Feed')</p>
+                            <p class="text-[9px] md:text-xs font-bold whitespace-nowrap">@lang('New order is confirmed') <span class="text-[#10F0B2]">@lang('Now!')</span></p>
                         </div>
                     </div>
                 </div>
@@ -734,9 +734,9 @@
         <div class="container mx-auto px-6">
             <div class="text-center mb-16 animate-on-scroll">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4">
-                    <span class="gradient-text">Our Services</span>
+                    <span class="gradient-text">@lang('Our Services')</span>
                 </h2>
-                <p class="text-xl text-gray-600">Everything you need to manage order confirmations efficiently</p>
+                <p class="text-xl text-gray-600">@lang('Everything you need to manage order confirmations efficiently')</p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -746,7 +746,7 @@
                     <div class="w-16 h-16 card-gradient-1 rounded-xl flex items-center justify-center mb-6 hover-scale">
                         <i class="ri-flashlight-line text-4xl text-white"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold mb-4">Fast Confirmation</h3>
+                    <h3 class="text-2xl font-semibold mb-4">@lang('Fast Confirmation')</h3>
 
                 </div>
 
@@ -756,7 +756,7 @@
                     <div class="w-16 h-16 card-gradient-2 rounded-xl flex items-center justify-center mb-6 hover-scale">
                         <i class="ri-compass-3-line text-4xl text-white"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold mb-4">Instant Tracking</h3>
+                    <h3 class="text-2xl font-semibold mb-4">@lang('Instant Tracking')</h3>
                     <!--<p class="text-gray-600">Track confirmation rates, delivery times, and customer satisfaction with
                         comprehensive analytics dashboard.</p>-->
                 </div>
@@ -767,7 +767,7 @@
                     <div class="w-16 h-16 card-gradient-3 rounded-xl flex items-center justify-center mb-6 hover-scale">
                         <i class="ri-line-chart-line text-4xl text-white"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold mb-4">Accurate Statistics</h3>
+                    <h3 class="text-2xl font-semibold mb-4">@lang('Accurate Statistics')</h3>
 
                 </div>
 
@@ -777,7 +777,7 @@
                     <div class="w-16 h-16 card-gradient-4 rounded-xl flex items-center justify-center mb-6 hover-scale">
                         <i class="ri-file-chart-line text-4xl text-white"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold mb-4">Daily Reports</h3>
+                    <h3 class="text-2xl font-semibold mb-4">@lang('Daily Reports')</h3>
 
                 </div>
 
@@ -787,7 +787,7 @@
                     <div class="w-16 h-16 card-gradient-5 rounded-xl flex items-center justify-center mb-6 hover-scale">
                         <i class="ri-truck-line text-4xl text-white"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold mb-4">High Delivery Rate</h3>
+                    <h3 class="text-2xl font-semibold mb-4">@lang('High Delivery Rate')</h3>
 
                 </div>
 
@@ -797,7 +797,7 @@
                     <div class="w-16 h-16 card-gradient-6 rounded-xl flex items-center justify-center mb-6 hover-scale">
                         <i class="ri-customer-service-2-fill text-4xl text-white"></i>
                     </div>
-                    <h3 class="text-2xl font-semibold mb-4">High Confirmation Rate</h3>
+                    <h3 class="text-2xl font-semibold mb-4">@lang('High Confirmation Rate')</h3>
 
                 </div>
             </div>
@@ -809,9 +809,9 @@
         <div class="container mx-auto px-6">
             <div class="text-center mb-16 animate-on-scroll">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4">
-                    <span class="gradient-text">Real-Time Order Tracking</span>
+                    <span class="gradient-text">@lang('Real-Time Order Tracking')</span>
                 </h2>
-                <p class="text-xl text-gray-600">We give you a complete visibilty to track your orders</p>
+                <p class="text-xl text-gray-600">@lang('We give you a complete visibilty to track your orders')</p>
             </div>
 
             <div class="max-w-4xl mx-auto">
@@ -819,11 +819,11 @@
                     class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 animate-on-scroll border border-white/20">
                     <div class="flex items-center justify-between mb-8">
                         <div>
-                            <h3 class="text-2xl font-semibold mb-2">Order #ORD-Vendex-007</h3>
-                            <p class="text-gray-600">Placed on january 1, 2026 at 10:30 AM</p>
+                            <h3 class="text-2xl font-semibold mb-2">@lang('Order') #ORD-Vendex-007</h3>
+                            <p class="text-gray-600">@lang('Placed on january 1, 2026 at 10:30 AM')</p>
                         </div>
                         <div class="px-4 py-2 bg-green-100 text-green-800 rounded-full font-semibold animate-pulse">
-                            In Transit
+                            @lang('In Transit')
                         </div>
                     </div>
 
@@ -839,8 +839,8 @@
                                 <i data-lucide="package" class="w-8 h-8 text-white"></i>
                             </div>
                             <div class="ml-6">
-                                <h4 class="text-lg font-semibold">Order Created</h4>
-                                <p class="text-gray-600">january 1, 2026 at 10:30 AM</p>
+                                <h4 class="text-lg font-semibold">@lang('Order Created')</h4>
+                                <p class="text-gray-600">@lang('january 1, 2026 at 10:30 AM')</p>
                             </div>
                         </div>
 
@@ -852,8 +852,8 @@
                             </div>
 
                             <div class="ml-6">
-                                <h4 class="text-lg font-semibold">Confirmed</h4>
-                                <p class="text-gray-600">january 1, 2026 at 10:40 AM</p>
+                                <h4 class="text-lg font-semibold">@lang('Confirmed')</h4>
+                                <p class="text-gray-600">@lang('january 1, 2026 at 10:40 AM')</p>
                             </div>
                         </div>
 
@@ -864,8 +864,8 @@
                                 <i data-lucide="truck" class="w-8 h-8 text-white"></i>
                             </div>
                             <div class="ml-6">
-                                <h4 class="text-lg font-semibold">In transit</h4>
-                                <p class="text-gray-600">january 1, 2026 at 01:00 PM</p>
+                                <h4 class="text-lg font-semibold">@lang('In Transit')</h4>
+                                <p class="text-gray-600">@lang('january 1, 2026 at 01:00 PM')</p>
                             </div>
                         </div>
 
@@ -875,8 +875,8 @@
                                 <i data-lucide="home" class="w-8 h-8 text-white"></i>
                             </div>
                             <div class="ml-6">
-                                <h4 class="text-lg font-semibold text-gray-400">Delivered</h4>
-                                <p class="text-gray-600">january 2, 2026 at 11:00 PM</p>
+                                <h4 class="text-lg font-semibold text-gray-400">@lang('Delivered')</h4>
+                                <p class="text-gray-600">@lang('january 2, 2026 at 11:00 PM')</p>
                             </div>
                         </div>
                     </div>
@@ -890,9 +890,9 @@
         <div class="container mx-auto px-6">
             <div class="text-center mb-16 animate-on-scroll">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4">
-                    <span class="gradient-text">What Our Sellers Said</span>
+                    <span class="gradient-text">@lang('What Our Sellers Said')</span>
                 </h2>
-                <p class="text-xl text-gray-600">Be one of them</p>
+                <p class="text-xl text-gray-600">@lang('Be one of them')</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8">
@@ -984,9 +984,9 @@
         <div class="container mx-auto px-6">
             <div class="text-center mb-16 animate-on-scroll">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4">
-                    <span class="gradient-text">Our Contact</span>
+                    <span class="gradient-text">@lang('Our Contact')</span>
                 </h2>
-                <p class="text-xl text-gray-600">We're here to help you succeed</p>
+                <p class="text-xl text-gray-600">@lang("We're here to help you succeed")</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -997,7 +997,7 @@
                         class="w-16 h-16 card-gradient-1 rounded-xl flex items-center justify-center mx-auto mb-6 hover-scale">
                         <i data-lucide="mail" class="w-8 h-8 text-white"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-4">Email Us</h3>
+                    <h3 class="text-xl font-semibold mb-4">@lang('Email Us')</h3>
                     <p class="text-gray-600">vendexentreprise@gmail.com</p>
 
                 </div>
@@ -1009,7 +1009,7 @@
                         class="w-16 h-16 card-gradient-3 rounded-xl flex items-center justify-center mx-auto mb-6 hover-scale">
                         <i data-lucide="phone" class="w-8 h-8 text-white"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-4">Call Us</h3>
+                    <h3 class="text-xl font-semibold mb-4">@lang('Call Us')</h3>
                     <p class="text-gray-600">+213 672764767</p>
 
                 </div>
@@ -1021,7 +1021,7 @@
                         class="w-16 h-16 card-gradient-2 rounded-xl flex items-center justify-center mx-auto mb-6 hover-scale">
                         <i data-lucide="map-pin" class="w-8 h-8 text-white"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-4">Visit Us</h3>
+                    <h3 class="text-xl font-semibold mb-4">@lang('Visit Us')</h3>
                     <p class="text-gray-600">Algiers, bordj el kiffan</p>
                 </div>
             </div>
@@ -1038,8 +1038,8 @@
                         <x-application-vector class="w-10 h-10"></x-application-vector>
                         <span class="text-xl font-bold">Vendex</span>
                     </div>
-                    <p class="text-gray-400">Reduce Cancelled Orders,and boost your confirmation rate with
-                        VENDEX, the fastest confirmation service.</p>
+                    <p class="text-gray-400">@lang('Reduce') @lang('Cancelled Orders'), @lang('and boost your confirmation rate with')
+                        VENDEX, @lang('the fastest confirmation service').</p>
                 </div>
 
                 <!-- Product -->
