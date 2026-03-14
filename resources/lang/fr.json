@@ -290,5 +290,19 @@
     "Modify Product": "Modifier le produit",
     "Register New Product": "Enregistrer un nouveau produit",
     "Update Product Information": "Mettre à jour les informations du produit",
-    "Confirm & Save Product": "Confirmer et enregistrer le produit"
+    "Confirm & Save Product": "Confirmer et enregistrer le produit",
+    "Create API Token": "Créer un Clé API",
+    "API tokens allow third-party services to authenticate with our application on your behalf.": "Les clés API permettent aux services tiers de s'authentifier auprès de notre application en votre nom.",
+    "Token Name": "Nom du Clé",
+    "Permissions": "Permissions",
+    "Created.": "Créé.",
+    "Create": "Créer",
+    "Manage API Tokens": "Gérer les clés API",
+    "You may delete any of your existing tokens if they are no longer needed.": "Vous pouvez supprimer l'une de vos clés existantes si elles ne sont plus nécessaires.",
+    "Last used": "Dernière utilisation",
+    "API Token": "Clé API",
+    "Please copy your new API token. For your security, it won\\'t be shown again.": "Veuillez copier votre nouvelle clé API. Pour votre sécurité, elle ne sera plus affichée.",
+    "API Token Permissions": "Permissions de la clé API",
+    "Delete API Token": "Supprimer la clé API",
+    "Are you sure you would like to delete this API token?": "Êtes-vous sûr de vouloir supprimer cette clé API?"
 }
