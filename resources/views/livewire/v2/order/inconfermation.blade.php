@@ -355,7 +355,7 @@
                 <div class="flex  items-center justify-between gap-4 border-b border-gray-200 bg-white px-6 py-3">
                     <livewire:v2.order.templates.order-customer-info :activeOrder="$activeOrder" :key="'order-customer-info-'.$activeOrder->id" />
                 </div>
-                <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-4">
+                <div class="grid grid-cols-1 gap-2 p-6 lg:grid-cols-4">
                     <livewire:v2.order.templates.order-items :activeOrder="$activeOrder" :availableProducts="$availableProducts" :key="'order-items-'.$activeOrder->id" />
                     <livewire:v2.order.templates.order-price :activeOrder="$activeOrder" :key="'order-price-'.$activeOrder->id" />
                     <livewire:v2.order.templates.order-logs :order="$activeOrder" :key="'order-logs-'.$activeOrder->id" />

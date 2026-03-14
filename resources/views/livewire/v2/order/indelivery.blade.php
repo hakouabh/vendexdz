@@ -354,7 +354,7 @@
                     <livewire:v2.order.templates.order-customer-info :activeOrder="$activeOrder" :canUpdate="false" :key="'order-customer-info-'.$activeOrder->id" />
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-4">
+                <div class="grid grid-cols-1 gap-2 p-6 lg:grid-cols-4">
                     <livewire:v2.order.templates.order-items :canUpdate="false" :activeOrder="$activeOrder" :availableProducts="$availableProducts" :key="'order-items-'.$activeOrder->id" />
                     <livewire:v2.order.templates.order-price :activeOrder="$activeOrder" :key="'order-price-'.$activeOrder->id" />
                     <livewire:v2.order.templates.order-logs :order="$activeOrder" :key="'order-logs-'.$activeOrder->id" />
