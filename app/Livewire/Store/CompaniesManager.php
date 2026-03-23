@@ -80,7 +80,15 @@ class CompaniesManager extends Component
 
     public function uninstall($appId)
     {
-        installedApps::find($appId)->delete();
+        $installedApp = installedApps::find($appId);
+        if($installedApp->is_default){
+            $nextApp = installedApps::where('sid', $this->sid)->where('app_id', '!=', $appId)->first();
+            if ($nextApp) {
+                $nextApp->is_default = true;
+                $nextApp->save();
+            }
+        }
+        $installedApp->delete();
     }
 
     public function render()
