@@ -8,8 +8,8 @@
         <div class="w-full sm:max-w-md px-8 py-5 bg-white shadow-xl overflow-hidden sm:rounded-2xl border border-gray-100">
             
             <div class="mb-8 text-center">
-                <h2 class="text-2xl font-bold text-gray-900">Create an account</h2>
-                <p class="text-sm text-gray-500 mt-1">Scale your business with Vendex.</p>
+                <h2 class="text-2xl font-bold text-gray-900">@lang('Create an account')</h2>
+                <p class="text-sm text-gray-500 mt-1">@lang('Scale your business with Vendex.')</p>
             </div>
 
             <x-validation-errors class="mb-4" />
@@ -18,15 +18,21 @@
                 @csrf
 
                 <div>
-                    <x-label for="name" value="{{ __('Name-StoreName') }}" class="text-gray-700 font-medium mb-1" />
-                    <x-input id="name" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm py-2.5" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="Baouni-store" />
+                    <x-label for="name" value="{{ __('Name/StoreName') }}" class="text-gray-700 font-medium mb-1" />
+                    <x-input id="name" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm py-2.5" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="{{ __('Name/StoreName') }}" />
                 </div>
 
+                
                 <div>
                     <x-label for="email" value="{{ __('Email') }}" class="text-gray-700 font-medium mb-1" />
-                    <x-input id="email" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm py-2.5" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="name@vendexdz.com" />
+                    <x-input id="email" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm py-2.5" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="{{ __('Email') }}" />
                 </div>
-
+                
+                <div>
+                    <x-label for="phone" value="{{ __('Whatsapp') }}" class="text-gray-700 font-medium mb-1" />
+                    <x-input id="phone" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm py-2.5" type="tel" name="phone" :value="old('phone')" required autocomplete="tel" placeholder="{{ __('Whatsapp') }}" />
+                </div>
+                
                 <div>
                     <x-label for="password" value="{{ __('Password') }}" class="text-gray-700 font-medium mb-1" />
                     <x-input id="password" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm py-2.5" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" />

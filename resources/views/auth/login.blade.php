@@ -8,8 +8,8 @@
         <div class="w-full sm:max-w-md px-8 py-10 bg-white shadow-xl overflow-hidden sm:rounded-2xl border border-gray-100">
             
             <div class="mb-8 text-center">
-                <h2 class="text-2xl font-bold text-gray-900">Welcome back</h2>
-                <p class="text-sm text-gray-500 mt-1">Please enter your details to sign in.</p>
+                <h2 class="text-2xl font-bold text-gray-900">@lang('Welcome back')</h2>
+                <p class="text-sm text-gray-500 mt-1">@lang('Please enter your details to sign in.')</p>
             </div>
 
             <x-validation-errors class="mb-4" />
@@ -56,12 +56,10 @@
             
             @if (Route::has('register'))
                 <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-500">
-                        Don't have an account? 
-                        <a href="{{ route('register') }}" class="font-medium text-gray-600 hover:text-indigo-500 transition">
-                            Sign up
-                        </a>
-                    </p>
+                    <a href="{{ route('register') }}" class="font-medium text-gray-600 hover:text-indigo-500 transition">
+                        @lang('Don\'t have an account?') 
+                        @lang('Sign up')
+                    </a>
                 </div>
             @endif
         </div>

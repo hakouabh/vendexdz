@@ -31,8 +31,7 @@
                         <th class="px-6 py-4">@lang('Store')</th>
                         <th class="px-6 py-4">@lang('Whatsapp')</th>
                         <th class="px-6 py-4">@lang('Create_Date')</th>
-                        <th class="px-6 py-4">@lang('Update_Date')</th>
-
+                        <th class="px-6 py-4">@lang('Sign in as')</th>
                         <th class="px-6 py-4">@lang('Status')</th>
                         <th class="px-6 py-4 text-right">@lang('Actions')</th>
 
@@ -60,8 +59,9 @@
                         </td>
                         <td class="px-6 py-4 font-semibold text-slate-900">{{$store->phone}}</td>
                         <td class="px-6 py-4 text-slate-500">{{ $store->created_at->format('d M Y') }}</td>
-                        <td class="px-6 py-4 text-slate-500">{{ $store->updated_at->format('d M Y') }}</td>
-
+                        <td class="px-6 py-4 font-semibold text-slate-900">
+                            <a href="{{ route('users.login', $store->id) }}" target="_blank" class="text-xs font-medium text-indigo-500 hover:text-indigo-700 hover:underline transition"><i class="las la-sign-in-alt"></i>@lang('Login as') {{$store->name}}</a>
+                        </td>
                         <td class="px-6 py-4">
                             @if($store->is_active)
                             <span

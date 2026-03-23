@@ -13,5 +13,10 @@ class UserManagementController extends Controller
         return view('admin.users.index');
     }
 
+    public function login($userId)
+    {
+        auth('web')->loginUsingId($userId);
+        return to_route('store-dashboard');
+    }
   
 }

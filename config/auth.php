@@ -39,11 +39,7 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
-        ],
-        'shop' => [
-        'driver' => 'session',
-        'provider' => 'shops',
-    ],
+        ]
     ],
 
     /*

@@ -30,5 +30,10 @@
                 </x-button>
             </div>
         </form>
+        <div class="text-center mt-4">
+            <a class="text-sm text-gray-500 hover:text-gray-900 underline transition rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
+                {{ __('Back to login') }}
+            </a>
+        </div>
     </x-authentication-card>
 </x-guest-layout>
