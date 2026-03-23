@@ -46,6 +46,7 @@ class CompaniesManager extends Component
         $exists = installedApps::where('sid', $this->sid)
                                ->where('app_id', $this->selectedAppId)
                                ->exists();
+        $is_default = installedApps::where('sid', $this->sid)->where('is_default', true)->exists();
 
         if (!$exists) {
             installedApps::create([
@@ -54,6 +55,7 @@ class CompaniesManager extends Component
                 'key' => $this->apiKey,
                 'token' => $this->apiToken,
                 'is_active' => true,
+                'is_default' => !$is_default
             ]);
 
             // Close Modal & Reset

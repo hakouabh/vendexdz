@@ -12,7 +12,9 @@ class installedApps extends Model
         'key',
         'token',
         'is_active',
+        'is_default'
     ];
+    
     public function supportedApp()
     {
         return $this->belongsTo(SupportedApps::class, 'app_id', 'app_id');
