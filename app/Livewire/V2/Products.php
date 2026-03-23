@@ -8,6 +8,7 @@ use App\Repositories\ProductRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\installedApps;
 use App\Models\ProductVariant;
 use App\Models\OrderItems;
 
@@ -18,6 +19,7 @@ class Products extends Component
     // UI state
     public $isEditMode = false;
     public $showForm = false;
+    public $no_delivery_companies = false;
 
     // Product fields
     public $productId;
@@ -32,7 +34,8 @@ class Products extends Component
 
     public function mount()
     {
-        
+        $sid = Auth::user()->userStore->store_id;
+        $this->no_delivery_companies = installedApps::where('sid', $sid)->count() === 0; 
     }
 
     protected function rules()

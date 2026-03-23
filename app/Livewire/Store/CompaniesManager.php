@@ -87,6 +87,7 @@ class CompaniesManager extends Component
                 $nextApp->is_default = true;
                 $nextApp->save();
             }
+            // TODO make new nexapp delivery price default 
         }
         $installedApp->delete();
     }

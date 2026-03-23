@@ -4,12 +4,14 @@ namespace App\Repositories;
 
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\installedApps;
 use App\Repositories\BaseRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Throwable;
+use App\Services\TerritoryFeesSwitcher;
 
 /**
  * Class ProductRepository
@@ -76,6 +78,10 @@ class ProductRepository extends BaseRepository
 
             foreach ($variants as $variant) {
                 $product->variants()->create($variant);
+            }
+            $installedApp = installedApps::where('sid', $product->store_id)->where('is_default', true)->first();
+            if($installedApp) {
+                syncTerritoriesAndFeesWithProduct($product, $installedApp);
             }
             DB::commit();
             return $product;

@@ -1,5 +1,12 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased text-left" x-data="{ open: @entangle('showForm') }">
-
+    @if($no_delivery_companies)
+    <a
+        href="{{ route('store.companies') }}"
+        target="_blank"
+        class="mb-3 bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full border border-orange-200 flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span> @lang('Click here to set up your delivery companies and territories before registering products.')
+    </a>
+    @endif
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div>
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">@lang('Inventory Stock')</h1>
