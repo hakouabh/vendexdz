@@ -24,12 +24,27 @@
                             <span class="flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span>
                         </div>
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-800 text-3xl"><img src="{{$app->icon}}" class="w-10" alt=""></div>
-                            <div><h3 class="font-bold text-slate-900 text-lg capitalize">{{ $app->name }}</h3></div>
+                            <div class="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-800 text-3xl"><img src="{{$app->supportedApp->icon}}" class="w-10" alt=""></div>
+                            <div><h3 class="font-bold text-slate-900 text-lg capitalize">{{ $app->supportedApp->name }}</h3></div>
                         </div>
+                        <label
+                        class="relative flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 group
+                    {{ $app->is_default ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-200 bg-white hover:border-slate-300' }}">
+                        <div class="flex-1">
+                            <p class="text-xs {{ $app->is_default ? 'text-indigo-600/80' : 'text-slate-500' }}">
+                                @lang('Set as default company for new orders.')
+                            </p>
+                        </div>
+                        <div class="relative ml-4">
+                            <input type="checkbox"  class="sr-only peer" wire:model="app->is_default" wire:change="setDefault({{ $app->id }})" {{ $app->is_default ? 'checked' : '' }}>
+                            <div
+                                class="w-12 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 shadow-inner">
+                            </div>
+                        </div>
+                    </label>
                         <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-50">
                             <div class="flex items-center gap-1 text-xs font-bold text-green-600">@lang('Active')</div>
-                            <button wire:click="uninstall('{{ $app->app_id }}')" wire:confirm="Uninstall?" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-lg transition">@lang('Uninstall')</button>
+                            <button wire:click="uninstall('{{ $app->id }}')" wire:confirm="Uninstall?" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-lg transition">@lang('Uninstall')</button>
                         </div>
                     </div>
                 @endforeach

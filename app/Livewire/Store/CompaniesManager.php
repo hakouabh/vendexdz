@@ -27,6 +27,17 @@ class CompaniesManager extends Component
         'apiToken' => 'required|string',
     ];
 
+    public function setDefault($appId)
+    {
+        installedApps::where('sid', $this->sid)->update(['is_default' => false]);
+
+        $app = installedApps::find($appId);
+        if ($app && $app->sid == $this->sid) {
+            $app->is_default = true;
+            $app->save();
+        }
+    }
+
     // Step 1: Open the Modal
     public function openInstallModal($appId, $appName)
     {
@@ -69,9 +80,7 @@ class CompaniesManager extends Component
 
     public function uninstall($appId)
     {
-        installedApps::where('sid', $this->sid)
-                     ->where('app_id', $appId)
-                     ->delete();
+        installedApps::find($appId)->delete();
     }
 
     public function render()
@@ -82,10 +91,11 @@ class CompaniesManager extends Component
             $query->where('name', 'like', '%' . $this->search . '%');
         }
         $allApps = $query->get();
+        $installedApps = installedApps::with('supportedApp')->where('sid', $this->sid)->get();
 
         $installedIds = installedApps::where('sid', $this->sid)->pluck('app_id')->toArray();
         return view('livewire.store.companies-manager', [
-            'installed' => $allApps->whereIn('app_id', $installedIds),
+            'installed' => $installedApps,
             'available' => $allApps->whereNotIn('app_id', $installedIds),
         ]);
     }
