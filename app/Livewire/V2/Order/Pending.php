@@ -42,6 +42,7 @@ class Pending extends Component
     public $start_date=null;
     public $end_date=null;
     public $stores;
+    public $search;
 
     public $activeTab = 'chat'; 
 
@@ -65,6 +66,15 @@ class Pending extends Component
             if ($this->statufilter) {
                 $query->where('asid', $this->statufilter);
             } 
+        })
+        ->when($this->search, function ($query) {
+            $query->where(function($q) {
+                $q->where('id', 'like', '%' . $this->search . '%')
+                ->orWhereHas('client', function ($vq) {
+                    $vq->where('full_name', 'like', '%' . $this->search . '%')
+                        ->orwhere('phone_number_1', 'like', '%' . $this->search . '%');
+                });
+            }); 
         })
 
         // 2. Store Filter (Directly on the 'orders' table)

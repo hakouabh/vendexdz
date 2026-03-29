@@ -35,7 +35,7 @@ class Indelivery extends Component
     public $start_date=null;
     public $end_date=null;
     public $stores;
-
+    public $search;
     public $activeTab = 'chat'; 
 
 
@@ -72,6 +72,15 @@ class Indelivery extends Component
         // 4. Date Range (Optional)
         ->when($this->start_date, fn($q) => $q->whereDate('created_at', '>=', $this->start_date))
         ->when($this->end_date, fn($q) => $q->whereDate('created_at', '<=', $this->end_date))
+        ->when($this->search, function ($query) {
+            $query->where(function($q) {
+                $q->where('id', 'like', '%' . $this->search . '%')
+                ->orWhereHas('client', function ($vq) {
+                    $vq->where('full_name', 'like', '%' . $this->search . '%')
+                        ->orwhere('phone_number_1', 'like', '%' . $this->search . '%');
+                });
+            }); 
+        })
 
         // Eager Load to avoid N+1 based on your Dumped Relations
         ->with([

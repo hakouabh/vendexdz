@@ -323,5 +323,8 @@
     "Email Password Reset Link": "Envoyer le lien de réinitialisation de mot de passe",
     "Back to login": "Retour à la connexion",
     "Reset Password": "Réinitialiser le mot de passe",
-    "Click here to set up your delivery companies and territories before registering products.": "Cliquez ici pour configurer vos sociétés de livraison et territoires avant d'enregistrer des produits."
+    "Click here to set up your delivery companies and territories before registering products.": "Cliquez ici pour configurer vos sociétés de livraison et territoires avant d'enregistrer des produits.",
+    "Cancel Creation": "Annuler la création",
+    "Create Order": "Créer une commande",
+    "Search Order...": "Rechercher une commande..."
 }

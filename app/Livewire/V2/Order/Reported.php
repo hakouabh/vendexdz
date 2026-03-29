@@ -30,6 +30,7 @@ class Reported extends Component
     public $start_date=null;
     public $end_date=null;
     public $stores;
+    public $search;
 
     public $activeTab = 'chat'; 
     protected $listeners = ['orderSaved' => 'syncOrder'];
@@ -64,6 +65,15 @@ class Reported extends Component
             $query->whereHas('items', function ($q) {
                 $q->where('product_id',$this->productfilter);
             });
+        })
+        ->when($this->search, function ($query) {
+            $query->where(function($q) {
+                $q->where('id', 'like', '%' . $this->search . '%')
+                ->orWhereHas('client', function ($vq) {
+                    $vq->where('full_name', 'like', '%' . $this->search . '%')
+                        ->orwhere('phone_number_1', 'like', '%' . $this->search . '%');
+                });
+            }); 
         })
 
         // 4. Date Range (Optional)

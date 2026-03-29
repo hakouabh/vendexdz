@@ -16,6 +16,14 @@
                 <i :class="isExpanded ? 'ri-subtract-line' : 'ri-add-line'" class="text-sm"></i>
             </button>
         </div>
+        <div class="relative w-full md:w-96">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </span>
+            <input wire:model.live="search" type="text" 
+                class="block w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm outline-none" 
+                placeholder="@lang('Search Order...')">
+        </div>
 
         <div x-show="isExpanded" x-collapse x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"

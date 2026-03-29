@@ -29,6 +29,7 @@ class Inconfermation extends Component
     public $statufilter=null;
     public $start_date=null;
     public $end_date=null;
+    public $search;
 
     public $activeTab = 'chat'; 
     protected $listeners = ['orderSaved' => 'syncOrder'];
@@ -59,6 +60,15 @@ class Inconfermation extends Component
         })
         ->when($this->storefilter, function ($query) {
             $query->where('sid', $this->storefilter);
+        })
+        ->when($this->search, function ($query) {
+            $query->where(function($q) {
+                $q->where('id', 'like', '%' . $this->search . '%')
+                ->orWhereHas('client', function ($vq) {
+                    $vq->where('full_name', 'like', '%' . $this->search . '%')
+                        ->orwhere('phone_number_1', 'like', '%' . $this->search . '%');
+                });
+            }); 
         })
         ->when($this->productfilter, function ($query) {
             $query->whereHas('items', function ($q) {
