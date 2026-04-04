@@ -206,8 +206,9 @@
     </div>
     <div class="hidden grid-cols-12 gap-4 px-6 text-[11px] font-bold uppercase tracking-widest text-gray-400 sm:grid">
         <div class="col-span-2">@lang('Order / Shop')</div>
-        <div class="col-span-3">@lang('Customer')</div>
-        <div class="col-span-3">@lang('Destination')</div>
+        <div class="col-span-2">@lang('Order Items')</div>
+        <div class="col-span-2">@lang('Customer')</div>
+        <div class="col-span-2">@lang('Destination')</div>
         <div class="col-span-2">@lang('Status')</div>
         <div class="col-span-1 text-right">@lang('Pricing')</div>
         <div class="col-span-1"></div>
@@ -220,26 +221,35 @@
                 <div class="col-span-12 flex flex-col justify-center sm:col-span-2">
                     <div class="flex items-center gap-2">
                         <span class="font-mono text-sm font-black text-gray-800">#{{ $order->id }}</span>
-                        <span
-                            class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
-                            <i class="ri-store-2-line"></i> {{$order->store->name ?? __('Unknown')}}
-                        </span>
                     </div>
                     <span class="mt-1 flex w-fit items-center gap-1 text-[10px] text-gray-400">
                         <i class="ri-calendar-line"></i> {{ $order->created_at?->format('d M, H:i') ?? 'N/A' }}
                     </span>
+                    @if($order->duplicated)
+                    <span class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
+                        <i class="ri-user-3-line"></i>@lang('Double')
+                    </span>
+                    @endif
+                    @if($context != 'store')
+                    <span class="mt-1 flex w-fit items-center gap-1 text-[10px] text-gray-400">
+                        <i class="ri-store-2-line"></i> {{$order->store->name ?? __('Unknown')}}
+                    </span>
+                    @endif
                 </div>
-                <div class="col-span-12 sm:col-span-3">
+                <div class="col-span-12 sm:col-span-2">
+                    @foreach($order->items as $item)
+                        <span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600">
+                            <i class="ri-shopping-bag-line"></i> {{ $item->product->nickname ?? $item->product->name }}
+                        </span>
+                        <br>
+                    @endforeach
+                </div>
+                <div class="col-span-12 sm:col-span-2">
                     <div class="flex items-center gap-3">
                         <div class="min-w-0">
                             <div class="flex items-center gap-2">
                                 <span
                                     class="font-mono text-sm font-black text-gray-800">{{ $order->client->full_name ?? __('Unknown') }}</span>
-                                @if($order->duplicated)
-                                <span class="flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
-                                    <i class="ri-user-3-line"></i>@lang('Double')
-                                </span>
-                                @endif
                             </div>
                             <a href="tel:0550123456"
                                 class="mt-0.5 inline-flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition">
@@ -249,7 +259,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-span-12 sm:col-span-3">
+                <div class="col-span-12 sm:col-span-2">
                     <div class="flex items-start gap-2">
                         <div class="mt-0.5 text-red-500">
                             <i class="ri-map-pin-2-fill text-lg"></i>
@@ -263,16 +273,16 @@
                                 title="{{ $order->client->town ?? __('Unknown') }}">
                                 {{ $order->client->address ?? __('Unknown') }}
                             </div>
+                            @if($order->app_id)
+                            <span
+                                class="flex items-center gap-1 rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
+                                <i class="ri-truck-line"></i> {{$order->deliveryCompany->name}}
+                            </span>
+                            @endif
                         </div>
-                        @if($order->app_id)
-                        <span
-                            class="flex items-center gap-1 rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200">
-                            <i class="ri-truck-line"></i> {{$order->deliveryCompany->name}}
-                        </span>
-                        @endif
                     </div>
                 </div>
-                <div class="col-span-6 sm:col-span-2">
+                <div class="col-span-12 sm:col-span-2">
                     <div x-data="{
             open: false,
             buttonRect: null
@@ -340,7 +350,7 @@
                         </template>
                     </div>
                 </div>
-                <div class="col-span-6 text-cnter sm:col-span-1">
+                <div class="col-span-12 text-cnter sm:col-span-1">
                     <div class="flex  items-baseline  justify-center">
                         <span class="text-sm font-black text-gray-900 whitespace-nowrap">{{$order->details?->total}}
                         </span><span class="text-[10px] font-extrabold text-gray-400">DZD</span>

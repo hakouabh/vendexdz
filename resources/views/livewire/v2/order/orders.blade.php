@@ -4,7 +4,7 @@
               <h1 class="text-2xl font-bold text-slate-900">@lang('Orders')</h1>
           </div>
           <div>
-                <a href="{{ route(request()->segment(1).'.create-order') }}" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-200">
+                <a href="{{ route($context.'.create-order') }}" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-200">
                     <i class="ri-add-circle-line text-[#10F0B2] text-lg"></i>
                     <span class="text-[11px] font-bold text-slate-600">@lang('Create Order')</span>
                 </a>
