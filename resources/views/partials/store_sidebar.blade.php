@@ -26,6 +26,9 @@
             <x-responsive-sidebar-link href="{{ route('store.orders') }}" :active="request()->routeIs('store.orders')">
                 <i class="ri-box-3-line text-sm"></i> @lang('Orders')
             </x-responsive-sidebar-link>
+            <x-responsive-sidebar-link href="{{ route('store.create-order') }}" :active="request()->routeIs('store.create-order')">
+                <i class="ri-box-3-line text-sm"></i> @lang('Create Order')
+            </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('store.products') }}"
                 :active="request()->routeIs('store.products')">
                 <i class="ri-price-tag-3-line text-sm"></i> @lang('Products')

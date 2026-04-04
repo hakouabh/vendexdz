@@ -11,4 +11,8 @@ class OrderManagementController extends Controller
     {
         return view('agent.orders');
     }
+    public function create()
+    {
+        return view('agent.create-order');
+    }
 }

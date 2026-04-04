@@ -11,4 +11,8 @@ class OrderManagementController extends Controller
     {
         return view('store.orders.index');
     }
+    public function create()
+    {
+        return view('store.orders.create');
+    }
 }

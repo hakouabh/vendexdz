@@ -20,7 +20,7 @@ use App\Services\TerritoryServices\NoestTerritoryService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
-class Orders extends Component
+class CreateOrder extends Component
 {
     #[Url(keep: true)] 
     public $currentTab = 'inconfirmation';
@@ -44,13 +44,15 @@ class Orders extends Component
 
     // Pricing
     public $price = 0;
+    public $stores;
+    public $context;
     public $totalDiscount = 0;
     public $delivery_price = 0;
     public $discount = 0;
     public $total = 0;
 
     // Order Items
-    public $items = [];
+    public array $items = [];
     public $availableProducts;
     public $can_use_stopdesk = true;
 
@@ -59,7 +61,6 @@ class Orders extends Component
    public $showSuccessModal = false; // Controls visibility
    public $showDiscountModal = false; // Controls visibility
    public $createdOrder = null; // Holds the order object after creation
-   public $createNeworeder =false;
     protected $rules = [
         'client_name' => 'required|string|min:3',
         'phone1' => ['required','regex:/^((05|06|07)[0-9]{8})$/'],
@@ -84,19 +85,41 @@ class Orders extends Component
         'items.*.quantity.required' => 'Quantity is required for all items',
         'items.*.quantity.min' => 'Quantity must be at least 1',
     ];
-    public string $context;
 
-    public function mount($context)
+    public function mount()
     {
-        $this->context = $context;
+        $this->context = request()->segment(1);
         $user = auth()->user(); 
         $query = $user->stores();
         if ($user->hasRole(2)) {
             $query = Store::where('created_by', '!=', $user->id); // all stores
         }
-        $stores = $query->latest()->get();
-        $this->store_id = request()->is('admin/orders') ? null : $stores->first()->id;
+        $this->stores = $query->latest()->get();
+        $this->store_id = request()->is('admin/create-order') ? null : $this->stores->first()->id;
+        $this->initializeOrder();
         $this->loadAvailableProducts();
+    }
+
+    public function Storefilter($id){
+        $this->store_id = $id;
+        $this->loadAvailableProducts();
+    }
+
+    private function initializeOrder()
+    {
+        $this->items = [
+            [
+                'id' => null,
+                'vid' => '',
+                'discount' => 0,
+                'product_id' => null,
+                'sku' => '',
+                'quantity' => 1,
+                'original' => 0,
+                'product_name' => trans('Product Selected'),
+                'variant_info' => trans('Please Select Variant'),
+            ]
+        ];
     }
 
     public function updatedStoreId($value){
@@ -149,6 +172,8 @@ class Orders extends Component
             if ($fee) {
                 $this->companie = $fee->app_id;
             }
+        }else{
+            return;
         }
         $installedApp = installedApps::where('sid', $firstItemSku->store_id)->where('app_id', $this->companie)->first();
         switch ($this->companie) {
@@ -398,14 +423,11 @@ class Orders extends Component
 
     public function render()
     {
-        $this->calculateTotal();
         $willayas = willaya::all();
         $user = auth()->user();
-        $firstStepStatus = firstStepStatu::all();
 
-        return view('livewire.v2.order.orders', [
+        return view('livewire.v2.order.create-order', [
             'willayas' => $willayas,
-            'firstStepStatus' => $firstStepStatus,
             'user' => $user,
         ]);
     }

@@ -189,7 +189,7 @@ class Inconfermation extends Component
             'delivery_type' => $this->activeOrder->details->delivery_type,
             'note'          => $this->activeOrder->details->commenter ?? '',
             'product_name'  => collect($this->activeOrder->items)->map(function($item) {
-                $name = $item->product->name;
+                $name = $item->product->nickname ?? $item->product->name;
                 $variant = $item->variant ? $item->variant->label : '';
                 $qty = " x" . ($item['quantity'] ?? 1);
                 

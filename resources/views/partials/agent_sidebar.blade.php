@@ -24,6 +24,9 @@
             <x-responsive-sidebar-link href="{{ route('agent.orders') }}" :active="request()->routeIs('agent.orders')">
                 <i class="ri-box-3-line text-sm"></i> Orders
             </x-responsive-sidebar-link>
+            <x-responsive-sidebar-link href="{{ route('agent.create-order') }}" :active="request()->routeIs('agent.create-order')">
+                <i class="ri-box-3-line text-sm"></i> @lang('Create Order')
+            </x-responsive-sidebar-link>
             <x-responsive-sidebar-link href="{{ route('agent.products') }}" :active="request()->routeIs('agent.products')">
                 <i class="ri-price-tag-3-line text-sm"></i> Products
             </x-responsive-sidebar-link>

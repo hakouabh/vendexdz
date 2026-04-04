@@ -53,6 +53,7 @@ Route::middleware([
         Route::get('/admin/status', [ManagerStatuController::class, 'index'])->name('admin.status');
         Route::get('/admin/fees', [ManagerFeesController::class, 'index'])->name('admin.fees');
         Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
+        Route::get('/admin/create-order', [AdminOrderController::class, 'create'])->name('admin.create-order');
         Route::get('/admin/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->name('log-viewer');
     });
     Route::middleware(['auth', 'role:4'])->group(function () {
@@ -60,6 +61,7 @@ Route::middleware([
             return view('agent.agent-dashboard');
         })->name('agent-dashboard');
         Route::get('/agent/orders', [AgentOrderController::class, 'index'])->name('agent.orders');
+        Route::get('/agent/create-orders', [AgentOrderController::class, 'create'])->name('agent.create-order');
         Route::get('/agent/products', [ProductController::class, 'index'])->name('agent.products');
         Route::get('/agent/chat', [ChatController::class, 'index'])->name('agent.chat');
         Route::get('/agent/bills', [BillsController::class, 'index'])->name('agent.bills');
@@ -72,6 +74,7 @@ Route::middleware([
         })->name('store-dashboard');
         Route::get('/store/companies', [ManagerCompaniesController::class, 'index'])->name('store.companies');
         Route::get('/store/orders', [StoreOrderController::class, 'index'])->name('store.orders');
+        Route::get('/store/create-order', [StoreOrderController::class, 'create'])->name('store.create-order');
         Route::get('/store/bills', [StoreBillController::class, 'index'])->name('store.bills');
         Route::get('/store/territories', [ManagerTerritoryController::class, 'index'])->name('store.territories');
         Route::get('/store/products', [ManagerProductsController::class, 'index'])->name('store.products');

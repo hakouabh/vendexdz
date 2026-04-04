@@ -35,6 +35,8 @@ class OrderPrice extends Component
     }
 
     public function updatedOrderDiscount($value){
+        if($value == null)
+            return;
         $this->order->details->update([
             'discount' => $value
         ]);
