@@ -47,6 +47,11 @@ class Order extends Model
         return $this->hasMany(OrderLog::class, 'oid', 'oid')->latest();
     }
 
+    public function latestLog()
+    {
+        return $this->hasOne(OrderLog::class, 'oid', 'oid')->latestOfMany();
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class, 'cid', 'id');

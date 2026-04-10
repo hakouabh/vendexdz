@@ -198,7 +198,7 @@ class StoreWorkspace extends Component
             });
         }
         
-        $orders = $query->get();
+        $orders = $query->with('latestLog')->get();
         
         // Initialize stats counters - keeping the original structure
         $stats = [
@@ -223,25 +223,14 @@ class StoreWorkspace extends Component
             'pre-confirmed'=> 0,
         ];
 
+        $deliveryPerformance = [
+            'delivered' => 0, 'suspended' => 0, 'return'=> 0, 'in_delivery' => 0 , 'in_route'=>0
+        ];
+
         // Get order status counts based on the LAST LOG of the day/range
         foreach ($orders as $order) {
-            // Get the latest status from order_logs for the specific day
-            $latestLog = OrderLog::where('oid', $order->oid)
-                ->when($this->start_date && $this->end_date, function($q) {
-                    // If using a range, find the latest log within that range
-                    $startDate = Carbon::parse($this->start_date)->startOfDay();
-                    $endDate = Carbon::parse($this->end_date)->endOfDay();
-                    $q->whereBetween('created_at', [$startDate, $endDate]);
-                })
-                ->when($this->selectedDate, function($q) {
-                    // If using a single date, find the latest log for that day
-                    $date = Carbon::parse($this->selectedDate);
-                    $q->whereDate('created_at', $date);
-                })
-                ->latest()
-                ->first();   
-            if ($latestLog && $latestLog->statusNew) {
-                $statusId = $latestLog->statusNew->fsid;
+            if ($order->latestLog && $order->latestLog->step == 1) {
+                $statusId = $order->latestLog->status_new->fsid;
                 
                 // Update stats based on status ID to match your new status options
                 switch ($statusId) {
@@ -294,13 +283,34 @@ class StoreWorkspace extends Component
                         break;
                 }
             }
+            if ($order->latestLog && $order->latestLog->step == 2) {
+                $statusId = $order->latestLog->status_new->ssid;
+                
+                switch ($statusId) {
+                    case 12: // delivered
+                         $deliveryPerformance['delivered']++;
+                         $stats['delivered']++;
+                        break;
+                    case 7: // in_delivery
+                         $deliveryPerformance['in_delivery']++;
+                        break;
+                    case 8: // suspended
+                         $deliveryPerformance['suspended']++;
+                        break;
+                    case 15: // in_route
+                         $deliveryPerformance['in_route']++;
+                        break;
+                    case 17: // return
+                         $deliveryPerformance['return']++;
+                         $stats['returned']++;
+                        break;
+                }
+            }
         }
         
         $this->orderStats = $stats;
         $this->performanceData = $performance;
-        $this->deliveryData = [
-            'delivered' => 0, 'suspended' => 0,'return'=>0, 'in_delivery' => 0 ,'in_route'=>0
-        ];
+        $this->deliveryData = $deliveryPerformance;
 
         $this->dailyProgress = $this->orderStats['total'];
     }
