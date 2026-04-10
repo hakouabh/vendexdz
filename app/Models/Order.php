@@ -69,9 +69,20 @@ class Order extends Model
     {
         return $this->hasOne(OrderWaiting::class, 'oid', 'oid');
     }
+
     public function Indelivery()
     {
         return $this->hasOne(OrderIndelivery::class, 'oid', 'oid');
+    }
+
+    public function IndeliveryNotDone()
+    {
+        return $this->hasOne(OrderIndelivery::class, 'oid', 'oid')->whereNotIn('ssid', [12, 8, 17]);
+    }
+
+    public function Done()
+    {
+        return $this->hasOne(OrderDone::class, 'oid', 'oid');
     }
 
     public function Timer()
