@@ -7,6 +7,7 @@ use App\Models\OrderItems;
 use App\Models\ProductVariant;
 use App\Models\fees;
 use App\Models\Order;
+use App\Models\OrderLog;
 use App\Models\Store;
 use App\Models\Client;
 use App\Models\Product;
@@ -200,7 +201,7 @@ trait OrderTrait
             );
 
             // 5. IMPORTANT: Add the Log entry so you don't get the 'statu_old' error
-            \App\Models\order_logs::create([
+            OrderLog::create([
                 'oid'       => $order->oid,
                 'aid'       => $authUser->id,
                 'statu_old' => $oldStatusId,
@@ -242,7 +243,7 @@ trait OrderTrait
                 'aid' => auth()->id(),
             ]);
 
-            \App\Models\order_logs::create([
+            OrderLog::create([
                 'oid'       => $order->oid,
                 'aid'       => auth()->id(),
                 'statu_old' => $oldStatusId,

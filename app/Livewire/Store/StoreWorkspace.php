@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Order;
 use App\Models\OrderItems;
 use App\Models\Product;
-use App\Models\order_logs;
+use App\Models\OrderLog;
 use App\Models\firstStepStatu;
 use App\Models\User;
 use Carbon\Carbon;
@@ -226,7 +226,7 @@ class StoreWorkspace extends Component
         // Get order status counts based on the LAST LOG of the day/range
         foreach ($orders as $order) {
             // Get the latest status from order_logs for the specific day
-            $latestLog = order_logs::where('oid', $order->oid)
+            $latestLog = OrderLog::where('oid', $order->oid)
                 ->when($this->start_date && $this->end_date, function($q) {
                     // If using a range, find the latest log within that range
                     $startDate = Carbon::parse($this->start_date)->startOfDay();

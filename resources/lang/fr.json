@@ -326,5 +326,8 @@
     "Click here to set up your delivery companies and territories before registering products.": "Cliquez ici pour configurer vos sociétés de livraison et territoires avant d'enregistrer des produits.",
     "Cancel Creation": "Annuler la création",
     "Create Order": "Créer une commande",
-    "Search Order...": "Rechercher une commande..."
+    "Search Order...": "Rechercher une commande...",
+    "Status updated from Waiting to Indelivery": "Statut mis à jour de En attente à En livraison",
+    "Status updated with new status": "Statut mis à jour avec le nouveau statut",
+    "Status updated to Waiting": "Statut mis à jour à En attente"
 }

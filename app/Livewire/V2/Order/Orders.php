@@ -334,7 +334,7 @@ class Orders extends Component
                 'commenter' => $this->comment,
                 'stopdesk' => $this->delivery_type,
             ]);
-            \App\Models\order_logs::create([
+            \App\Models\OrderLog::create([
                 'oid'       => $order->oid,
                 'aid'       => auth()->id(),
                 'statu_old' => 1,

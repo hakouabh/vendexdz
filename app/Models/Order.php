@@ -44,7 +44,7 @@ class Order extends Model
 
     public function histories()
     {
-        return $this->hasMany(order_logs::class, 'oid', 'oid')->latest();
+        return $this->hasMany(OrderLog::class, 'oid', 'oid')->latest();
     }
 
     public function client()
@@ -91,7 +91,7 @@ class Order extends Model
     }
     public function logs()
     {
-        return $this->hasMany(order_logs::class, 'oid', 'oid')->latest();
+        return $this->hasMany(OrderLog::class, 'oid', 'oid')->latest();
     }
 
     public function getDuplicatedAttribute()
