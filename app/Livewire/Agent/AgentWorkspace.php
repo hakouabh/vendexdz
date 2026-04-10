@@ -148,7 +148,6 @@ class AgentWorkspace extends Component
                     $date = Carbon::parse($this->selectedDate);
                     $q->whereDate('created_at', $date);
                 })
-                ->with('statusNew')
                 ->latest()
                 ->first();
                 

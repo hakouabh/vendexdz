@@ -111,8 +111,6 @@ trait OrderTrait
         $this->activeOrder = Order::with([
             'client.willaya',
             'logs.user', 
-            'logs.statusNew', 
-            'logs.statusOld', 
             'Inconfirmation.firstStepStatu', 
             'Waiting.AcceptStepStatu',
             'Indelivery.SecondStepStatu', 

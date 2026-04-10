@@ -69,7 +69,6 @@ class SyncOrderStatus extends Command
                                             'statu_new' => $internalStatus,
                                             'text'      => trans('Status updated from Waiting to Indelivery'),
                                             ]);
-                                            \Log::alert("Status updated from Waiting to Indelivery");
                                         $order->Waiting()->delete();
                                     }else if($order->Indelivery()->exists()) {
                                         OrderLog::create([
@@ -80,7 +79,6 @@ class SyncOrderStatus extends Command
                                             'statu_new' => $internalStatus,
                                             'text' => trans('Status updated with new status'),
                                         ]);
-                                        \Log::alert("Status updated with new status");
                                     }
 
                                     $order->Indelivery()->updateOrCreate(
@@ -98,7 +96,7 @@ class SyncOrderStatus extends Command
                                             'statu_new' => $internalStatus,
                                             'text' => trans('Status updated to Waiting'),
                                         ]);
-                                        \Log::alert("Status updated to Waiting");
+                                        
                                     }
                                     $order->Waiting()->updateOrCreate(
                                         ['oid' => $order->oid],

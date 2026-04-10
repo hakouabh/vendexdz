@@ -13,7 +13,7 @@
         <div class="relative border-l-2 border-slate-100 ml-3 space-y-8 pl-6 py-2">
             @foreach($activeOrder->logs as $log)
             <div class="relative group">
-                @php $color = $log->statusNew?->color ?? '#cbd5e1'; @endphp
+                @php $color = $log->status_new?->color ?? '#cbd5e1'; @endphp
                 <div class="absolute -left-[31px] top-1 h-4 w-4 rounded-full border-4 border-white shadow-sm z-10"
                     style="background-color: {{ $color }};">
                     @if($loop->first)
@@ -24,7 +24,7 @@
                 <div class="flex flex-col">
                     <div class="flex justify-between items-start">
                         <p class="text-xs font-bold text-slate-800">
-                            {{ $log->statusNew?->name ?? __('Status #') . $log->statu_new }}
+                            {{ $log->status_new?->name ?? __('Status #') . $log->statu_new }}
                         </p>
                         <span class="text-[9px] font-medium text-slate-400">
                             {{ $log->created_at }}
@@ -35,8 +35,8 @@
                         @lang('by') <span class="font-semibold text-slate-700">{{ $log->user?->name ?? __('System') }}</span>
                         @if($log->statu_new != $log->statu_old)
                         <span class="opacity-50 italic ml-1">
-                            (@lang('From') {{ $log->statusOld?->name ?? __('Initial') }} @lang('to')
-                            {{ $log->statusNew?->name }})
+                            (@lang('From') {{ $log->status_old?->name ?? __('Initial') }} @lang('to')
+                            {{ $log->status_new?->name }})
                         </span>
                         @endif
                     </p>
