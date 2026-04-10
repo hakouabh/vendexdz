@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Order;
-use App\Models\orderLog;
+use App\Models\OrderLog;
 use App\Services\TrackingOrderSwitcher;
 
 class SyncOrderStatus extends Command
@@ -57,30 +57,10 @@ class SyncOrderStatus extends Command
                                 
                                 $internalStatus = $result['internal_status'];
                                 $remoteStatus = $result['remote_status'];
-                                
+                                $lastOrderLog = OrderLog::where('oid', $order->oid)->latest()->first();
                                 if ($remoteStatus !== 'prete_a_expedier') {
                                     
-                                    if($order->Waiting()->exists()) {
-                                        OrderLog::create([
-                                            'oid'       => $order->oid,
-                                            'aid'       => 9,
-                                            'step'      => 2,
-                                            'statu_old' => $order->Waiting->ssid,
-                                            'statu_new' => $internalStatus,
-                                            'text'      => trans('Status updated from Waiting to Indelivery'),
-                                            ]);
-                                        $order->Waiting()->delete();
-                                    }else if($order->Indelivery()->exists()) {
-                                        OrderLog::create([
-                                            'oid'       => $order->oid,
-                                            'aid'       => 9,
-                                            'step'      => 2,
-                                            'statu_old' => $order->Indelivery->ssid,
-                                            'statu_new' => $internalStatus,
-                                            'text' => trans('Status updated with new status'),
-                                        ]);
-                                    }
-
+                                    $order->Waiting()->delete();
                                     $order->Indelivery()->updateOrCreate(
                                         ['oid' => $order->oid],
                                         [
@@ -88,22 +68,32 @@ class SyncOrderStatus extends Command
                                         ]
                                     );
                                 } else {
-                                    if($order->Inconfirmation()->exists()) {
-                                        OrderLog::create([
-                                            'oid'       => $order->oid,
-                                            'aid'       => 9,
-                                            'statu_old' => $order->Inconfirmation->fsid,
-                                            'statu_new' => $internalStatus,
-                                            'text' => trans('Status updated to Waiting'),
-                                        ]);
-                                        
-                                    }
                                     $order->Waiting()->updateOrCreate(
                                         ['oid' => $order->oid],
                                         [
                                             'ssid' => $internalStatus,
                                         ]
                                     );
+                                }
+                                if($lastOrderLog->step == 1 && $lastOrderLog->statu_new != $internalStatus){
+                                    OrderLog::create([
+                                        'oid' => $order->oid,
+                                        'aid' => 9,
+                                        'statu_old' => $lastOrderLog->statu_new,
+                                        'statu_new' => $internalStatus,
+                                        'text' => "Status synced from remote: $remoteStatus",
+                                        'step' => 2
+                                    ]);
+                                } elseif($lastOrderLog->step == 2 && $lastOrderLog->statu_new != $internalStatus){
+                                    OrderLog::create([
+                                        'oid' => $order->oid,
+                                        'aid' => null,
+                                        'statu_old' => $lastOrderLog->statu_new,
+                                        'statu_new' => $internalStatus,
+                                        'text' => "Status synced from remote: $remoteStatus",
+                                        'step' => 2
+                                    ]);
+                                    
                                 }
                             }
                         });
