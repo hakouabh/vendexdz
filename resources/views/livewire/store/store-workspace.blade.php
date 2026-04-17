@@ -311,7 +311,7 @@
                     @foreach($topWilayas as $wilaya)
                     <div>
                         <div class="flex justify-between text-sm font-bold text-slate-700 mb-1">
-                            <span>{{$wilaya->wilaya_id }} - {{$wilaya->wilaya_name}} ({{$wilaya->total_orders}} @lang('Orders'))</span>
+                            <span>{{$wilaya->wilaya_name}} ({{$wilaya->delivered_orders.' / '.$wilaya->total_orders}} @lang('Orders'))</span>
                             <span>{{$wilaya->delivered_percentage}}%</span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-2.5">

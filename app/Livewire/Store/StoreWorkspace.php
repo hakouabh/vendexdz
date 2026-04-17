@@ -42,26 +42,44 @@ class StoreWorkspace extends Component
         $this->products = Product::where('store_id', $store_id)->get();
         $this->statusOptions = firstStepStatu::all();
         $this->loadChart();
-        $this->topWilayas = DB::table('orders')
-            ->join('clients', 'clients.id', '=', 'orders.cid')
-            ->join('willayas', 'willayas.wid', '=', 'clients.wilaya')
-            ->leftJoin('order_indeliveries', 'order_indeliveries.oid', '=', 'orders.oid')
-            ->where('orders.sid', $store_id)
-            // TODO make delivered
+        $this->topWilayas = DB::table('orders as o')
+            ->join('clients as c', 'c.id', '=', 'o.cid')
+            ->join('willayas as w', 'w.wid', '=', 'c.wilaya')
+
+            ->where('o.sid', $store_id)
+
             ->selectRaw('
-                willayas.wid as wilaya_id,
-                willayas.name as wilaya_name,
-                COUNT(DISTINCT orders.id) as total_orders,
-                SUM(CASE WHEN order_indeliveries.ssid = 1 THEN 1 ELSE 0 END) as delivered_orders,
+                w.wid as wilaya_id,
+                w.name as wilaya_name,
+                COUNT(DISTINCT o.oid) as total_orders,
+
+                COUNT(DISTINCT CASE 
+                    WHEN EXISTS (
+                        SELECT 1 FROM order_logs ol
+                        WHERE ol.oid = o.oid
+                        AND ol.step = 2
+                        AND ol.statu_new = 12
+                    )
+                    THEN o.oid
+                END) as delivered_orders,
+
                 ROUND(
-                    SUM(CASE WHEN order_indeliveries.ssid = 1 THEN 1 ELSE 0 END)
-                    / COUNT(DISTINCT orders.id) * 100
+                    COUNT(DISTINCT CASE 
+                        WHEN EXISTS (
+                            SELECT 1 FROM order_logs ol
+                            WHERE ol.oid = o.oid
+                            AND ol.step = 2
+                            AND ol.statu_new = 12
+                        )
+                        THEN o.oid
+                    END) * 100.0
+                    / COUNT(DISTINCT o.oid)
                 ) as delivered_percentage
             ')
             
-            ->groupBy('willayas.wid', 'willayas.name')
+            ->groupBy('w.wid', 'w.name')
             ->orderByDesc('delivered_percentage')
-            ->limit(5)
+            ->limit(7)
             ->get();
 
         $pipeLineStats = DB::table('orders as o')
