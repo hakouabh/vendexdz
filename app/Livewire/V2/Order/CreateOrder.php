@@ -134,6 +134,7 @@ class CreateOrder extends Component
     public function updatedCity($value)
     {
         $currentCommune = collect($this->communes)->firstWhere('name', $value);
+        \Log::alert($currentCommune);
 
         if ($currentCommune) {
             switch ((int)$this->companie) {
@@ -153,6 +154,15 @@ class CreateOrder extends Component
             }
         }
 
+        $this->calculateTotal();
+    }
+
+    public function setDelivery($type)
+    {
+        if ($type == '1' && !$this->can_use_stopdesk) {
+            return;
+        }
+        $this->delivery_type = $type;
         $this->calculateTotal();
     }
 
@@ -300,8 +310,8 @@ class CreateOrder extends Component
 
             if ($delivery === null && !empty($item['product_id']) && !empty($this->wilaya)) {
                 $fee = fees::where('product_id', $item['product_id'])
-                    ->where('wid', $this->wilaya)
-                    ->first();
+                ->where('wid', $this->wilaya)
+                ->first();
                 
                 if ($fee) {
                     if ($this->delivery_type == 1) {

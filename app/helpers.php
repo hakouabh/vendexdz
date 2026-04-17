@@ -28,10 +28,10 @@ function canDelete($models, $columnName, $id)
             ['sid' => $product->store_id, 'wid' => $fee['wilaya_id'], 'product_id' => $product->id],
             [
                 'app_id' => $installedApp->app_id,
-                'o_s_p'  => $fee['fees'],
-                'o_d_p'  => $fee['fees_stopdesk'],
-                'c_s_p'  => $fee['fees'],
-                'c_d_p'  => $fee['fees_stopdesk'],
+                'o_s_p'  => $fee['fees_stopdesk'],
+                'o_d_p'  => $fee['fees'],
+                'c_s_p'  => $fee['fees_stopdesk'],
+                'c_d_p'  => $fee['fees'],
             ]
         );
     }

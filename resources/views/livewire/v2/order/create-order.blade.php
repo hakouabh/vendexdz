@@ -290,7 +290,7 @@
                     <div>
                         <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Delivery Type')</label>
                         <div class="flex rounded-lg bg-slate-100 p-1">
-                            <button type="button" wire:click="$set('delivery_type', '1')"
+                            <button type="button" wire:click="setDelivery('1')"
                                 {{ !$can_use_stopdesk ? 'disabled' : '' }}
                                 class="flex-1 rounded py-1.5 text-[10px] font-bold {{ $delivery_type=='1'?'bg-white text-blue-600 shadow-sm':'text-slate-400' }}">
                                 <span>@lang('Stopdesk')</span>
@@ -298,7 +298,7 @@
                                 <span class="text-[8px] text-red-500">@lang('Not Available')</span>
                                 @endif
                             </button>
-                            <button type="button" wire:click="$set('delivery_type', '0')"
+                            <button type="button" wire:click="setDelivery('0')"
                                 class="flex-1 rounded py-1.5 text-[10px] font-bold {{ $delivery_type=='0'?'bg-white text-blue-600 shadow-sm':'text-slate-400' }}">@lang('Domicile')</button>
                         </div>
                     </div>
