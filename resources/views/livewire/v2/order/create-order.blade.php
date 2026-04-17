@@ -92,7 +92,7 @@
                                 class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
                                 <option value="">@lang('Select Product')</option>
                                 @foreach($availableProducts as $prod)
-                                <option value="{{ $prod->id }}">{{ $prod->name }}</option>
+                                <option value="{{ $prod->id }}">{{ $prod->nickname ?? $prod->name}}</option>
                                 @endforeach
                             </select>
                         </div>

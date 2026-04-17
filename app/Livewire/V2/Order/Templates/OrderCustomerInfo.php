@@ -282,7 +282,7 @@ class OrderCustomerInfo extends Component
             'delivery_type' => $this->delivery_type,
             'note'          => $this->Comment,
             'product_name'  => collect($this->activeOrder->items)->map(function($item) {
-                $name =$item->product->nickname ?? $item->product->name;
+                $name = $item->product->nickname ?? $item->product->name;
                 $variant = $item->variant ? $item->variant->label : '';
                 $qty = " x" . ($item['quantity'] ?? 1);
                 
