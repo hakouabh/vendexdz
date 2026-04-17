@@ -90,7 +90,7 @@
                                 class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Product')</label>
                             <select wire:model.live="items.{{ $index }}.product_id"
                                 class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
-                                <option value="">-- @lang('Select Product') --</option>
+                                <option value="">@lang('Select Product')</option>
                                 @foreach($availableProducts as $prod)
                                 <option value="{{ $prod->id }}">{{ $prod->name }}</option>
                                 @endforeach
@@ -100,19 +100,19 @@
                             <label
                                 class="mb-1 block text-[10px] font-bold uppercase text-slate-400">@lang('Variant')</label>
                             <select wire:model.live="items.{{ $index }}.vid"
-                                {{ empty($item['product_id']) ? 'disabled' : '' }}
+                                {{ empty($item['product_id']) || ($item['disabled'] ?? false) ? 'disabled' : '' }}
                                 class="w-full rounded-xl border-none bg-white p-2 text-[11px] font-bold text-slate-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
-                                <option value="">-- @lang('Select Variant') --</option>
+                                <option value="">@lang('Select Variant')</option>
                                 @if(!empty($item['product_id']))
-                                @foreach($this->getVariants($item['product_id']) as $v)
-                                <option value="{{ $v->id }}">{{ $v->label }}
-                                    @if($v->quantity == 0)
-                                    <span>@lang('out of stock')</span>
-                                    @else
-                                    <span> - qty:{{$v->quantity}}</span>
-                                    @endif
-                                </option>
-                                @endforeach
+                                    @foreach($this->getVariants($item['product_id']) as $v)
+                                    <option value="{{ $v->id }}" {{$v->id == $item['vid'] ? 'selected' : ''}}>{{ $v->label }}
+                                        @if($v->quantity == 0)
+                                            <span>@lang('out of stock')</span>
+                                        @else
+                                            <span> - qty:{{$v->quantity}}</span>
+                                        @endif
+                                    </option>
+                                    @endforeach
                                 @endif
                             </select>
                         </div>

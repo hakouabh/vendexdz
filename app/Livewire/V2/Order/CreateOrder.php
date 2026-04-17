@@ -214,6 +214,23 @@ class CreateOrder extends Component
             $index = explode('.', $key)[0];
             $this->items[$index]['vid'] = '';
         }
+        if (strpos($key, '.product_id') !== false) {
+            $product = Product::find($value);
+            if($product && $product->variants->count() == 1){
+                $index = explode('.', $key)[0];
+                $variant = $product->variants->first();
+                $this->items[$index]['original'] = $product->price;
+                $this->items[$index]['vid'] = $variant->id;
+                $this->items[$index]['discount'] = $variant->discount;
+                $this->items[$index]['sku'] = $variant->sku;
+                $this->items[$index]['disabled'] = true;
+                $this->items[$index]['product_id'] = $product->id;
+                $this->items[$index]['product_name'] = $product->name;
+                $this->items[$index]['variant_info'] = $variant->label;
+                
+                $this->calculateTotal();
+            }
+        }
 
         if (strpos($key, '.vid') !== false) {
             $index = explode('.', $key)[0];
@@ -224,6 +241,7 @@ class CreateOrder extends Component
                 $this->items[$index]['vid'] = $variant->id;
                 $this->items[$index]['discount'] = $variant->discount;
                 $this->items[$index]['sku'] = $variant->sku;
+                $this->items[$index]['disabled'] = false;
                 $this->items[$index]['product_id'] = $variant->product_id;
                 $this->items[$index]['product_name'] = $variant->product->name;
                 $this->items[$index]['variant_info'] = $variant->label;
