@@ -284,7 +284,7 @@
                 <div class="col-span-12 sm:col-span-2">
                     @foreach($order->items as $item)
                         <span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600">
-                            <i class="ri-shopping-bag-line"></i> {{ $item->product->nickname ?? $item->product->name }}
+                            <i class="ri-shopping-bag-line"></i> {{ $item->product ? $item->product->nickname ?? $item->product->name : '' }}
                         </span>
                         <br>
                     @endforeach

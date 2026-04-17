@@ -66,7 +66,8 @@ class ShippingSwitcher
         if(isset($result['successes'])){
             return [
                 'success' => true,
-                'tracking' => $result['successes'][0]['trackingNumber']
+                'tracking' => $result['successes'][0]['trackingNumber'],
+                'parcelId' => $result['successes'][0]['parcelId']
             ];
         }
 

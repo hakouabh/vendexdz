@@ -37,29 +37,7 @@ class ZRCreateOrderService
         ])->post("{$this->baseUrl}/parcels/bulk", ['parcels' => $parcels]);
 
         $data = $response->json();
-      
         return $data;
-    }
-
-    protected function updateOrdersInDatabase($successes)
-    {
-        foreach ($successes as $item) {
-         
-            $ref = $item['externalId'] ?? null;
-            $trackingNumber = $item['trackingNumber'] ?? null;
-            $parcelId = $item['parcelId'] ?? null;
-            if ($ref && $trackingNumber) {
-                $numericId = str_replace('VN-', '', $ref); 
-                
-                Order::where('oid', $numericId)->update([
-                    'tracking' => $trackingNumber, 
-                    'custom_id'=> $parcelId
-                ]);
-
-                OrderInconfirmation::where('oid', $numericId)->delete();
-                OrderWaiting::create(['oid'=>$numericId,'asid'=>1]);
-            }
-        }
     }
     
     public function formatOrder($standardOrder)
@@ -82,6 +60,19 @@ class ZRCreateOrderService
             throw new \Exception("ZR Error: Commune '{$standardOrder->city}' not found in {$zrWilaya['name']}.");
         }
 
+        $order_id = str_replace('VN-', '', $standardOrder->ref);
+
+        $order = Order::with(['items'])->find($order_id);
+        $orderedProducts = $order->items->map(function($item){
+            return [
+                "productSku"  => $item->variant ? $item->variant->sku : null,
+                "productName" => $item->product->nickname??$item->product->name,
+                "unitPrice"   => $item->product->price,
+                "quantity"    => $item->quantity,
+                "stockType"   => "none"
+            ];
+        })->toArray();
+        
         return [
             "customer" => [
                 "customerId"=> "5c809fd6-dfca-4f72-a88a-10dd333339de",
@@ -99,16 +90,7 @@ class ZRCreateOrderService
                 "cityTerritoryId"    => $zrWilaya['id'], 
                 "districtTerritoryId" => $zrCommune['id']
             ],
-            "orderedProducts" => [
-                [
-                   
-                    // "productSku"  => "CHOC-LINDT-001",
-                    "productName" => $standardOrder->product_name,
-                    "unitPrice"   => (double) $standardOrder->total_price,
-                    "quantity"    => (int) ($standardOrder->quantity ?? 1),
-                    "stockType"   => "none" 
-                ]
-            ],
+            "orderedProducts" => $orderedProducts,
             "amount"       => (double) $standardOrder->total_price,
             "description"  => $standardOrder->product_name,
             "deliveryType" => $standardOrder->delivery_type == 1 ? "pickup-point" : "home",

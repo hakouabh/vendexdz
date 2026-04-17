@@ -50,7 +50,7 @@ class ZRTerritoryService
 
     public function getFeesCached()
     {
-        return Cache::remember('ZR_fees_'. $this->tenantId, 86400, function () {
+        return cache()->remember('ZR_fees_'. $this->tenantId, 86400, function () {
             $response = Http::withHeaders([
                 'Accept'    => 'application/json',
                 'X-Api-Key' => $this->apiKey,
