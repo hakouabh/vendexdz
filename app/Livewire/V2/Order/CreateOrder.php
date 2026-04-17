@@ -134,7 +134,6 @@ class CreateOrder extends Component
     public function updatedCity($value)
     {
         $currentCommune = collect($this->communes)->firstWhere('name', $value);
-        \Log::alert($currentCommune);
 
         if ($currentCommune) {
             switch ((int)$this->companie) {

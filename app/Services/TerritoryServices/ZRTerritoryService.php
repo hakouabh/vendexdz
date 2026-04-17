@@ -50,43 +50,45 @@ class ZRTerritoryService
 
     public function getFeesCached()
     {
-        $response = Http::withHeaders([
-            'Accept'    => 'application/json',
-            'X-Api-Key' => $this->apiKey,
-            'X-Tenant'  => $this->tenantId,
-        ])->get("{$this->baseUrl}/delivery-pricing/rates",[
-            "pageNumber" =>  1,
-            "pageSize" =>  5000,
-            "orderBy" =>  [
-                "code asc"
-            ]
-        ]);
-        if (!$response->successful()) {
+        return Cache::remember('ZR_fees_'. $this->tenantId, 86400, function () {
+            $response = Http::withHeaders([
+                'Accept'    => 'application/json',
+                'X-Api-Key' => $this->apiKey,
+                'X-Tenant'  => $this->tenantId,
+            ])->get("{$this->baseUrl}/delivery-pricing/rates",[
+                "pageNumber" =>  1,
+                "pageSize" =>  5000,
+                "orderBy" =>  [
+                    "code asc"
+                ]
+            ]);
+            if (!$response->successful()) {
 
-            return [];
-        }
-        $data = collect($response->json()['rates']);        
-        $groupedWilaya = collect($data)
-            ->filter(function ($item) {
-                return ($item['toTerritoryLevel'] ?? null) === 'wilaya';
-            })
-            ->map(function ($item) {
+                return [];
+            }
+            $data = collect($response->json()['rates']);        
+            $groupedWilaya = collect($data)
+                ->filter(function ($item) {
+                    return ($item['toTerritoryLevel'] ?? null) === 'wilaya';
+                })
+                ->map(function ($item) {
 
-                $home = collect($item['deliveryPrices'])
-                    ->firstWhere('deliveryType', 'home');
+                    $home = collect($item['deliveryPrices'])
+                        ->firstWhere('deliveryType', 'home');
 
-                $pickup = collect($item['deliveryPrices'])
-                    ->firstWhere('deliveryType', 'pickup-point');
+                    $pickup = collect($item['deliveryPrices'])
+                        ->firstWhere('deliveryType', 'pickup-point');
 
-                return [
-                    'wilaya_id' => $item['toTerritoryCode'],
-                    'fees' => $home['price'] ?? 0,
-                    'fees_stopdesk' => $pickup['price'] ?? 0,
-                ];
-            })
-            ->unique('wilaya_id')
-            ->sortByDesc('wilaya_id')
-            ->values();
-        return $groupedWilaya->toArray();
+                    return [
+                        'wilaya_id' => $item['toTerritoryCode'],
+                        'fees' => $home['price'] ?? 0,
+                        'fees_stopdesk' => $pickup['price'] ?? 0,
+                    ];
+                })
+                ->unique('wilaya_id')
+                ->sortByDesc('wilaya_id')
+                ->values();
+            return $groupedWilaya->toArray();
+        });
     }
 }
