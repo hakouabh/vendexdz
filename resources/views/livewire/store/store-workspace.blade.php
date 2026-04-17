@@ -262,14 +262,28 @@
                     </h3>
 
                     <!-- Range buttons -->
-                    <div class="flex gap-2">
-                        <button disabled wire:click="setRange('day')" class="px-3 py-1 text-xs bg-slate-100 rounded-lg">
+                    <div class="flex gap-2 d-none">
+                        <button
+                            wire:click="setRange('day')"
+                            wire:loading.attr="disabled"
+                            class="px-3 py-1 text-xs rounded-lg {{ $this->range === 'day' ? 'bg-indigo-500 text-white' : 'bg-slate-100' }}"
+                        >
                             @lang('Day')
                         </button>
-                        <button disabled wire:click="setRange('week')" class="px-3 py-1 text-xs bg-slate-100 rounded-lg">
+
+                        <button
+                            wire:click="setRange('week')"
+                            wire:loading.attr="disabled"
+                            class="px-3 py-1 text-xs rounded-lg {{ $this->range === 'week' ? 'bg-indigo-500 text-white' : 'bg-slate-100' }}"
+                        >
                             @lang('Week')
                         </button>
-                        <button disabled wire:click="setRange('month')" class="px-3 py-1 text-xs bg-slate-100 rounded-lg">
+
+                        <button
+                            wire:click="setRange('month')"
+                            wire:loading.attr="disabled"
+                            class="px-3 py-1 text-xs rounded-lg {{ $this->range === 'month' ? 'bg-indigo-500 text-white' : 'bg-slate-100' }}"
+                        >
                             @lang('Month')
                         </button>
                     </div>
@@ -277,9 +291,11 @@
 
                 <!-- Chart -->
                 <div
-                    x-data="confirmationChart(window.chartData)"
+                    wire:ignore
+                    x-data="confirmationChart(@js($chartData ?? []))"
                     x-init="init()"
-                    class="relative h-72">
+                    class="relative h-72"
+                >
                     <canvas x-ref="chartCanvas"></canvas>
                 </div>
             </div>
@@ -313,7 +329,11 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Confirmation Chart -->
-                <div x-data="performanceChart(window.performanceData)"
+                <div 
+                    wire:ignore
+                    id="performanceChart"
+                    x-data="performanceChart(@js($performanceData))"
+                    x-init="init()"
                     class="group bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col items-center hover:shadow-xl transition-all duration-500 w-full max-w-sm transform hover:-translate-y-1">
 
                     <!-- Animated border effect -->
@@ -388,9 +408,11 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Second Chart (Performance) -->
-                <div x-data="deliveryChart(window.deliveryData)"
+                <div 
+                wire:ignore
+                id="deliveryChart"
+                x-data="deliveryChart(@js($deliveryData))"
+                x-init="init()"
                     class="group bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col items-center hover:shadow-xl transition-all duration-500 w-full max-w-sm transform hover:-translate-y-1">
                     <div
                         class="absolute inset-0 rounded-[24px]  opacity-0 group-hover:opacity-20 transition-opacity duration-500">
@@ -589,11 +611,6 @@
             </div>
         </div>
         <script>
-            window.performanceData = @json($performanceData);
-            window.deliveryData = @json($deliveryData);
-            window.chartData = @json($chartData);
-        </script>
-        <script>
             const translations = {
                 confirmed: "{{ __('Confirmed') }}",
                 cancelled: "{{ __('Cancelled') }}",
@@ -608,43 +625,55 @@
                 in_route: "{{ __('In Route') }}"
             };
 
-            function performanceChart(initialData) {
+            function performanceChart(initialData = {}) {
                 return {
                     confirmed: {
-                        val: initialData.confirmed,
+                        val: 0,
                         show: true,
                         color: '#10b981',
                         label: translations.confirmed
                     },
                     cancelled: {
-                        val: initialData.cancelled,
+                        val: 0,
                         show: true,
                         color: '#ef4444',
                         label: translations.cancelled
                     },
                     noAnswer: {
-                        val: initialData.no_answer,
+                        val: 0,
                         show: true,
                         color: '#7bff00ff',
                         label: translations.no_answer
                     },
                     reported: {
-                        val: initialData.reported,
+                        val: 0,
                         show: true,
                         color: '#3b82f6',
                         label: translations.reported
                     },
                     double: {
-                        val: initialData.double,
+                        val: 0,
                         show: true,
                         color: '#f59e0b',
                         label: translations.double
                     },
                     falserate: {
-                        val: initialData.false_rate,
+                        val: 0,
                         show: true,
                         color: '#8b5cf6',
                         label: translations.false_rate
+                    },
+
+                    init() {
+                        this.updateData(initialData);
+                    },
+                    updateData(newData) {
+                        this.confirmed.val = newData.confirmed ?? 0;
+                        this.cancelled.val = newData.cancelled ?? 0;
+                        this.noAnswer.val = newData.no_answer ?? 0;
+                        this.reported.val = newData.reported ?? 0;
+                        this.double.val = newData.double ?? 0;
+                        this.falserate.val = newData.false_rate ?? 0;
                     },
 
                     getTotal() {
@@ -667,94 +696,77 @@
                         let p5 = p4 + (this.double.show ? (this.double.val / total) * 100 : 0);
 
                         return `conic-gradient(
-                    ${this.confirmed.color} 0% ${p1}%, 
-                    ${this.cancelled.color} ${p1}% ${p2}%, 
-                    ${this.noAnswer.color} ${p2}% ${p3}%,
-                    ${this.reported.color} ${p3}% ${p4}%,
-                    ${this.double.color} ${p4}% ${p5}%,
-                    ${this.falserate.color} ${p5}% 100%
-                )`;
+                            ${this.confirmed.color} 0% ${p1}%,
+                            ${this.cancelled.color} ${p1}% ${p2}%,
+                            ${this.noAnswer.color} ${p2}% ${p3}%,
+                            ${this.reported.color} ${p3}% ${p4}%,
+                            ${this.double.color} ${p4}% ${p5}%,
+                            ${this.falserate.color} ${p5}% 100%
+                        )`;
                     },
 
                     getTopReason() {
                         let items = [
-                            this.confirmed.show ? {
-                                val: this.confirmed.val,
-                                label: this.confirmed.label,
-                                color: this.confirmed.color
-                            } : null,
-                            this.cancelled.show ? {
-                                val: this.cancelled.val,
-                                label: this.cancelled.label,
-                                color: this.cancelled.color
-                            } : null,
-                            this.noAnswer.show ? {
-                                val: this.noAnswer.val,
-                                label: this.noAnswer.label,
-                                color: this.noAnswer.color
-                            } : null,
-                            this.reported.show ? {
-                                val: this.reported.val,
-                                label: this.reported.label,
-                                color: this.reported.color
-                            } : null,
-                            this.double.show ? {
-                                val: this.double.val,
-                                label: this.double.label,
-                                color: this.double.color
-                            } : null,
-                            this.falserate.show ? {
-                                val: this.falserate.val,
-                                label: this.falserate.label,
-                                color: this.falserate.color
-                            } : null
-                        ].filter(item => item !== null);
+                            this.confirmed,
+                            this.cancelled,
+                            this.noAnswer,
+                            this.reported,
+                            this.double,
+                            this.falserate
+                        ].filter(item => item.show);
 
-                        if (items.length === 0) return {
-                            label: 'No Data',
-                            color: '#94a3b8'
-                        };
+                        if (!items.length) {
+                            return { label: 'No Data', color: '#94a3b8' };
+                        }
 
-                        items.sort((a, b) => b.val - a.val);
-                        return {
-                            label: items[0].label,
-                            color: items[0].color
-                        };
+                        return items.sort((a, b) => b.val - a.val)[0];
                     }
                 }
             }
 
-            function deliveryChart(initialData) {
+            function deliveryChart(initialData = {}) {
                 return {
                     delivered: {
-                        val: initialData.delivered,
+                        val: 0,
                         show: true,
                         color: '#10b981',
                         label: translations.delivered
                     },
                     suspended: {
-                        val: initialData.suspended,
+                        val: 0,
                         show: true,
                         color: '#f59e0b',
                         label: translations.suspended
                     },
                     rReturn: {
-                        val: initialData.return,
+                        val: 0,
                         show: true,
                         color: '#ef4444',
                         label: translations.rReturn
                     },
                     in_delivery: {
-                        val: initialData.in_delivery,
+                        val: 0,
                         show: true,
                         color: '#3b82f6',
                         label: translations.in_delivery
                     },
                     in_route: {
-                        val: initialData.in_route,
+                        val: 0,
                         show: true,
                         color: '#4c58f6',
                         label: translations.in_route
+                    },
+
+                    init() {
+                        this.updateData(initialData);
+                    },
+
+                    updateData(newData) {
+                        this.delivered.val = newData.delivered ?? 0;
+                        this.suspended.val = newData.suspended ?? 0;
+                        this.rReturn.val = newData.return ?? 0;
+                        this.in_delivery.val = newData.in_delivery ?? 0;
+                        this.in_route.val = newData.in_route ?? 0;
                     },
 
                     getTotal() {
@@ -773,130 +785,116 @@
                         let p2 = p1 + (this.suspended.show ? (this.suspended.val / total) * 100 : 0);
                         let p3 = p2 + (this.rReturn.show ? (this.rReturn.val / total) * 100 : 0);
                         let p4 = p3 + (this.in_delivery.show ? (this.in_delivery.val / total) * 100 : 0);
-                        let p5 = p4 + (this.in_route.show ? (this.in_route.val / total) * 100 : 0);
 
                         return `conic-gradient(
-                    ${this.delivered.color} 0% ${p1}%, 
-                    ${this.suspended.color} ${p1}% ${p2}%, 
-                    ${this.rReturn.color} ${p2}% ${p3}%,
-                    ${this.in_delivery.color} ${p3}% ${p4}%,
-                    ${this.in_route.color} ${p4}% 100%
-                )`;
+                            ${this.delivered.color} 0% ${p1}%,
+                            ${this.suspended.color} ${p1}% ${p2}%,
+                            ${this.rReturn.color} ${p2}% ${p3}%,
+                            ${this.in_delivery.color} ${p3}% ${p4}%,
+                            ${this.in_route.color} ${p4}% 100%
+                        )`;
                     },
 
                     getTopReason() {
                         let items = [
-                            this.delivered.show ? {
-                                val: this.delivered.val,
-                                label: this.delivered.label,
-                                color: this.delivered.color
-                            } : null,
-                            this.suspended.show ? {
-                                val: this.suspended.val,
-                                label: this.suspended.label,
-                                color: this.suspended.color
-                            } : null,
-                            this.rReturn.show ? {
-                                val: this.rReturn.val,
-                                label: this.rReturn.label,
-                                color: this.rReturn.color
-                            } : null,
-                            this.in_delivery.show ? {
-                                val: this.in_delivery.val,
-                                label: this.in_delivery.label,
-                                color: this.in_delivery.color
-                            } : null,
-                            this.in_route.show ? {
-                                val: this.in_route.val,
-                                label: this.in_route.label,
-                                color: this.in_route.color
-                            } : null
-                        ].filter(item => item !== null);
+                            this.delivered,
+                            this.suspended,
+                            this.rReturn,
+                            this.in_delivery,
+                            this.in_route
+                        ].filter(item => item.show);
 
-                        if (items.length === 0) return {
-                            label: 'No Data',
-                            color: '#94a3b8'
-                        };
+                        if (!items.length) {
+                            return { label: 'No Data', color: '#94a3b8' };
+                        }
 
-                        items.sort((a, b) => b.val - a.val);
-                        return {
-                            label: items[0].label,
-                            color: items[0].color
-                        };
+                        return items.sort((a, b) => b.val - a.val)[0];
                     }
                 }
             }
         </script>
+        @script
         <script>
-            function confirmationChart(initialData) {
-                return {
-                    chart: null,
+            $wire.on('delivery-updated', (event) => {
+                const el = document.getElementById('deliveryChart')
 
-                    init() {
-                        const ctx = this.$refs.chartCanvas.getContext('2d');
-
-                        this.chart = new Chart(ctx, {
-                            type: 'line',
-                            data: this.formatData(initialData),
-
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                        align: 'end'
-                                    }
-                                },
-
-                                interaction: {
-                                    mode: 'index',
-                                    intersect: false
-                                },
-
-                                scales: {
-                                    y: {
-                                        beginAtZero: true
-                                    }
-                                }
-                            }
-                        });
-                    },
-
-                    formatData(data) {
-                        return {
-                            labels: data.labels,
-                            datasets: [{
-                                    label: "{{ __('Confirmation') }}",
-                                    data: data.confirmed,
-                                    borderColor: '#4f46e5',
-                                    backgroundColor: 'rgba(79,70,229,0.1)',
-                                    borderWidth: 3,
-                                    fill: true,
-                                    tension: 0.4
-                                },
-                                {
-                                    label: "{{ __('Delivery') }}",
-                                    data: data.delivered,
-                                    borderColor: '#10b981',
-                                    backgroundColor: 'rgba(16,185,129,0.1)',
-                                    borderWidth: 3,
-                                    fill: true,
-                                    tension: 0.4
-                                }
-                            ]
-                        };
-                    },
-
-                    updateChart(data) {
-                        console.log(data);
-
-                        this.chart.data = this.formatData(data);
-                        this.chart.update();
-                    }
+                if (el && el._x_dataStack) {
+                    el._x_dataStack[0].updateData(event.deliveryData)
                 }
+            })
+
+            $wire.on('performance-updated', (event) => {
+                const el = document.getElementById('performanceChart')
+
+                if (el && el._x_dataStack) {
+                    el._x_dataStack[0].updateData(event.performanceData)
+                }
+            })
+            document.addEventListener('livewire:init', () => {
+                Livewire.on('confirmation-data-updated', (event) => {
+
+                    window.updateConfirmationChart?.(event.chartData)
+
+                })
+            })
+        </script>
+        @endscript
+        <script>
+            function confirmationChart(initialData = {}) {
+    return {
+        chart: null,
+        data: initialData,
+
+        init() {
+            const ctx = this.$refs.chartCanvas.getContext('2d')
+
+            this.chart = new Chart(ctx, {
+                type: 'line',
+                data: this.formatData(this.data),
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            })
+
+            // expose global updater
+            window.updateConfirmationChart = (newData) => {
+                this.updateChart(newData)
             }
+        },
+
+        formatData(data = {}) {
+            return {
+                labels: (data.labels ?? []).map(String),
+                datasets: [
+                    {
+                        label: "Confirmation",
+                        data: data.confirmed ?? [],
+                        borderColor: '#4f46e5',
+                        fill: true
+                    },
+                    {
+                        label: "Delivery",
+                        data: data.delivered ?? [],
+                        borderColor: '#10b981',
+                        fill: true
+                    }
+                ]
+            }
+        },
+
+        updateChart(newData) {
+            if (!this.chart) return
+
+            const formatted = this.formatData(newData)
+
+            this.chart.data.labels = formatted.labels
+            this.chart.data.datasets = formatted.datasets
+
+            this.chart.update()
+        }
+    }
+}
         </script>
 
 

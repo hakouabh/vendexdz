@@ -227,12 +227,21 @@ class StoreWorkspace extends Component
             'delivered' => 0, 'suspended' => 0, 'return'=> 0, 'in_delivery' => 0 , 'in_route'=>0
         ];
 
-        // Get order status counts based on the LAST LOG of the day/range
-        foreach ($orders as $order) {
-            if ($order->latestLog && $order->latestLog->step == 1) {
-                $statusId = $order->latestLog->status_new->fsid;
-                
-                // Update stats based on status ID to match your new status options
+        $orderOids = $orders->pluck('oid');
+        $orderLogs = OrderLog::whereIn('oid', $orderOids)
+            ->when($this->start_date && $this->end_date, function($q) {
+                $startDate = Carbon::parse($this->start_date)->startOfDay();
+                $endDate = Carbon::parse($this->end_date)->endOfDay();
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            })
+            ->when($this->selectedDate, function($q) {
+                $date = Carbon::parse($this->selectedDate);
+                $q->whereDate('created_at', $date);
+            })
+            ->get();
+        foreach ($orderLogs as $orderLog) {
+            if ($orderLog->step == 1) {
+                $statusId = $orderLog->status_new->fsid;
                 switch ($statusId) {
                     case 1: // pending
                          $performance['pending']++;
@@ -283,9 +292,8 @@ class StoreWorkspace extends Component
                         break;
                 }
             }
-            if ($order->latestLog && $order->latestLog->step == 2) {
-                $statusId = $order->latestLog->status_new->ssid;
-                
+            if ($orderLog->step == 2) {
+                $statusId = $orderLog->status_new->ssid;
                 switch ($statusId) {
                     case 12: // delivered
                          $deliveryPerformance['delivered']++;
@@ -311,6 +319,9 @@ class StoreWorkspace extends Component
         $this->orderStats = $stats;
         $this->performanceData = $performance;
         $this->deliveryData = $deliveryPerformance;
+
+        $this->dispatch('performance-updated', performanceData: $this->performanceData);
+        $this->dispatch('delivery-updated', deliveryData: $this->deliveryData);
 
         $this->dailyProgress = $this->orderStats['total'];
     }
@@ -356,7 +367,6 @@ class StoreWorkspace extends Component
     {
         $this->range = $range;
         $this->loadChart();
-        $this->dispatch('chartUpdated', $this->chartData);
     }
 
     private function loadChart()
@@ -369,17 +379,20 @@ class StoreWorkspace extends Component
             default => '%Y-%m-%d',
         };
 
-        $confirmed = DB::table('order_inconfirmations as c')
+        $confirmed = DB::table('order_logs as c')
             ->join('orders as o','o.oid','=','c.oid')
             ->where('o.sid', $store_id)
-            ->whereIn('c.fsid',[2,3])
+            ->where('c.step', 1)
+            ->whereIn('c.statu_new',[2,3])
             ->selectRaw("DATE_FORMAT(c.created_at,'{$format}') as period, COUNT(*) as total")
             ->groupBy('period')
             ->pluck('total','period');
         // TODO delivered
-        $delivered = DB::table('order_indeliveries as d')
+        $delivered = DB::table('order_logs as d')
             ->join('orders as o','o.oid','=','d.oid')
             ->where('o.sid', $store_id)
+            ->where('d.step', 2)
+            ->where('d.statu_new', 12)
             ->selectRaw("DATE_FORMAT(d.created_at,'{$format}') as period, COUNT(*) as total")
             ->groupBy('period')
             ->pluck('total','period');
@@ -394,6 +407,7 @@ class StoreWorkspace extends Component
             'confirmed' => $confirmedData->toArray(),
             'delivered' => $deliveredData->toArray(),
         ];
+        $this->dispatch('confirmation-data-updated', chartData: $this->chartData);
     }
 
     
