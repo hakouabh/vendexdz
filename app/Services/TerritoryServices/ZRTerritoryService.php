@@ -6,61 +6,87 @@ use Illuminate\Support\Facades\Http;
 
 class ZRTerritoryService
 {
-    protected string $baseUrl = 'https://api.zrexpress.app/api/v1.0';
+    protected string $baseUrl;
     protected string $apiKey;
     protected string $tenantId;
 
-    public function __construct()
+    public function __construct($installedApp)
     {
-        $this->apiKey   = config('services.zr.api_key');
-        $this->tenantId = config('services.zr.tenant_id');
+        $this->baseUrl = $installedApp->supportedApp->base_url;
+        $this->apiKey = $installedApp->token;
+        $this->tenantId = $installedApp->key;
     }
 
     
     public function getEverythingCached()
-{
-    return cache()->remember('zr_territory_full_map', 86400, function () {
-        $allCommunes = collect();
-        $allWilayas = collect();
-        $page = 1;
-        $totalPages = 1;
-
-        // حلقة تكرار لجلب كافة الصفحات
-        do {
+    {
+        return cache()->remember('ZRExpressTerritories_'.$this->tenantId, 86400, function () {
             $response = Http::withHeaders([
                 'Accept'    => 'application/json',
                 'X-Api-Key' => $this->apiKey,
                 'X-Tenant'  => $this->tenantId,
-            ])->post("{$this->baseUrl}/territories/search", [
-                'pageNumber' => $page,
-                'pageSize'   => 500, // طلب 500 في كل مرة لضمان استقرار السيرفر
-                'filters'    => [],
-                'orderBy'    => ['name asc'],
+            ])->post("{$this->baseUrl}/territories/search",[
+                "pageNumber" =>  1,
+                "pageSize" =>  5000,
+                "orderBy" =>  [
+                    "code asc"
+                ]
             ]);
+            if (!$response->successful()) {
 
-            if ($response->successful()) {
-                $data = $response->json();
-                $items = collect($data['items'] ?? []);
-                
-                // تقسيم البيانات القادمة حسب المستوى
-                $allWilayas = $allWilayas->merge($items->where('level', 'wilaya'));
-                $allCommunes = $allCommunes->merge($items->where('level', 'commune'));
-
-                // تحديث عدد الصفحات الكلي (بناءً على رد السيرفر)
-                $totalPages = $data['totalPages'] ?? 1;
-                $page++;
-            } else {
-                break; // توقف في حال حدوث خطأ
+                return [];
             }
+            $items = collect($response->json()['items']);
+            $allCommunes = collect();
+            $allWilayas = collect();
+            $allWilayas = $allWilayas->merge($items->where('level', 'wilaya'));
+            $allCommunes = $allCommunes->merge($items->where('level', 'commune'));
+            return [
+                'wilayas'  => $allWilayas->keyBy(fn($i) => (int)$i['code'])->toArray(),
+                'communes' => $allCommunes->groupBy('parentId')->toArray(),
+            ];
+        });
+    }
 
-        } while ($page <= $totalPages);
+    public function getFeesCached()
+    {
+        $response = Http::withHeaders([
+            'Accept'    => 'application/json',
+            'X-Api-Key' => $this->apiKey,
+            'X-Tenant'  => $this->tenantId,
+        ])->get("{$this->baseUrl}/delivery-pricing/rates",[
+            "pageNumber" =>  1,
+            "pageSize" =>  5000,
+            "orderBy" =>  [
+                "code asc"
+            ]
+        ]);
+        if (!$response->successful()) {
 
-        return [
-            'wilayas'  => $allWilayas->keyBy(fn($i) => (int)$i['code'])->toArray(),
-            'communes' => $allCommunes->groupBy('parentId')->toArray(),
-        ];
-    });
-}
+            return [];
+        }
+        $data = collect($response->json()['rates']);        
+        $groupedWilaya = collect($data)
+            ->filter(function ($item) {
+                return ($item['toTerritoryLevel'] ?? null) === 'wilaya';
+            })
+            ->map(function ($item) {
 
+                $home = collect($item['deliveryPrices'])
+                    ->firstWhere('deliveryType', 'home');
 
+                $pickup = collect($item['deliveryPrices'])
+                    ->firstWhere('deliveryType', 'pickup-point');
+
+                return [
+                    'wilaya_id' => $item['toTerritoryCode'],
+                    'fees' => $home['price'] ?? 0,
+                    'fees_stopdesk' => $pickup['price'] ?? 0,
+                ];
+            })
+            ->unique('wilaya_id')
+            ->sortByDesc('wilaya_id')
+            ->values();
+        return $groupedWilaya->toArray();
+    }
 }

@@ -224,7 +224,7 @@ class OrderCustomerInfo extends Component
                 $this->communes = $data['communes'][$value] ?? [];
                 break;
             case 1010:
-                $service = new ZRTerritoryService();
+                $service = new ZRTerritoryService($installedApp);
                 $data = $service->getEverythingCached();
                 $zrWilaya = $data['wilayas'][$value] ?? null;
                 if ($zrWilaya) {

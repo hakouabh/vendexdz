@@ -126,12 +126,12 @@
                         <div class="space-y-1.5">
                             <label class="text-[11px] font-bold text-slate-500 uppercase ml-1">@lang('Category')</label>
                             <select wire:model="category_id" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none appearance-none">
-                                <x-input-error for="category_id" class="mt-1" />
                                 <option value="">@lang('Select Category')</option>
                                 @foreach($categories as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
                                 @endforeach
                             </select>
+                            <x-input-error for="category_id" class="mt-1" />
                         </div>
                     </div>
                 </div>
