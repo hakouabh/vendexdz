@@ -43,14 +43,13 @@ class ShippingSwitcher
             1002 => new AndersonCreateOrderService($installedApp),
             1003 => new AndersonCreateOrderService($installedApp),
             1015 => new NoestCreateOrderService($installedApp),
-            1010 => new ZRCreateOrderService($installedApp->token),
+            1010 => new ZRCreateOrderService($installedApp),
             default => throw new \Exception("Carrier Service ID [{$id}] not found in Switcher."),
         };
     }
 
     protected function processResponse($ref, $result)
     {
-        // EcoTrack structure check: result -> results -> {ref} -> success
         if (isset($result['results'][$ref]['success']) && $result['results'][$ref]['success']) {
             return [
                 'success' => true,
@@ -64,7 +63,12 @@ class ShippingSwitcher
                 'tracking' => $result['passed'][0]['tracking'],
             ];
         }
-
+        if(isset($result['successes'])){
+            return [
+                'success' => true,
+                'tracking' => $result['successes'][0]['trackingNumber']
+            ];
+        }
 
         return [
             'success' => false, 

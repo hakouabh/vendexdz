@@ -9,14 +9,17 @@ use App\Models\OrderWaiting;
 
 class ZRCreateOrderService
 {
-    protected string $baseUrl = 'https://api.zrexpress.app/api/v1'; // تم تحديث المسار بناءً على التوثيق
+    protected string $baseUrl;
     protected string $apiKey;
     protected string $tenantId;
+    protected $installedApp;
 
-    public function __construct()
+    public function __construct($installedApp)
     {
-        $this->apiKey   = config('services.zr.api_key'); // Bearer Token
-        $this->tenantId = config('services.zr.tenant_id');
+        $this->installedApp = $installedApp;
+        $this->baseUrl = $installedApp->supportedApp->base_url;
+        $this->apiKey = $installedApp->token;
+        $this->tenantId = $installedApp->key;
     }
 
     public function sendOrders($standardOrders)
@@ -34,15 +37,6 @@ class ZRCreateOrderService
         ])->post("{$this->baseUrl}/parcels/bulk", ['parcels' => $parcels]);
 
         $data = $response->json();
-       
-     
-        if ($response->successful() || $response->status() == 207) {
-            if (isset($data['successes']) && count($data['successes']) > 0) {
-                $this->updateOrdersInDatabase($data['successes']);
-            }
-            
-            
-        }
       
         return $data;
     }
@@ -59,19 +53,18 @@ class ZRCreateOrderService
                 
                 Order::where('oid', $numericId)->update([
                     'tracking' => $trackingNumber, 
-                    'app_id'   => 1 ,
                     'custom_id'=> $parcelId
                 ]);
 
                 OrderInconfirmation::where('oid', $numericId)->delete();
-                OrderWaiting::updateOrCreate(['oid' => $numericId], ['asid' => 1]);
+                OrderWaiting::create(['oid'=>$numericId,'asid'=>1]);
             }
         }
     }
     
     public function formatOrder($standardOrder)
     {
-        $territoryService = new \App\Services\TerritoryServices\ZRTerritoryService();
+        $territoryService = new \App\Services\TerritoryServices\ZRTerritoryService($this->installedApp);
         $territoryData = $territoryService->getEverythingCached();
 
         $wilayaCode = (int)$standardOrder->wilaya;
@@ -109,7 +102,7 @@ class ZRCreateOrderService
             "orderedProducts" => [
                 [
                    
-                    "productSku"  => "CHOC-LINDT-001",
+                    // "productSku"  => "CHOC-LINDT-001",
                     "productName" => $standardOrder->product_name,
                     "unitPrice"   => (double) $standardOrder->total_price,
                     "quantity"    => (int) ($standardOrder->quantity ?? 1),
