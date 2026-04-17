@@ -54,7 +54,7 @@
     <div class="p-4 border-t border-gray-100">
 
 
-        <a href="{{ route('profile.show') }}"
+        <a href="#"
             class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl cursor-pointer transition-all duration-200 group border border-transparent hover:border-slate-100">
             <div
                 class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold shadow-sm group-hover:scale-105 transition-transform">

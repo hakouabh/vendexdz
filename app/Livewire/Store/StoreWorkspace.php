@@ -63,39 +63,32 @@ class StoreWorkspace extends Component
             ->orderByDesc('delivered_percentage')
             ->limit(5)
             ->get();
+
         $pipeLineStats = DB::table('orders as o')
-        ->leftJoin('order_inconfirmations as c', 'c.oid', '=', 'o.oid')
-        ->leftJoin('order_indeliveries as s', 's.oid', '=', 'o.oid')
-        ->leftJoin('order_dones as d', 'd.oid', '=', 'o.oid')
+            ->leftJoin('order_logs as c', 'c.oid', '=', 'o.oid')
+            ->where('o.sid', $store_id)
+            ->selectRaw('
+                COUNT(DISTINCT o.oid) as total_orders,
 
-        ->where('o.sid', $store_id)
+                -- confirmed (step 1)
+                COUNT(DISTINCT CASE 
+                    WHEN c.step = 1 AND c.statu_new IN (2,3)
+                    THEN o.oid 
+                END) as confirmed_orders,
 
-        ->selectRaw('
-            COUNT(DISTINCT o.oid) as total_orders,
+                -- shipped (entered step 2)
+                COUNT(DISTINCT CASE 
+                    WHEN c.step = 2
+                    THEN o.oid 
+                END) as shipped_orders,
 
-            -- confirmed OR shipped OR delivered
-            COUNT(DISTINCT CASE 
-                WHEN c.fsid IN (2,3) 
-                OR s.oid IS NOT NULL
-                OR d.oid IS NOT NULL
-                THEN o.oid 
-            END) as confirmed_orders,
-
-            -- shipped OR delivered
-            COUNT(DISTINCT CASE 
-                WHEN s.oid IS NOT NULL
-                OR d.oid IS NOT NULL
-                THEN o.oid 
-            END) as shipped_orders,
-
-            -- delivered only
-            COUNT(DISTINCT CASE 
-                WHEN d.oid IS NOT NULL 
-                THEN o.oid 
-            END) as delivered_orders
-        ')
-        
-        ->first();
+                -- delivered (step 2 + status 12)
+                COUNT(DISTINCT CASE 
+                    WHEN c.step = 2 AND c.statu_new = 12
+                    THEN o.oid 
+                END) as delivered_orders
+            ')
+            ->first();
 
         $pipeLineTotal = $pipeLineStats->total_orders ?: 1;
         $this->pipeLineFlow = [
@@ -119,8 +112,11 @@ class StoreWorkspace extends Component
         $this->topProducts = DB::table('order_items as oi')
             ->join('orders as o', 'o.oid', '=', 'oi.oid')
             ->join('products as p', 'p.id', '=', 'oi.product_id')
+            ->join('order_logs as c', 'c.oid', '=', 'o.oid')
 
             ->where('o.sid', $store_id)
+            ->where('c.step', 2)
+            ->where('c.statu_new', 12)
 
             ->selectRaw('
                 p.id,
@@ -387,7 +383,6 @@ class StoreWorkspace extends Component
             ->selectRaw("DATE_FORMAT(c.created_at,'{$format}') as period, COUNT(*) as total")
             ->groupBy('period')
             ->pluck('total','period');
-        // TODO delivered
         $delivered = DB::table('order_logs as d')
             ->join('orders as o','o.oid','=','d.oid')
             ->where('o.sid', $store_id)
