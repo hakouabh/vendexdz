@@ -39,7 +39,7 @@
                     </div>
 
                     @if($start_date || $end_date)
-                    <button wire:click="$set('start_date', null); $set('end_date', null);"
+                    <button wire:click="setDateToNull()"
                         class="px-3 py-1 text-gray-400 hover:text-red-500 transition">
                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
