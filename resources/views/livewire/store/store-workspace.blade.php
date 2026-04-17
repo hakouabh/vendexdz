@@ -262,7 +262,8 @@
                     </h3>
 
                     <!-- Range buttons -->
-                    <div class="flex gap-2 d-none">
+                     @if(false)
+                    <div class="flex gap-2">
                         <button
                             wire:click="setRange('day')"
                             wire:loading.attr="disabled"
@@ -287,6 +288,7 @@
                             @lang('Month')
                         </button>
                     </div>
+                    @endif
                 </div>
 
                 <!-- Chart -->
