@@ -31,7 +31,7 @@ class SyncOrderStatus extends Command
         Order::query()
             ->where(function ($q) {
                 $q->whereHas('Waiting')
-                    ->orWhereHas('Indelivery');
+                    ->orWhereHas('IndeliveryNotDone');
             })
             ->select('id', 'tracking', 'sid', 'app_id', 'oid')
             ->chunkById(1000, function ($orders) {
