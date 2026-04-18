@@ -28,7 +28,6 @@ class TrackingOrderSwitcher
         return match ((int)$id) {
             1001, 1002, 1003 => new WorldExpressTrackingService($installedApp),
             // 1015 => new NoestStatusService($installedApp),
-            // 1010 => new ZRStatusService($installedApp->token),
             default => throw new \Exception("Carrier Service ID [{$id}] not found in Switcher."),
         };
     }

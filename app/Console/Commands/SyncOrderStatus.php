@@ -33,6 +33,7 @@ class SyncOrderStatus extends Command
                 $q->whereHas('Waiting')
                     ->orWhereHas('IndeliveryNotDone');
             })
+            ->whereIn('app_id', [1001, 1002, 1003])
             ->select('id', 'tracking', 'sid', 'app_id', 'oid')
             ->chunkById(1000, function ($orders) {
                 $groups = $orders->groupBy(fn($o) => $o->sid . '-' . $o->app_id);

@@ -34,6 +34,7 @@ class OrderWebhookController extends Controller
         'lightfunnels' => 'handleLightFunnelsWebhook',
         'foorweb' => 'handleFoorwebWebhook',
         'custom' => 'handleCustomWebhook',
+        'zr' => 'handleZrWebhook',
     ];
 
     public function orderCreated(Request $request, $platform =null) 
@@ -827,6 +828,15 @@ protected function formatAyorItems($orderLines)
     /**
      * Handle custom/unknown platform webhooks
      */
+
+    protected function handleZrWebhook(Request $request, $platform){
+        Log::build([
+            'driver' => 'single',
+            'path' => storage_path("logs/{$platform}.log"),
+        ])->info("Webhook for {$platform}", [
+            'request_data' => $request->all(),
+        ]);
+    }
     protected function handleCustomWebhook(Request $request, $platform)
     {
         $data = $request->all();

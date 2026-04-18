@@ -66,14 +66,6 @@ class NoestTrackingService
                     'ssid' => $internalStatus,
                 ]
             );
-
-            // اختياري: إذا أردت تسجيل لوق (Log) لكل تحديث جديد
-            /*
-            $order->logs()->create([
-                'content' => "Status updated to: " . $status,
-                'user_id' => 0 // System update
-            ]);
-            */
         }
         
     }
