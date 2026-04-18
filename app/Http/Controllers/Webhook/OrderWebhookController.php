@@ -841,7 +841,7 @@ protected function formatAyorItems($orderLines)
         $orderId = str_replace('VN-', '', $response['ExternalId']);
         $order = Order::find($orderId);
         if($order){
-            $remoteStatus = $response['state']['name'];
+            $remoteStatus = $response['State']['name'];
             $internalStatus = mapZrStatus($remoteStatus);
             $lastOrderLog = OrderLog::where('oid', $order->oid)->latest()->first();
             if ($internalStatus != null) {
