@@ -25,7 +25,7 @@ class ShipOrderSwitcher
             1002 => new AndersonShipOrderService($installedApp),
             1003 => new AndersonShipOrderService($installedApp),
             1015 => new NoestShipOrderService($installedApp),
-            1010 => new ZRShipOrderService($installedApp->token),
+            1010 => new ZRShipOrderService($installedApp),
             default => throw new \Exception("Carrier [{$id}] not found."),
         };
     }

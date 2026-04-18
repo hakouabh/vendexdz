@@ -31,10 +31,7 @@ class ZREditOrderService
         $parcelId = $orderRecord->custom_id;
 
         $customer = $this->updateCustomer($parcelId, $standardOrder);
-        \Log::alert($customer);
-        // 2. Update Delivery Address (PATCH) - FIXED URL
         $address = $this->updateAddress($parcelId, $standardOrder);
-        // 3. Update Products & Amount (PUT)
         $products = $this->updateProducts($parcelId, $standardOrder);
         return [
             'success'   => $customer->successful() && $address->successful() && $products->successful(),

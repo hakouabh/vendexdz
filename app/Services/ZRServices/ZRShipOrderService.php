@@ -7,19 +7,17 @@ use App\Models\Order;
 
 class ZRShipOrderService
 {
-    protected string $baseUrl = 'https://api.zrexpress.app/api/v1'; 
+    protected string $baseUrl;
     protected string $apiKey;
     protected string $tenantId;
 
-    public function __construct()
+    public function __construct($installedApp)
     {
-        $this->apiKey   = config('services.zr.api_key');
-        $this->tenantId = config('services.zr.tenant_id');
+        $this->baseUrl = $installedApp->supportedApp->base_url;
+        $this->apiKey = $installedApp->token;
+        $this->tenantId = $installedApp->key;
     }
 
-    /**
-    
-     */
     public function validateAndShip(string $tracking)
     {
 
@@ -46,7 +44,6 @@ class ZRShipOrderService
         ]);
          
         $data = $response->json();
-        dd( $data);
         if ($response->successful()) {
             return [
                 'success' => true,
