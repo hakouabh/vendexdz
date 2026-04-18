@@ -844,7 +844,7 @@ protected function formatAyorItems($orderLines)
             $remoteStatus = $response['state']['name'];
             $internalStatus = mapZrStatus($remoteStatus);
             $lastOrderLog = OrderLog::where('oid', $order->oid)->latest()->first();
-            if ($remoteStatus !== 'pret_a_expedier') {
+            if ($internalStatus != null) {
                                         
                 $order->Waiting()->delete();
                 $order->Indelivery()->updateOrCreate(
@@ -857,7 +857,7 @@ protected function formatAyorItems($orderLines)
                 $order->Waiting()->updateOrCreate(
                     ['oid' => $order->oid],
                     [
-                        'ssid' => $internalStatus,
+                        'asid' => 1,
                     ]
                 );
             }
@@ -1297,7 +1297,7 @@ protected function formatAyorItems($orderLines)
     private function mapZrStatus($status)
     {
         $map = [
-            'en_ramassage'           =>  '1',
+            'pret_a_expedier'           =>  '1',
             'en_preparation_stock'   =>  '2',
             'vers_hub'               =>  '3',
             'en_hub'                 =>  '4',
@@ -1315,7 +1315,7 @@ protected function formatAyorItems($orderLines)
             'retour_recu'            =>  '16',
             'retour_archive'         =>  '17',
             'annule'                 =>  '18',
-            'pret_a_expedier'       => null
+            'prete_a_expedier'       => null
         ];
 
         return $map[$status] ?? 'unknown';
