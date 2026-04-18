@@ -7,14 +7,15 @@ use App\Models\Order;
 
 class ZRDeleteOrderService
 {
-    protected string $baseUrl = 'https://api.zrexpress.app/api/v1';
+    protected string $baseUrl;
     protected string $apiKey;
     protected string $tenantId;
 
-    public function __construct()
+    public function __construct($installedApp)
     {
-        $this->apiKey   = config('services.zr.api_key');
-        $this->tenantId = config('services.zr.tenant_id');
+        $this->baseUrl = $installedApp->supportedApp->base_url;
+        $this->apiKey = $installedApp->token;
+        $this->tenantId = $installedApp->key;
     }
 
     
@@ -38,17 +39,13 @@ class ZRDeleteOrderService
             'X-Tenant'  => $this->tenantId,
         ])->delete("{$this->baseUrl}/parcels/{$parcelId}");
 
-    
-        if ($response->status() === 204 || $response->successful()) {
+        if ($response->status() === 200 || $response->successful()) {
             return [
                 'success' => true,
                 'message' => 'Parcel deleted successfully from ZR Express.'
             ];
         }
-
-      
         return [
-            'success' => false,
             'status'  => $response->status(),
             'message' => $response->json()['detail'] ?? 'Failed to delete parcel.'
         ];

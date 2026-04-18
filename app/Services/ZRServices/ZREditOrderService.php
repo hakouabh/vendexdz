@@ -8,14 +8,17 @@ use App\Services\TerritoryServices\ZRTerritoryService;
 
 class ZREditOrderService
 {
-    protected string $baseUrl = 'https://api.zrexpress.app/api/v1';
+    protected string $baseUrl;
     protected string $apiKey;
     protected string $tenantId;
+    protected $installedApp;
 
-    public function __construct()
+    public function __construct($installedApp)
     {
-        $this->apiKey   = config('services.zr.api_key');
-        $this->tenantId = config('services.zr.tenant_id');
+        $this->installedApp = $installedApp;
+        $this->baseUrl = $installedApp->supportedApp->base_url;
+        $this->apiKey = $installedApp->token;
+        $this->tenantId = $installedApp->key;
     }
 
     public function updateOrder(string $tracking, $standardOrder)
@@ -27,12 +30,9 @@ class ZREditOrderService
 
         $parcelId = $orderRecord->custom_id;
 
-        // 1. Update Customer (PATCH)
         $customer = $this->updateCustomer($parcelId, $standardOrder);
-        
         // 2. Update Delivery Address (PATCH) - FIXED URL
         $address = $this->updateAddress($parcelId, $standardOrder);
-
         // 3. Update Products & Amount (PUT)
         $products = $this->updateProducts($parcelId, $standardOrder);
         return [
@@ -58,7 +58,7 @@ class ZREditOrderService
 
     protected function updateAddress(string $parcelId, $order)
     {
-        $territory = new ZRTerritoryService();
+        $territory = new ZRTerritoryService($this->installedApp);
         $data = $territory->getEverythingCached();
 
         $zrWilaya = $data['wilayas'][(int)$order->wilaya] ?? null;
@@ -70,32 +70,39 @@ class ZREditOrderService
 
         // URL changed from /address to /deliveryAddress based on your docs
         return Http::withHeaders($this->getHeaders())
-            ->patch("{$this->baseUrl}/parcels/{$parcelId}/deliveryAddress", [
+            ->patch("{$this->baseUrl}/parcels/{$parcelId}/deliveryAddress", 
+            [
                 "parcelId"           => $parcelId,
-                "street"             => $order->address,
-                "city"               => $zrWilaya['name'],
-                "cityTerritoryId"    => $zrWilaya['id'],
-                "district"           => $zrCommune['name'],
-                "districtTerritoryId" => $zrCommune['id'],
-                "country"            => "algeria"
+                'deliveryAddress' => [
+                    "street"             => $order->address,
+                    "city"               => $zrWilaya['name'],
+                    "cityTerritoryId"    => $zrWilaya['id'],
+                    "district"           => $zrCommune['name'],
+                    "districtTerritoryId" => $zrCommune['id'],
+                    "country"            => "algeria"
+                ]
             ]);
     }
 
-    protected function updateProducts(string $parcelId, $order)
+    protected function updateProducts(string $parcelId, $standardOrder)
     { 
-        // Preparation of the payload based on your documentation
+        $order_id = str_replace('VN-', '', $standardOrder->ref);
+
+        $order = Order::with(['items'])->find($order_id);
+        $orderedProducts = $order->items->map(function($item){
+            return [
+                "productSku"  => $item->variant ? $item->variant->sku : null,
+                "productName" => $item->product->nickname??$item->product->name,
+                "unitPrice"   => $item->product->price,
+                "quantity"    => $item->quantity,
+                "stockType"   => "none"
+            ];
+        })->toArray();
         $payload = [
             "parcelId"    => $parcelId,
-            "description" => $order->product_name, // Mandatory
-            "amount"      => (double) $order->total_price, // Optional, but recommended to keep synced
-            "orderedProducts" => [
-                [
-                    "productName" => $order->product_name,
-                    "unitPrice"   => (double) $order->total_price,
-                    "quantity"    => (int) ($order->quantity ?? 1),
-                    "stockType"   => "none", // Options: local, warehouse, none
-                ]
-            ]
+            "description" => $standardOrder->product_name, // Mandatory
+            "amount"      => (double) $standardOrder->total_price, // Optional, but recommended to keep synced
+            "orderedProducts" => $orderedProducts
         ];
 
         // The documentation example shows -X PUT even though the header says PATCH

@@ -25,7 +25,7 @@ class RemoveOrderSwitcher
             1002 => new AndersonDeleteOrderService($installedApp),
             1003 => new AndersonDeleteOrderService($installedApp),
             1015 => new NoestDeleteOrderService($installedApp),
-            1010 => new ZRDeleteOrderService($installedApp->token),
+            1010 => new ZRDeleteOrderService($installedApp),
             default => throw new \Exception("Carrier [{$id}] not found."),
         };
     }
