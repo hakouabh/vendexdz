@@ -842,7 +842,7 @@ protected function formatAyorItems($orderLines)
         $order = Order::find($orderId);
         if($order){
             $remoteStatus = $response['State']['Name'];
-            $internalStatus = mapZrStatus($remoteStatus);
+            $internalStatus = $this->mapZrStatus($remoteStatus);
             $lastOrderLog = OrderLog::where('oid', $order->oid)->latest()->first();
             if ($internalStatus !== null) {
                                         
