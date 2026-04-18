@@ -1315,7 +1315,7 @@ protected function formatAyorItems($orderLines)
             'retour_recu'            =>  '16',
             'retour_archive'         =>  '17',
             'annule'                 =>  '18',
-            'prete_a_expedier'       => null
+            'pret_a_expedier'       => null
         ];
 
         return $map[$status] ?? 'unknown';
