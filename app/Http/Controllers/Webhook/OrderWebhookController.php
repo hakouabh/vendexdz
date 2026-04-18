@@ -837,7 +837,7 @@ protected function formatAyorItems($orderLines)
         ])->info("Webhook for {$platform}", [
             'request_data' => $request->all(),
         ]);
-        $response = $request->data;
+        $response = $request->Data;
         $orderId = str_replace('VN-', '', $response['ExternalId']);
         $order = Order::find($orderId);
         if($order){
