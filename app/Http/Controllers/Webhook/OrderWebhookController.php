@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Webhook;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderLog;
 use App\Models\OrderItems;
 use App\Models\Client;
 use App\Models\ProductVariant;
@@ -836,6 +837,50 @@ protected function formatAyorItems($orderLines)
         ])->info("Webhook for {$platform}", [
             'request_data' => $request->all(),
         ]);
+        $response = $request->data;
+        $orderId = str_replace('VN-', '', $response['ExternalId']);
+        $order = Order::find($orderId);
+        if($order){
+            $remoteStatus = $response['state']['name'];
+            $internalStatus = mapZrStatus($remoteStatus);
+            $lastOrderLog = OrderLog::where('oid', $order->oid)->latest()->first();
+            if ($remoteStatus !== 'pret_a_expedier') {
+                                        
+                $order->Waiting()->delete();
+                $order->Indelivery()->updateOrCreate(
+                    ['oid' => $order->oid],
+                    [
+                        'ssid' => $internalStatus,
+                    ]
+                );
+            } else {
+                $order->Waiting()->updateOrCreate(
+                    ['oid' => $order->oid],
+                    [
+                        'ssid' => $internalStatus,
+                    ]
+                );
+            }
+            if($lastOrderLog->step == 1 && $lastOrderLog->statu_new != $internalStatus){
+                OrderLog::create([
+                    'oid' => $order->oid,
+                    'aid' => 9,
+                    'statu_old' => $lastOrderLog->statu_new,
+                    'statu_new' => $internalStatus,
+                    'text' => "Status synced from remote: $remoteStatus",
+                    'step' => 2
+                ]);
+            } elseif($lastOrderLog->step == 2 && $lastOrderLog->statu_new != $internalStatus){
+                OrderLog::create([
+                    'oid' => $order->oid,
+                    'aid' => null,
+                    'statu_old' => $lastOrderLog->statu_new,
+                    'statu_new' => $internalStatus,
+                    'text' => "Status synced from remote: $remoteStatus",
+                    'step' => 2
+                ]);       
+            }
+        }
     }
     protected function handleCustomWebhook(Request $request, $platform)
     {
@@ -1247,5 +1292,32 @@ protected function formatAyorItems($orderLines)
         $random = mt_rand(1000, 9999);
         
         return "{$timestamp}{$random}";
+    }
+
+    private function mapZrStatus($status)
+    {
+        $map = [
+            'en_ramassage'           =>  '1',
+            'en_preparation_stock'   =>  '2',
+            'vers_hub'               =>  '3',
+            'en_hub'                 =>  '4',
+            'vers_wilaya'            =>  '5',
+            'en_preparation'         =>  '6',
+            'en_livraison'           =>  '7',
+            'suspendu'               =>  '8',
+            'Picked Up'              =>  '9',
+            'encaisse_non_paye'      =>  '10',
+            'paiements_prets'        =>  '11',
+            'paye_et_archive'        =>  '12',
+            'retour_chez_livreur'    =>  '13',
+            'retour_transit_entrepot' =>  '14',
+            'retour_en_traitement'   =>  '15',
+            'retour_recu'            =>  '16',
+            'retour_archive'         =>  '17',
+            'annule'                 =>  '18',
+            'pret_a_expedier'       => null
+        ];
+
+        return $map[$status] ?? 'unknown';
     }
 }
