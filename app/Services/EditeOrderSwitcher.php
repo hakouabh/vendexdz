@@ -19,7 +19,6 @@ class EditeOrderSwitcher
         $service = $this->resolveService($order->app_id, $order->sid);
         
         $result = $service->updateOrder($order->tracking, $orders);
-          
         return $result;
     }
 

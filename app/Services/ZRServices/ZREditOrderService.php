@@ -31,6 +31,7 @@ class ZREditOrderService
         $parcelId = $orderRecord->custom_id;
 
         $customer = $this->updateCustomer($parcelId, $standardOrder);
+        \Log::alert($customer);
         // 2. Update Delivery Address (PATCH) - FIXED URL
         $address = $this->updateAddress($parcelId, $standardOrder);
         // 3. Update Products & Amount (PUT)
@@ -42,7 +43,7 @@ class ZREditOrderService
                 'address'  => $address->json(),
                 'products' => $products->json(),
             ],
-            'errors' => $this->collectErrors($customer, $address, $products)
+            'message' => $this->collectErrors($customer, $address, $products)
         ];
     }
 
@@ -120,13 +121,13 @@ class ZREditOrderService
         ];
     }
 
-    private function collectErrors($res1, $res2, $res3): array
+    private function collectErrors($res1, $res2, $res3)
     {
         $errors = [];
-        if (!$res1->successful()) $errors['customer'] = $res1->json();
-        if (!$res2->successful()) $errors['address'] = $res2->json();
-        if (!$res3->successful()) $errors['products'] = $res3->json();
-        return $errors;
+        if (!$res1->successful()) $errors['customer'] = $res1->json()['detail'] ?? 'Customer error';
+        if (!$res2->successful()) $errors['address'] = $res2->json()['detail'] ?? 'Address error';
+        if (!$res3->successful()) $errors['products'] = $res3->json()['detail'] ?? 'Products error';
+        return implode(' | ', $errors);
     }
 
     private function formatPhone($phone)
