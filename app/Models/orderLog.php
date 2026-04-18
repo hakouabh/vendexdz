@@ -19,7 +19,7 @@ class OrderLog extends Model
     }
     public function firstStepStatusNew()
     {
-        return $this->belongsTo(FirstStepStatu::class, 'statu_new', 'fsid');
+        return $this->belongsTo(firstStepStatu::class, 'statu_new', 'fsid');
     }
 
     public function secondStepStatusNew()
@@ -29,7 +29,7 @@ class OrderLog extends Model
 
     public function firstStepStatusOld()
     {
-        return $this->belongsTo(FirstStepStatu::class, 'statu_old', 'fsid');
+        return $this->belongsTo(firstStepStatu::class, 'statu_old', 'fsid');
     }
 
     public function secondStepStatusOld()
