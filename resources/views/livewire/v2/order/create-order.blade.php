@@ -109,7 +109,7 @@
                                         @if($v->quantity == 0)
                                             <span>@lang('out of stock')</span>
                                         @else
-                                            <span> - qty:{{$v->quantity}}</span>
+                                            <span> {{$v->label ? '-' : '' }} qty:{{$v->quantity}}</span>
                                         @endif
                                     </option>
                                     @endforeach

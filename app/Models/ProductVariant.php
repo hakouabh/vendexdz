@@ -28,6 +28,6 @@ class ProductVariant extends Model
             ->filter()
             ->implode(' ');
 
-        return $label ?: $this->sku;
+        return $label ?? null;
     } 
 }
