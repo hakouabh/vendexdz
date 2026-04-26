@@ -129,6 +129,11 @@ trait OrderTrait
             ->with('variants')
             ->get();
     }
+
+    public function setDateToNull(){
+        $this->start_date = null;
+        $this->end_date = null;
+    }
     
     public function getVariants($id)
     {
