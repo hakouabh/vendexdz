@@ -24,9 +24,9 @@ class Reported extends Component
     public $tempOrderId;
     public $scheduleTime;
     public $selectedStatu = null;
-    public $storefilter=null;
-    public $productfilter=null;
-    public $statufilter=null;
+    public $storefilter;
+    public $productfilter;
+    public $statufilter;
     public $start_date=null;
     public $end_date=null;
     public $stores;
@@ -49,7 +49,7 @@ class Reported extends Component
         $orders = Order::query()->whereIn('sid',$this->stores->pluck('id'))
         ->whereHas('Inconfirmation', function ($query) {
             if ($this->statufilter) {
-                $query->where('fsid', $this->statufilter);
+                $query->where('fsid', $this->statufilter['fsid']);
             } else {
                 // Default view logic: Exclude specific statuses
                 $query->whereIn('fsid', [3, 4]);
@@ -58,12 +58,12 @@ class Reported extends Component
 
         // 2. Store Filter (Directly on the 'orders' table)
         ->when($this->storefilter, function ($query) {
-            $query->where('sid', $this->storefilter);
+            $query->where('sid', $this->storefilter['id']);
         })
 
         ->when($this->productfilter, function ($query) {
             $query->whereHas('items', function ($q) {
-                $q->where('product_id',$this->productfilter);
+                $q->where('product_id',$this->productfilter['id']);
             });
         })
         ->when($this->search, function ($query) {

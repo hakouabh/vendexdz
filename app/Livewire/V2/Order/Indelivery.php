@@ -29,9 +29,9 @@ class Indelivery extends Component
     public $tempOrderId;
     public $scheduleTime;
     public $selectedStatu = null;
-    public $storefilter=null;
-    public $productfilter=null;
-    public $statufilter=null;
+    public $storefilter;
+    public $productfilter;
+    public $statufilter;
     public $start_date=null;
     public $end_date=null;
     public $stores;
@@ -53,20 +53,20 @@ class Indelivery extends Component
        $orders = Order::query()->whereIn('sid',$this->stores->pluck('id'))
         ->whereHas('Indelivery', function ($query) {
             if ($this->statufilter) {
-                $query->where('ssid', $this->statufilter);
+                $query->where('ssid', $this->statufilter['ssid']);
             } else {
                 // Default view logic: Exclude specific statuses
                 $query->whereNotIn('ssid', [3, 4]);
             }
         })
         ->when($this->storefilter, function ($query) {
-            $query->where('sid', $this->storefilter);
+            $query->where('sid', $this->storefilter['id']);
         })
 
         // 3. Product SKU Filter (Table: order_items)
         ->when($this->productfilter, function ($query) {
             $query->whereHas('items', function ($q) {
-                $q->where('product_id',$this->productfilter);
+                $q->where('product_id',$this->productfilter['id']);
             });
         })
         // 4. Date Range (Optional)

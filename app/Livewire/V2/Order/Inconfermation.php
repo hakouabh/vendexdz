@@ -24,9 +24,9 @@ class Inconfermation extends Component
     public $tempOrderId;
     public $scheduleTime;
     public $selectedStatu = null;
-    public $storefilter=null;
-    public $productfilter=null;
-    public $statufilter=null;
+    public $storefilter;
+    public $productfilter;
+    public $statufilter;
     public $start_date=null;
     public $end_date=null;
     public $search;
@@ -44,7 +44,7 @@ class Inconfermation extends Component
     { 
         $firstStepStatus = firstStepStatu::all();
         $products = Product::when($this->storefilter, function ($query) {
-            $query->where('store_id', $this->storefilter);
+            $query->where('store_id', $this->storefilter['id']);
         })
         ->when($this->storefilter == null, function ($query) {
             $query->whereIn('store_id', $this->stores->pluck('id'));
@@ -53,13 +53,13 @@ class Inconfermation extends Component
         $orders = Order::query()->whereIn('sid',$this->stores->pluck('id'))
             ->whereHas('Inconfirmation', function ($query) {
             if ($this->statufilter) {
-                $query->where('fsid', $this->statufilter);
+                $query->where('fsid', $this->statufilter['fsid']);
             } else {
                 $query->whereNotIn('fsid', [3, 4]);
             }
         })
         ->when($this->storefilter, function ($query) {
-            $query->where('sid', $this->storefilter);
+            $query->where('sid', $this->storefilter['id']);
         })
         ->when($this->search, function ($query) {
             $query->where(function($q) {
@@ -72,7 +72,7 @@ class Inconfermation extends Component
         })
         ->when($this->productfilter, function ($query) {
             $query->whereHas('items', function ($q) {
-                $q->where('product_id',$this->productfilter);
+                $q->where('product_id', $this->productfilter['id']);
             });
         })
         ->when($this->start_date, fn($q) => $q->whereDate('created_at', '>=', $this->start_date))

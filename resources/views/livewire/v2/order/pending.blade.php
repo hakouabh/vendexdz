@@ -96,7 +96,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                         </svg>
-                        {{ __('Filter Store') }}
+                        {{ $storefilter['name'] ?? __('Filter Store') }}
+                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
                     </button>
                 </x-slot>
 
@@ -108,7 +112,7 @@
                     <x-dropdown-link wire:click="Storefilter(null)">All</x-dropdown-link>
 
                     @foreach($stores as $store)
-                    <x-dropdown-link wire:click="Storefilter({{$store->id}})">
+                    <x-dropdown-link wire:click="Storefilter({{$store}})">
                         {{$store->name}}
                     </x-dropdown-link>
                     @endforeach
@@ -122,7 +126,15 @@
                 <x-slot name="trigger">
                     <button type="button"
                         class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-500 bg-white hover:text-gray-700 transition">
-                        {{ __('Filter Product') }}
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        {{ $productfilter['name'] ?? __('Filter Product') }}
+                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
                     </button>
                 </x-slot>
 
@@ -134,7 +146,7 @@
                     <x-dropdown-link wire:click="Productfilter(null)">All</x-dropdown-link>
 
                     @foreach($products as $product)
-                    <x-dropdown-link wire:click="Productfilter('{{$product->id}}')">
+                    <x-dropdown-link wire:click="Productfilter({{$product}})">
                         {{$product->name}}
                     </x-dropdown-link>
                     @endforeach
@@ -147,7 +159,19 @@
                 <x-slot name="trigger">
                     <button type="button"
                         class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-500 bg-white hover:text-gray-700 transition">
-                        {{ __('Filter Status') }}
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        @if($statufilter)
+                            <i class="{{$statufilter['icon']}}"></i> {{__($statufilter['name'])}}
+                        @else
+                           {{ __('Filter Status') }}
+                        @endif
+                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
                     </button>
                 </x-slot>
 
@@ -162,7 +186,7 @@
                         </x-dropdown-link>
 
                         @foreach($AcceptStepStatus as $status)
-                        <x-dropdown-link wire:click="Statufilter({{$status->asid}})">
+                        <x-dropdown-link wire:click="Statufilter({{$status}})">
                             <i class="{{$status->icon}}"></i> {{ __($status->name) }}
                         </x-dropdown-link>
                         @endforeach

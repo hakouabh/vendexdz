@@ -49,16 +49,16 @@ trait OrderTrait
         $this->store_id = $this->stores->first()->id ?? null;
     }
 
-    public function Storefilter($id){
-        $this->storefilter = $id;
+    public function Storefilter($store){
+        $this->storefilter = $store;
     }
 
-    public function Productfilter($id){
-        $this->productfilter = $id;
+    public function Productfilter($product){
+        $this->productfilter = $product;
     }
 
-    public function Statufilter($id){
-        $this->statufilter = $id;
+    public function Statufilter($status){
+        $this->statufilter = $status;
     }
 
     public function toggleExpand($id)
