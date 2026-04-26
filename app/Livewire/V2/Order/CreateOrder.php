@@ -333,6 +333,7 @@ class CreateOrder extends Component
         if($value > $this->totalDiscount){
             $this->showDiscountModal = true;
         }
+        $this->calculateTotal();
     }
 
     public function createOrder()
