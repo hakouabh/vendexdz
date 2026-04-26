@@ -1025,6 +1025,16 @@ protected function formatAyorItems($orderLines)
                 'fsid' => 1,
                 'aid' => $user->id,
             ]);
+            $calculatedPrice = 0;
+            $calculatedPrice = $order->items->sum(function ($item) {
+                $price = $item->variant ? $item->variant->product->price : 0;
+                return $price * $item['quantity'];
+            });
+            
+            $order->details()->update([
+                'price' => $calculatedPrice,
+                'total' => $calculatedPrice,
+            ]); 
 
             DB::commit();
 
