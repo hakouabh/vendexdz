@@ -81,13 +81,13 @@
           <div wire:loading.remove>
               <div wire:key="tab-wrapper-{{ $currentTab }}-{{ $store_id }}">
                   @if ($currentTab === 'inconfirmation')
-                  @livewire('v2.order.inconfermation', ['storefilter' => $store_id, 'context' => $context], key('comp-inconf-' . $currentTab . $store_id))
+                  @livewire('v2.order.inconfermation', ['storefilter' => $store, 'context' => $context], key('comp-inconf-' . $currentTab . $store_id))
                   @elseif ($currentTab === 'postponed')
-                  @livewire('v2.order.reported', ['storefilter' => $store_id, 'context' => $context], key('comp-postponed-' . $currentTab . $store_id))
+                  @livewire('v2.order.reported', ['storefilter' => $store, 'context' => $context], key('comp-postponed-' . $currentTab . $store_id))
                   @elseif ($currentTab === 'waiting')
-                  @livewire('v2.order.pending', ['storefilter' => $store_id, 'context' => $context], key('comp-waiting-' . $currentTab . $store_id))
+                  @livewire('v2.order.pending', ['storefilter' => $store, 'context' => $context], key('comp-waiting-' . $currentTab . $store_id))
                   @elseif ($currentTab === 'indelivery')
-                  @livewire('v2.order.indelivery', ['storefilter' => $store_id, 'context' => $context], key('comp-delivery-' . $currentTab . $store_id))
+                  @livewire('v2.order.indelivery', ['storefilter' => $store, 'context' => $context], key('comp-delivery-' . $currentTab . $store_id))
                   @endif
               </div>
           </div>

@@ -34,6 +34,7 @@ class Orders extends Component
     public $address;
     public $comment;
     public $store_id;
+    public $store;
 
     // Order Configuration
     public $delivery_type = 1;
@@ -95,7 +96,8 @@ class Orders extends Component
             $query = Store::where('created_by', '!=', $user->id); // all stores
         }
         $stores = $query->latest()->get();
-        $this->store_id = request()->is('admin/orders') ? null : $stores->first()->id;
+        $this->store = request()->is('admin/orders') ? null : $stores->first();
+        $this->store_id = $this->store['id'] ?? null;
         $this->loadAvailableProducts();
     }
 
