@@ -125,6 +125,18 @@ trait OrderTrait
 
         if (!$this->activeOrder) return;
 
+        if(!$this->activeOrder->app_id){
+            $firstItem = $this->activeOrder->items->first();
+            $fee = fees::where('product_id', $firstItem->product_id)
+                ->where('wid', $this->activeOrder->client->wilaya)
+                ->first();
+            if($fee){
+                $this->activeOrder->update([
+                    'app_id' => $fee->app_id
+                ]);
+            }
+        }
+
         $this->availableProducts = Product::where('store_id', $this->activeOrder->sid)
             ->with('variants')
             ->get();

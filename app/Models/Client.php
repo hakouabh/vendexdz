@@ -16,7 +16,7 @@ class Client extends Model
     ];
     public function willaya()
     {
-         return $this->hasOne(willaya::class, 'wid', 'wilaya');
+        return $this->hasOne(willaya::class, 'wid', 'wilaya');
     }
   
 }
