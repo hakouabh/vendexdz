@@ -98,22 +98,24 @@ class Inconfermation extends Component
 
     public function sendAllToShipping()
     {
-        return;
-        $user = auth()->user();
-
         $ordersToSend = Order::whereHas('Inconfirmation.firstStepStatu', function ($query) {
-                $query->where('fsid', 2); 
-            })
-            ->whereIn('sid', $user->stores->pluck('id'))
-            ->with(['client', 'details', 'items.variant.product'])
-            ->get();
+            $query->where('fsid', 1); 
+        })
+        ->when($this->storefilter, function ($query) {
+            $query->where('sid', $this->storefilter['id']);
+        })
+        ->when($this->storefilter == null, function ($query) {
+            $query->whereIn('sid', $this->stores->pluck('id'));
+        })
+        ->with(['client', 'details', 'items.variant.product'])
+        ->get();
 
         if ($ordersToSend->isEmpty()) {
             session()->flash('error', 'No confirmed orders found to dispatch.');
             return;
         }
         $storesOrders = $ordersToSend->groupBy('sid');
-
+        $notifications = [];
         foreach ($storesOrders as $storeOrders){
             $groupedOrders = $storeOrders->groupBy('app_id');
         
@@ -121,58 +123,27 @@ class Inconfermation extends Component
             $totalErrors = 0;
 
             try {
-                $switcher = new \App\Services\ShippingSwitcher();
+                $switcher = new ShippingSwitcher();
 
                 foreach ($groupedOrders as $appId => $ordersInGroup) {
                     $standardizedOrders = $ordersInGroup->map(function($order) {
                         $this->activeOrder = $order;
                         return $this->getLocalStandardizedData();
                     })->toArray();
-                
-                    $bulkResult = $switcher->dispatch($standardizedOrders, $this->activeOrder);
-        
-                    foreach ($bulkResult['results'] as $ref => $result) {
-                        if (($result['success'] ?? false) === true) {
-                        $id = str_replace('VN-', '', $result['reference']);
-                        $order = Order::find($id);
 
-                        if (!$order) {
-                            \Log::warning("Order #{$id} not found in DB.");
-                            continue;
-                        }
-
-                        $order->update([
-                            'tracking'  => $result['tracking'],
-                            'custom_id' =>  $result['parcelId'] ?? null,
-                        ]);
-
-                        OrderInconfirmation::where('oid', $order->oid)->delete();
-                        OrderWaiting::create([
-                            'oid'  => $order->oid,
-                            'asid' => 1
-                        ]);
-
-                        $this->dispatch(
-                            'notify',
-                            type: 'success',
-                            message: "Dispatched! Tracking: {$result['tracking']}"
-                        );
-
-                        $totalSuccess++;
-                        continue;
-                        }
-                        else {
-                            $totalErrors++;
-                            \Log::warning("Order #{$ref} (App: {$appId}) not found in bulk response.");
-                        }
+                    $notifications = array_merge(
+                        $notifications, 
+                        $switcher->createParcels($standardizedOrders, $this->activeOrder)
+                    );
+                    foreach ($notifications as $notification) {
+                        $notification['status'] == 'success' ? $totalSuccess++ : $totalErrors++;
                     }
                 }
-                $this->dispatch('notify', type: 'success', message: "Process Finished: $totalSuccess orders sent. $totalErrors failed.");
             } catch (\Exception $e) {
-                \Log::error("Critical Bulk Shipping Error: " . $e->getMessage());
-                $this->dispatch('notify', type: 'error', message: "Error: " . $e->getMessage());
+                \Log::error($e->getMessage());
             }
         }
+        $this->dispatch('notify', type: 'success', message: "Process Finished: $totalSuccess orders sent. $totalErrors failed.");
     }
 
     private function getLocalStandardizedData()

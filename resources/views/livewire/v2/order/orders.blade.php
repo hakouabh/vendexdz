@@ -10,22 +10,6 @@
                 </a>
           </div>
       </div>
-      <div>
-          @if($context == 'agent' || $context == 'manager')
-          <div class="w-1/2 my-5">
-              <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">
-                  @lang('Shops You link with')</label>
-              <div class="flex rounded-lg bg-gray-100  p-1">
-                  @foreach($user->stores as $store)
-                  <button type="button" wire:key="store-{{ $store->id }}"
-                      wire:click="$set('store_id', {{ $store->id }})"
-                      class="flex-1 max-w-44 rounded py-1.5 text-[10px] font-bold {{ $store_id==$store->id?'bg-white text-blue-600 shadow-sm':'text-gray-400' }}"><i
-                          class="ri-store-2-line text-xs mx-2"></i>{{$store->name}}</button>
-                  @endforeach
-              </div>
-          </div>
-          @endif
-      </div>
       <div class="">
           <div class="mb-8">
               <div class="px-1 mb-4">

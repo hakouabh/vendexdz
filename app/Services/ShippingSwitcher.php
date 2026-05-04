@@ -6,12 +6,12 @@ use App\Services\AndersonServices\AndersonCreateOrderService;
 use App\Services\NoestServices\NoestCreateOrderService;
 use App\Services\ZRServices\ZRCreateOrderService;
 use App\Models\installedApps;
+use App\Models\OrderInconfirmation;
+use App\Models\OrderWaiting;
+use App\Models\Order;
 
 class ShippingSwitcher
 {
-    /**
-     * Now accepts a single standard object OR an array of standard objects
-     */
     public function dispatch($orders, $order) 
     {  
         // 1. Resolve service
@@ -33,6 +33,15 @@ class ShippingSwitcher
         // 5. If it was a single order, process the individual response as before
         $singleRef = $orderList[0]->ref;
         return $this->processResponse($singleRef, $result);
+    }
+
+    public function createParcels($orders, $order) 
+    {  
+        $service = $this->resolveService($order->app_id, $order->sid);
+
+        $result = $service->sendOrders($orders);
+        
+        return $this->processCreateOrdersResponse($result);
     }
 
     protected function resolveService($id, $sid)
@@ -75,5 +84,146 @@ class ShippingSwitcher
             'success' => false, 
             'message' => $result['results'][$ref]['errors'] ?? 'API error for ' . $ref
         ];
+    }
+    protected function processCreateOrdersResponse($response)
+    {
+        $notifications = [];
+        if (isset($response['passed'])) {
+            foreach ($response['passed'] as $passed) {
+                $reference = $passed['reference'] ?? null;
+
+                if (!$reference) {
+                    continue;
+                }
+                $id = str_replace('VN-', '', $reference);
+                $order = Order::find($id);
+
+                if (!$order) {
+                    continue;
+                }
+                $order->tracking = $passed['tracking'];
+                $order->save();
+                OrderInconfirmation::where('oid', $order->oid)->delete();
+                OrderWaiting::create([
+                    'oid'  => $order->oid,
+                    'asid' => 1
+                ]);
+
+                $notifications[] = [
+                    'order_number' => $reference,
+                    'status' => 'success',
+                    'message' => 'Parcel created successfully',
+                ];
+            }
+        }
+        if (isset($response['successes'])) {
+            foreach ($response['successes'] as $successe) {
+                $reference = $successe['externalId'] ?? null;
+
+                if (!$reference) {
+                    continue;
+                }
+
+                $id = str_replace('VN-', '', $reference);
+                $order = Order::find($id);
+
+                if (!$order) {
+                    continue;
+                }
+                $order->tracking = $successe['trackingNumber'];
+                $order->custom_id = $successe['parcelId'] ?? null;
+                $order->save();
+                OrderInconfirmation::where('oid', $order->oid)->delete();
+                OrderWaiting::create([
+                    'oid'  => $order->oid,
+                    'asid' => 1
+                ]);
+
+                $notifications[] = [
+                    'order_number' => $reference,
+                    'status' => 'success',
+                    'message' => 'Parcel created successfully',
+                ];
+            }
+        }
+        if (isset($response['failed'])) {
+            foreach ($response['failed'] as $failed) {
+                $reference = $failed['reference'] ?? null;
+
+                if (!$reference) {
+                    continue;
+                }
+
+                $message = collect($failed)
+                    ->except('reference')
+                    ->flatten()
+                    ->implode(' ');
+
+                $notifications[] = [
+                    'order_number' => $reference,
+                    'status' => 'failed',
+                    'message' => $message,
+                ];
+            }
+        }
+        if (isset($response['failures'])) {
+            foreach ($response['failures'] as $failure) {
+                $reference = $failure['externalId'] ?? null;
+
+                if (!$reference) {
+                    continue;
+                }
+
+                $message = collect($failure)
+                    ->except('reference')
+                    ->flatten()
+                    ->implode(' ');
+
+                $notifications[] = [
+                    'order_number' => $reference,
+                    'status' => 'failed',
+                    'message' => $message,
+                ];
+            }
+        }
+        if (isset($response['results'])) {
+            foreach ($response['results'] as $reference => $result) {
+                $id = str_replace('VN-', '', $reference);
+                $order = Order::find($id);
+
+                if (!$order) {
+                    continue;
+                }
+
+                if (($result['success'] ?? false) === true) {
+
+                    $order->tracking = $result['tracking'] ?? null;
+                    $order->save();
+                    OrderInconfirmation::where('oid', $order->oid)->delete();
+                    OrderWaiting::create([
+                        'oid'  => $order->oid,
+                        'asid' => 1
+                    ]);
+
+                    $notifications[] = [
+                        'order_number' => $reference,
+                        'status' => 'success',
+                        'message' => 'Parcel created successfully',
+                    ];
+                } else {
+                    $message = collect($result)
+                        ->except(['success', 'reference'])
+                        ->flatten()
+                        ->implode(' ');
+
+                    $notifications[] = [
+                        'order_number' => $reference,
+                        'status' => 'failed',
+                        'message' => $message ?: 'Parcel creation failed',
+                    ];
+                }
+            }
+        }
+        return $notifications;
     }
 }

@@ -1,4 +1,18 @@
 <div class="w-full space-y-4">
+    @if($context == 'agent' || $context == 'manager')
+        <div class="w-1/2 my-5">
+            <label class="mb-1 block text-[10px] font-bold uppercase text-gray-400">
+                @lang('Shops You link with')</label>
+            <div class="flex rounded-lg bg-gray-100  p-1">
+                @foreach($stores as $store)
+                <button type="button" wire:key="store-{{ $store->id }}"
+                    wire:click="Storefilter({{ $store }})"
+                    class="flex-1 max-w-44 rounded py-1.5 text-[10px] font-bold {{ $storefilter && $storefilter['id'] == $store->id ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400' }}"><i
+                        class="ri-store-2-line text-xs mx-2"></i>{{$store->name}}</button>
+                @endforeach
+            </div>
+        </div>
+    @endif
     <div x-data="{ isExpanded: false }" class="w-full space-y-4">
         <div class="flex items-center justify-between px-1">
             <div class="flex items-center gap-3">

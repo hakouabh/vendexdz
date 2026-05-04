@@ -115,7 +115,7 @@ class Reported extends Component
         $totalErrors = 0;
 
         try {
-            $switcher = new \App\Services\ShippingSwitcher();
+            $switcher = new ShippingSwitcher();
 
             foreach ($groupedOrders as $appId => $ordersInGroup) {
                 
