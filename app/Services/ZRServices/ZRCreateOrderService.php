@@ -24,7 +24,6 @@ class ZRCreateOrderService
 
     public function sendOrders($standardOrders)
     { 
-        
         $parcels = [];
         foreach ($standardOrders as $order) {
             $parcels[] = $this->formatOrder($order);
@@ -34,8 +33,8 @@ class ZRCreateOrderService
             'Accept'    => 'application/json',
             'X-Api-Key' => $this->apiKey,
             'X-Tenant'  => $this->tenantId,
-        ])->post("{$this->baseUrl}/parcels/bulk", ['parcels' => $parcels]);
-
+            ])->post("{$this->baseUrl}/parcels/bulk", ['parcels' => $parcels]);
+            
         $data = $response->json();
         return $data;
     }

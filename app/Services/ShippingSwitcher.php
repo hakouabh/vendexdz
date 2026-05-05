@@ -72,11 +72,17 @@ class ShippingSwitcher
                 'tracking' => $result['passed'][0]['tracking'],
             ];
         }
-        if(isset($result['successes'])){
+        if(isset($result['successCount']) && $result['successCount'] > 0) {
             return [
                 'success' => true,
                 'tracking' => $result['successes'][0]['trackingNumber'],
                 'parcelId' => $result['successes'][0]['parcelId']
+            ];
+        }
+        if (isset($result['failureCount']) && $result['failureCount'] > 0) {
+            return [
+                'success' => false, 
+                'message' => $result['failures'][0]['errorMessage'] ?? 'API error for ' . $ref
             ];
         }
 
