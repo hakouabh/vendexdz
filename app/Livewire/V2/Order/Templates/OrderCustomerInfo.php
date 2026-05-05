@@ -280,7 +280,7 @@ class OrderCustomerInfo extends Component
             'wilaya'        => $this->wilaya,
             'total_price'   => $this->activeOrder->details->total,
             'delivery_type' => $this->delivery_type,
-            'note'          => $this->Comment,
+            'commenter'     => $this->Comment,
             'product_name'  => collect($this->activeOrder->items)->map(function($item) {
                 $name = $item->product->nickname ?? $item->product->name;
                 $variant = $item->variant ? $item->variant->label : '';

@@ -17,11 +17,7 @@ class AndersonEditOrderService
 
     public function updateOrder(string $tracking, $updatedData)
     {   
-    // 1. Préparer les données avec les bons noms de champs
         $queryParams = $this->formatOrder($tracking, $updatedData);
-      
-    // 2. Construire l'URL avec les paramètres (Query String)
-    // L'API attend : /update/order?tracking=XXX&client=YYY...
         $url = "{$this->baseUrl}/api/v1/update/order?" . http_build_query($queryParams);
 
         $response = Http::withHeaders([
@@ -47,6 +43,7 @@ class AndersonEditOrderService
             'product'    => $standardOrder->product_name, // Requis par l'Update API
             'type'       => 1, 
             'stop_desk'  => (int) $standardOrder->delivery_type,
+            "remarque"   => $standardOrder->commenter ?? "",
         ];
     }
 }

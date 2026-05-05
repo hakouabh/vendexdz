@@ -28,7 +28,6 @@ class AndersonCreateOrderService
         foreach ($standardOrders as $order) {
             $formattedOrders[] = $this->formatOrder($order);
         }
-
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Authorization' => 'Bearer ' . $this->apiKey,
@@ -71,6 +70,7 @@ class AndersonCreateOrderService
             "stop_desk"   => (int) $standardOrder->delivery_type,
             "weight"      => "1",
             "type"        => "1",
+            "remarque"    => $standardOrder->commenter ?? "",
         ];
     }
 }

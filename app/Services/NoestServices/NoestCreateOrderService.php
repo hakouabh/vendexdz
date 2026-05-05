@@ -76,6 +76,7 @@ class NoestCreateOrderService
             "stop_desk"   => (int) $standardOrder->delivery_type,
             "poids"      => "1",
             "type_id"        => "1",
+            "remarque"    => $standardOrder->commenter ?? "",
         ];
     }
 }

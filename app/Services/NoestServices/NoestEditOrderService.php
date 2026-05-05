@@ -22,7 +22,7 @@ class NoestEditOrderService
         $formatedData = $this->formatOrder($tracking, $updatedData);
       
         $response = Http::withHeaders([
-        'Accept' => 'application/json',
+        'Content-Type' => 'application/json',
         'Authorization' => 'Bearer ' . $this->apiKey,
         ])->post("{$this->baseUrl}/api/public/update/order", $formatedData);
      
@@ -44,6 +44,7 @@ class NoestEditOrderService
             'product'    => $standardOrder->product_name, // Requis par l'Update API
             'type'       => 1, 
             'stop_desk'  => (int) $standardOrder->delivery_type,
+            "remarque"   => $standardOrder->commenter ?? "",
         ];
     }
 }
