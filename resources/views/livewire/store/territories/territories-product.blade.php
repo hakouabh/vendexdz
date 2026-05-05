@@ -6,6 +6,9 @@
             </h3>
         </div>
         <div class="flex gap-2">
+            <button wire:click="syncFromDeliveryCompany" class="px-3 py-1.5 text-[10px] font-bold bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition">
+                @lang('Sync from Delivery Company')
+            </button>
             <button wire:click="syncAll" class="px-3 py-1.5 text-[10px] font-bold bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition">
                 @lang('Sync All to 1st Row')
             </button>

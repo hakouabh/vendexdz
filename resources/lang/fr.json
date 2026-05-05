@@ -199,6 +199,7 @@
     "Connect & Install": "Connecter et installer",
     "Shipping Manager": "Gestionnaire de livraison",
     "Sync All to 1st Row": "Synchroniser tout sur la 1ère ligne",
+    "Sync from Delivery Company": "Synchroniser depuis la société de livraison",
     "Save All Rates": "Enregistrer tous les tarifs",
     "Delivery company": "Société de livraison",
     "StopDesk": "StopDesk",
@@ -329,5 +330,7 @@
     "Search Order...": "Rechercher une commande...",
     "Status updated from Waiting to Indelivery": "Statut mis à jour de En attente à En livraison",
     "Status updated with new status": "Statut mis à jour avec le nouveau statut",
-    "Status updated to Waiting": "Statut mis à jour à En attente"
+    "Status updated to Waiting": "Statut mis à jour à En attente",
+    "Shipping rates synchronized from delivery company.": "Tarifs de livraison synchronisés depuis la société de livraison.",
+    "Shipping rates saved successfully.": "Tarifs de livraison enregistrés avec succès."
 }

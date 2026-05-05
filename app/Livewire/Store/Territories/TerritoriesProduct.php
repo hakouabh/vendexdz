@@ -60,6 +60,15 @@ class TerritoriesProduct extends Component
         }
     }
 
+    public function syncFromDeliveryCompany(){
+        $installedApp = installedApps::where('sid', $this->product->store_id)->where('is_default', true)->first();
+        if($installedApp) {
+            syncTerritoriesAndFeesWithProduct($this->product, $installedApp);
+        }
+        $this->mount($this->product);
+        $this->dispatch('notify', type: 'success', message: __('Shipping rates synchronized from delivery company.'));
+    }
+
     public function save()
     {
         $sid = auth()->user()->userStore->store_id;
@@ -77,8 +86,7 @@ class TerritoriesProduct extends Component
                 ]
             );
         }
-
-        session()->flash('success', "Shipping rates for {$this->product_id} saved.");
+        $this->dispatch('notify', type: 'success', message: __('Shipping rates saved successfully.'));
     }
     public function render()
     {
