@@ -99,7 +99,7 @@ class Inconfermation extends Component
     public function sendAllToShipping()
     {
         $ordersToSend = Order::whereHas('Inconfirmation.firstStepStatu', function ($query) {
-            $query->where('fsid', 1); 
+            $query->where('fsid', 2); 
         })
         ->when($this->storefilter, function ($query) {
             $query->where('sid', $this->storefilter['id']);
