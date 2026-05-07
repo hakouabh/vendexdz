@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class UserManagementController extends Controller
 {
@@ -13,10 +14,42 @@ class UserManagementController extends Controller
         return view('admin.users.index');
     }
 
-    public function login($userId)
+    public function impersonate(User $user)
     {
-        auth('web')->loginUsingId($userId);
-        return to_route('store-dashboard');
+        auth()->user()->impersonate($user);
+        request()->session()->regenerate();
+
+        $dashboardRoutes = [
+            2 => 'admin-dashboard',
+            3 => 'manager-dashboard',
+            4 => 'agent-dashboard',
+            5 => 'store-dashboard',
+        ];
+
+        $roleId = auth()->user()
+            ->roles()
+            ->value('roles.rid');
+
+        return to_route($dashboardRoutes[$roleId] ?? 'dashboard');
+    }
+
+    public function leave()
+    {
+        auth()->user()->leaveImpersonation();
+        request()->session()->regenerate();
+        
+        $dashboardRoutes = [
+            2 => 'admin-dashboard',
+            3 => 'manager-dashboard',
+            4 => 'agent-dashboard',
+            5 => 'store-dashboard',
+        ];
+
+        $roleId = auth()->user()
+            ->roles()
+            ->value('roles.rid');
+
+        return to_route($dashboardRoutes[$roleId] ?? 'dashboard');
     }
   
 }

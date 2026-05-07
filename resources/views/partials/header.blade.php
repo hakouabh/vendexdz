@@ -10,7 +10,11 @@
 
     <div class="flex items-center gap-5">
         <div class="flex items-center gap-4 text-gray-500">
-
+            @impersonating
+            <a href="{{ route('impersonate.leave') }}" class="text-xs font-medium text-indigo-500 hover:text-indigo-700 hover:underline transition"><i class="las la-sign-in-alt"></i>@lang('Leave Impersonation')</a>
+            @endImpersonating
+        </div>
+        <div class="w-px h-6 bg-gray-200">
         </div>
 
         <div class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold shadow-sm group-hover:scale-105 transition-transform">

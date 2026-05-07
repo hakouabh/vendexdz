@@ -32,7 +32,7 @@
                         <th class="px-6 py-4">@lang('Whatsapp')</th>
                         <th class="px-6 py-4">@lang('Create_Date')</th>
                         <th class="px-6 py-4">@lang('Update_Date')</th>
-
+                        <th class="px-6 py-4">@lang('Sign in as')</th>
                         <th class="px-6 py-4">@lang('Status')</th>
 
                         <th class="px-6 py-4 text-right">@lang('Actions')</th>
@@ -62,6 +62,9 @@
                         <td class="px-6 py-4 font-semibold text-slate-900">{{$agent->phone}}</td>
                         <td class="px-6 py-4 text-slate-500">{{ $agent->created_at->format('d M Y') }}</td>
                         <td class="px-6 py-4 text-slate-500">{{ $agent->updated_at->format('d M Y') }}</td>
+                        <td class="px-6 py-4 font-semibold text-slate-900">
+                            <a href="{{ route('impersonate', $agent->id) }}" class="text-xs font-medium text-indigo-500 hover:text-indigo-700 hover:underline transition"><i class="las la-sign-in-alt"></i>@lang('Login as') {{$agent->name}}</a>
+                        </td>
 
                         <td class="px-6 py-4">
                             @if($agent->is_active)

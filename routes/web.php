@@ -27,7 +27,7 @@ Route::get('/', function () {
 //     ->withoutMiddleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\VerifyCsrfToken::class]);
 
 Route::middleware([
-    'auth:sanctum',
+    'auth:web',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
@@ -48,7 +48,7 @@ Route::middleware([
             return view('admin.admin-dashboard');
         })->name('admin-dashboard');
         Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
-        Route::get('/login/{user}', [AdminUserController::class, 'login'])->name('users.login');
+        Route::get('/impersonate/{user}', [AdminUserController::class, 'impersonate'])->name('impersonate');
         Route::get('/admin/link', [ManagerLinkController::class, 'index'])->name('admin.link');
         Route::get('/admin/status', [ManagerStatuController::class, 'index'])->name('admin.status');
         Route::get('/admin/fees', [ManagerFeesController::class, 'index'])->name('admin.fees');
@@ -79,4 +79,5 @@ Route::middleware([
         Route::get('/store/territories', [ManagerTerritoryController::class, 'index'])->name('store.territories');
         Route::get('/store/products', [ManagerProductsController::class, 'index'])->name('store.products');
     });
+    Route::get('/impersonate-leave', [AdminUserController::class, 'leave'])->name('impersonate.leave');
 });
