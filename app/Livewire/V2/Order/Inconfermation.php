@@ -167,7 +167,7 @@ class Inconfermation extends Component
                 return $name . $variant . $qty;
             })->implode(' + '),
             'quantity'      => collect($this->activeOrder->items)->sum('quantity'),
-            "commenter"     => $this->activeOrder->details->commenter ?? "",
+            "commenter"     => $this->activeOrder->details->commenter ?? null,
         ];
     }
 }
