@@ -91,7 +91,9 @@ class ZRCreateOrderService
             ],
             "orderedProducts" => $orderedProducts,
             "amount"       => (double) $standardOrder->total_price,
-            "description"  => $standardOrder->commenter ?? $standardOrder->product_name,
+            "description" => !empty($standardOrder->commenter)
+                ? $standardOrder->commenter
+                : $standardOrder->product_name,
             "deliveryType" => $standardOrder->delivery_type == 1 ? "pickup-point" : "home",
             "externalId"   => $standardOrder->ref,
         ];
