@@ -28,6 +28,7 @@ class OrderCustomerInfo extends Component
     public $client_name;
     public $phone1;
     public $phone2;
+    public $delivery_type;
     public $address;
     public $Comment;
     public $can_use_stopdesk = true;
@@ -44,7 +45,6 @@ class OrderCustomerInfo extends Component
     ];
 
     public function mount(Order $activeOrder, $canUpdate = true){
-
         $this->activeOrder = $activeOrder;
         $this->client = $activeOrder->client;
         $this->client_name = $this->client->full_name ?? '';
@@ -189,7 +189,7 @@ class OrderCustomerInfo extends Component
                     break;
             }
             if (!$this->can_use_stopdesk) {
-                $this->delivery_type = '0';
+                $this->setDelivery('0');
             }
         }
         $this->client->town = $value;
@@ -249,6 +249,10 @@ class OrderCustomerInfo extends Component
             return;
         }
         $this->delivery_type = $type;
+        
+        $this->activeOrder->details->update([
+            'stopdesk' => $this->delivery_type,
+        ]);
         $this->calculateTotal();
     }
 

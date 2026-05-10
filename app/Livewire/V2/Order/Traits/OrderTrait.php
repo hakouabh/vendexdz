@@ -18,7 +18,6 @@ trait OrderTrait
 {
     public $items = [];
     public $availableProducts;
-    public $delivery_type;
     public $order_type = 'Normal';
     public $delivery_price = 0;
     public $price = 0;
@@ -88,15 +87,14 @@ trait OrderTrait
                 ->where('wid', $client->wilaya)
                 ->first();
             $this->delivery_price = $fee
-                ? ($this->delivery_type ? $fee->c_s_p : $fee->c_d_p)
-                : 0;
+            ? ($this->activeOrder->details->stopdesk ? $fee->c_s_p : $fee->c_d_p)
+            : 0;
         }
         $this->total = ($this->price + $this->delivery_price) - ($this->activeOrder->details->discount ?? 0);
         $this->activeOrder->details->update([
             'total' => $this->total,
             'price' => $this->price,
-            'delivery_price' => $this->delivery_price,
-            'stopdesk' => $this->delivery_type ?? $this->activeOrder->details->stopdesk,
+            'delivery_price' => $this->delivery_price
         ]);
         $this->dispatch('orderTotalsUpdated', [
             'price'          => $this->price,
