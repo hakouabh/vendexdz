@@ -105,12 +105,6 @@ class OrderWebhookController extends Controller
     protected function handleFoorwebWebhook(Request $request, $platform)
     {
         $orderData = $request->all();
-        Log::build([
-            'driver' => 'single',
-            'path' => storage_path("logs/foorwebdebug.log"),
-        ])->info("Received Foorweb webhook", [
-            'order_data' => $orderData
-        ]);
 
         if (empty($orderData)) {
             return null;
