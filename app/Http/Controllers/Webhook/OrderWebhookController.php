@@ -34,6 +34,7 @@ class OrderWebhookController extends Controller
         'ayor' => 'handleAyorWebhook',
         'lightfunnels' => 'handleLightFunnelsWebhook',
         'foorweb' => 'handleFoorwebWebhook',
+        'googlesheet' => 'handleGoogleSheetWebhook',
         'custom' => 'handleCustomWebhook',
         'zr' => 'handleZrWebhook',
     ];
@@ -136,6 +137,46 @@ class OrderWebhookController extends Controller
             'platform_data'     => $orderData['custom_data']
         ];
     }
+
+    /**
+     * Handle Google Sheet webhooks
+    */
+    protected function handleGoogleSheetWebhook(Request $request, $platform)
+    {
+        $orderData = $request->all();
+
+        Log::build([
+            'driver' => 'single',
+            'path' => storage_path("logs/{$platform}.log"),
+        ])->info("Received Google Sheet webhook", [
+            'order_data' => $orderData
+        ]);
+
+        if (empty($orderData)) {
+            return null;
+        }
+
+        return null;
+
+        return [
+            'platform_order_id' => $orderData['order_id'] ?? time(),
+            'client_name'       => $orderData['full_name'] ?? 'Unknown',
+            'phone1'            => $orderData['phone'] ?? '',
+            'phone2'            => '', 
+            'wilaya'            => $orderData['wilaya_id'] ?? 16,
+            'city'              => $orderData['commune'] ?? '',
+            'address'           => $orderData['address'] ?? '',
+            'items'             => [], // Google Sheets may not have structured items
+            'delivery_type'     => ($orderData['is_stop_desk'] ?? false) ? 1 : 0,
+            'comment'           => $orderData['client_note'] ?? '',
+            'discount'          => $orderData['discount'] ?? 0,
+            'subtotal'          => $orderData['subtotal'] ?? 0,
+            'total'             => $orderData['total'] ?? 0,
+            'currency'          => 'DZD',
+            'platform_data'     => $orderData
+        ];
+    }
+
     /**
      * Handle Shopify webhooks
      */

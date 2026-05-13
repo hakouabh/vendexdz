@@ -41,4 +41,7 @@ Route::prefix('webhook')->group(function () {
 
     Route::post('/foorweb/created', [OrderWebhookController::class, 'orderCreated'])
         ->name('webhook.foorweb.created');
+
+    Route::post('/googlesheet/created', [OrderWebhookController::class, 'orderCreated'])
+        ->name('webhook.googlesheet.created');
 });
