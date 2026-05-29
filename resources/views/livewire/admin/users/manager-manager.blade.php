@@ -10,7 +10,10 @@
                 <div class="relative w-96 group hidden md:block">
                     <i
                         class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500"></i>
-                    <input type="text" placeholder="@lang('Search Manager...')" wire:model="search"
+                    <input type="text" wire:model.live="search" placeholder="@lang('Search Manager...')"
+                    autocomplete="off"
+                    readonly
+                    onfocus="this.removeAttribute('readonly')"
                         class="w-full pl-10 pr-12 py-2 bg-gray-50 border border-transparent focus:bg-white focus:border-indigo-200 focus:ring-2 focus:ring-indigo-50 rounded-lg outline-none text-sm transition text-slate-700 placeholder-gray-400">
                     <div
                         class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 border border-gray-200 px-1.5 py-0.5 rounded bg-white">
@@ -243,6 +246,128 @@
                 </div>
             </div>
         </x-slot>
+    </x-dialog-modal>
+    <x-dialog-modal wire:model="isCreateModalOpen" maxWidth="lg">
+        <x-slot name="title">
+            <div class="px-2 pt-2 flex items-start justify-between">
+                <div class="flex gap-4">
+                    <div
+                        class="h-12 w-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                        <i class="ri-user-settings-line text-2xl text-indigo-600"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 tracking-tight"> @lang('Create Manager') </h2>
+                        <p class="text-sm text-slate-500 mt-1">@lang('Manage Manager details, contact info, and visibility.')</p>
+                    </div>
+                </div>
+                <button wire:click="$set('isCreateModalOpen', false)"
+                    class="text-slate-400 hover:text-slate-600 transition">
+                    <i class="ri-close-line text-2xl"></i>
+                </button>
+            </div>
+        </x-slot>
 
+        <x-slot name="content">
+            <div class="space-y-6 px-2">
+                <div>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Manager')
+                        @lang('Full Name')</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i
+                                class="ri-user-settings-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                        </div>
+                        <input type="text" wire:model="name"
+                            class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200 placeholder-slate-400"
+                            placeholder="e.g. Vendex Mega Manager">
+                    </div>
+                    <x-input-error for="name" class="mt-1" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Contact
+                            @lang('Email')</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i
+                                    class="ri-mail-send-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                            </div>
+                            <input type="email" wire:model="email"
+                                class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
+                                placeholder="manager@Manager.com">
+                        </div>
+                        <x-input-error for="email" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <label
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Whatsapp')</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i
+                                    class="ri-whatsapp-line text-slate-400 group-focus-within:text-green-500 transition-colors"></i>
+                            </div>
+                            <input type="text" wire:model="phone"
+                                class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
+                                placeholder="+213 555...">
+                        </div>
+                        <x-input-error for="phone" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <label
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Password')</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i
+                                    class="ri-lock-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                            </div>
+                            <input type="password" wire:model="password"
+                                class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
+                                placeholder="••••••••">
+                        </div>
+                        <x-input-error for="password" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <label
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Confirm Password')</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i
+                                    class="ri-lock-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                            </div>
+                            <input type="password" wire:model="password_confirmation"
+                                class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
+                                placeholder="••••••••">
+                        </div>
+                        <x-input-error for="password_confirmation" class="mt-1" />
+                    </div>
+                </div>
+            </div>
+        </x-slot>
+
+        <x-slot name="footer">
+            <div class="border-t border-slate-100 pt-4 w-full flex justify-between items-center">
+
+                <button type="button"
+                    class="text-xs font-medium text-red-500 hover:text-red-700 hover:underline transition">
+                </button>
+
+                <div class="flex items-center gap-3">
+                    <x-secondary-button wire:click="$set('isCreateModalOpen', false)" wire:loading.attr="disabled"
+                        class="!rounded-lg border-slate-200">
+                        @lang('Cancel')
+                    </x-secondary-button>
+
+                    <x-button wire:click="createManager" wire:loading.attr="disabled"
+                        class="bg-slate-900 hover:bg-slate-800 text-white !rounded-lg px-6 shadow-lg shadow-slate-200">
+                        <span wire:loading.remove>@lang('Create Manager')</span>
+                        <span wire:loading>@lang('Saving...')</span>
+                    </x-button>
+                </div>
+            </div>
+        </x-slot>
     </x-dialog-modal>
 </div>

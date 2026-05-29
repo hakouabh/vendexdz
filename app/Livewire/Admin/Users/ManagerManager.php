@@ -11,14 +11,19 @@ class ManagerManager extends Component
     use WithPagination;
     protected $pageName = 'inPage';
     public $isEditModalOpen = false;
+    public $isCreateModalOpen = false;
     public $editingManagerId = null;
     
     public $name;
     public $email;
     public $phone;
+    public $password;
+    public $password_confirmation;
     public $is_active = false;
-    public $role;
+    // TODO
+    public $role = 3;
     public $search = '';
+    protected $listeners = ['createManagerClick' => 'openCreateModal'];
 
     public function openEditModal($id)
     {
@@ -31,6 +36,12 @@ class ManagerManager extends Component
         $this->is_active = $Manager->is_active;
         $this->role = $Manager->roles->first()?->rid;
         $this->isEditModalOpen = true;
+    }
+
+    public function openCreateModal()
+    {
+        $this->reset(['editingManagerId', 'name', 'email', 'phone', 'is_active', 'role']);
+        $this->isCreateModalOpen = true;
     }
 
     public function updateManager()
@@ -60,7 +71,7 @@ class ManagerManager extends Component
     public function render()
     {
         $managers = User::whereHas('roles', function ($q) {
-        $q->where('roles.rid', 3); 
+        $q->where('roles.rid', $this->role); 
         })
         ->where(function ($query) {
             $query->where('name', 'like', '%' . $this->search . '%')
@@ -69,5 +80,28 @@ class ManagerManager extends Component
         ->paginate(10);
         $managers->withQueryString();
         return view('livewire.admin.users.manager-manager',['managers'=>$managers]);
+    }
+
+    public function createManager()
+    {
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string',
+            'password' => 'required|confirmed|min:8',
+            'role' => 'required|exists:roles,rid'
+        ]);
+
+        $Manager = User::create([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'password' => bcrypt($this->password),
+            'is_active' => 1,
+        ]);
+        $Manager->roles()->attach($this->role);
+        $this->isCreateModalOpen = false;
+        
+        session()->flash('message', 'Manager created successfully.');
     }
 }
