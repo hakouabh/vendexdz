@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Role;
 use App\Models\Store;
 use App\Models\UserStore;
 use Livewire\WithPagination;
@@ -21,7 +22,7 @@ class PendingManager extends Component
     public $email;
     public $phone;
     public $is_active = false;
-    public $role;
+    public $role = Role::PENDING;
     public $search = '';
     
     public function openEditModal($id)
@@ -31,9 +32,8 @@ class PendingManager extends Component
         $this->editingPendingId = $id;
         $this->name = $Pending->name;
         $this->email = $Pending->email;
-        $this->phone = $Pending->phone; // أو $Pending->whatsapp حسب التسمية عندك
+        $this->phone = $Pending->phone;
         $this->is_active = $Pending->is_active;
-        $this->role = $Pending->roles->first()?->rid;
         $this->isEditModalOpen = true;
     }
 
@@ -62,7 +62,7 @@ class PendingManager extends Component
     public function render()
     {
         $pendings = User::whereHas('roles', function ($q) {
-        $q->where('roles.rid', 1); 
+        $q->where('roles.rid', $this->role); 
         })
         ->where(function($query) {
             $query->where('name', 'like', '%' . $this->search . '%')
@@ -70,7 +70,8 @@ class PendingManager extends Component
         })
         ->paginate(10);
         $pendings->withQueryString();
-        return view('livewire.admin.users.pending-manager',['pendings'=>$pendings]);
+        $roles = Role::all();
+        return view('livewire.admin.users.pending-manager',['pendings'=>$pendings, 'roles'=>$roles]);
     }
 
     public function deletePending($id)

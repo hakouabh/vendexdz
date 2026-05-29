@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Users;
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\Role;
 use Livewire\WithPagination;
 
 class ManagerManager extends Component
@@ -20,8 +21,7 @@ class ManagerManager extends Component
     public $password;
     public $password_confirmation;
     public $is_active = false;
-    // TODO
-    public $role = 3;
+    public $role = Role::MANAGER;
     public $search = '';
     protected $listeners = ['createManagerClick' => 'openCreateModal'];
 
@@ -32,9 +32,8 @@ class ManagerManager extends Component
         $this->editingManagerId = $id;
         $this->name = $Manager->name;
         $this->email = $Manager->email;
-        $this->phone = $Manager->phone; // أو $Manager->whatsapp حسب التسمية عندك
+        $this->phone = $Manager->phone;
         $this->is_active = $Manager->is_active;
-        $this->role = $Manager->roles->first()?->rid;
         $this->isEditModalOpen = true;
     }
 
@@ -79,7 +78,8 @@ class ManagerManager extends Component
         })
         ->paginate(10);
         $managers->withQueryString();
-        return view('livewire.admin.users.manager-manager',['managers'=>$managers]);
+        $roles = Role::all();
+        return view('livewire.admin.users.manager-manager',['managers'=>$managers, 'roles'=>$roles]);
     }
 
     public function createManager()
@@ -103,5 +103,15 @@ class ManagerManager extends Component
         $this->isCreateModalOpen = false;
         
         session()->flash('message', 'Manager created successfully.');
+    }
+
+    public function deleteManager()
+    {
+        $Manager = User::find($this->editingManagerId);
+        if ($Manager) {
+            $Manager->delete();
+            $this->isEditModalOpen = false;
+            session()->flash('message', 'Manager deleted successfully.');
+        }
     }
 }

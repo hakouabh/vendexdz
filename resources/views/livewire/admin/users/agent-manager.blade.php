@@ -12,6 +12,9 @@
                     <i
                         class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500"></i>
                     <input type="text" placeholder="@lang('Search Agents...')" wire:model.live="search"
+                        autocomplete="off"
+                        readonly
+                        onfocus="this.removeAttribute('readonly')"
                         class="w-full pl-10 pr-12 py-2 bg-gray-50 border border-transparent focus:bg-white focus:border-indigo-200 focus:ring-2 focus:ring-indigo-50 rounded-lg outline-none text-sm transition text-slate-700 placeholder-gray-400">
                     <div
                         class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 border border-gray-200 px-1.5 py-0.5 rounded bg-white">
@@ -24,10 +27,6 @@
             <table class="w-full text-left border-collapse">
                 <thead class="bg-gray-50/50 text-slate-500 text-xs uppercase font-semibold tracking-wider">
                     <tr>
-                        <th class="px-6 py-4 rounded-tl-lg">
-                            <input type="checkbox"
-                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                        </th>
                         <th class="px-6 py-4">@lang('Agent')</th>
                         <th class="px-6 py-4">@lang('Whatsapp')</th>
                         <th class="px-6 py-4">@lang('Create_Date')</th>
@@ -43,10 +42,6 @@
                 <tbody class="divide-y divide-gray-100 text-sm">
                     @foreach($agents as $agent)
                     <tr wire:key="agent-{{ $agent->id }}" class="hover:bg-gray-50/80 transition duration-150 group">
-                        <td class="px-6 py-4">
-                            <input type="checkbox"
-                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                        </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div
@@ -104,7 +99,7 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-slate-900 tracking-tight">{{ __('Update Agent') }}</h2>
-                        <p class="text-sm text-slate-500 mt-1">Manage Agent details, roles, and visibility.</p>
+                        <p class="text-sm text-slate-500 mt-1">@lang('Manage Agent details, roles, and visibility.')</p>
                     </div>
                 </div>
                 <button wire:click="$set('isEditModalOpen', false)"
@@ -118,8 +113,7 @@
             <div class="space-y-5 px-2">
 
                 <div>
-                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Agent
-                        Name</label>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Agent') @lang('Full Name') </label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <i
@@ -135,7 +129,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">
-                            Assign Role
+                            @lang('Assign Role')
                         </label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -144,11 +138,10 @@
                             </div>
                             <select wire:model="role"
                                 class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200 appearance-none cursor-pointer">
-                                <option value="" disabled>Select Role</option>
-                                <option value="1">pending</option>
-                                <option value="3">Manager</option>
-                                <option value="4">Agent</option>
-                                <option value="5">Store</option>
+                                <option value="" disabled>@lang('Select Role')</option>
+                                @foreach($roles as $r)
+                                    <option value="{{ $r->rid }}">{{ __($r->name) }}</option>
+                                @endforeach
                             </select>
                             <div
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
@@ -160,7 +153,7 @@
 
                     <div>
                         <label
-                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Email</label>
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Email')</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                                 <i class="ri-mail-send-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
@@ -174,8 +167,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Whatsapp
-                        Number</label>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Whatsapp')</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <i
@@ -189,26 +181,25 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Account
-                        Status</label>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Account Status')</label>
                     <label
                         class="relative flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 group
                     {{ $is_active ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-200 bg-white hover:border-slate-300' }}">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-sm font-bold {{ $is_active ? 'text-indigo-700' : 'text-slate-700' }}">
-                                    {{ $is_active ? 'Active Account' : 'Suspended Account' }}
+                                    {{ $is_active ? __('Active Account') : __('Suspended Account') }}
                                 </span>
                                 @if($is_active)
                                 <span
-                                    class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wide">Live</span>
+                                    class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wide">@lang('Live')</span>
                                 @else
                                 <span
-                                    class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 uppercase tracking-wide">Blocked</span>
+                                    class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 uppercase tracking-wide">@lang('Blocked')</span>
                                 @endif
                             </div>
                             <p class="text-xs {{ $is_active ? 'text-indigo-600/80' : 'text-slate-500' }}">
-                                {{ $is_active ? 'User has full access to the dashboard.' : 'User access is temporarily revoked.' }}
+                                {{ $is_active ? __('User has full access to the dashboard.') : __('User access is temporarily revoked.') }}
                             </p>
                         </div>
                         <div class="relative ml-4">
@@ -226,18 +217,142 @@
         <x-slot name="footer">
             <div class="border-t border-slate-100 pt-4 w-full flex justify-between items-center">
                 <button type="button"
+                    wire:click="deleteAgent" wire:loading.attr="disabled"
                     class="text-xs font-medium text-red-500 hover:text-red-700 hover:underline transition">
-                    
+                    @lang('Delete Agent')
                 </button>
                 <div class="flex items-center gap-3">
                     <x-secondary-button wire:click="$set('isEditModalOpen', false)"
                         class="!rounded-lg border-slate-200">
-                        Cancel
+                        @lang('Cancel')
                     </x-secondary-button>
                     <x-button wire:click="updateAgent" wire:loading.attr="disabled"
                         class="bg-slate-900 hover:bg-slate-800 text-white !rounded-lg px-6 shadow-lg shadow-slate-200">
-                        <span wire:loading.remove>Save Changes</span>
-                        <span wire:loading>Saving...</span>
+                        <span wire:loading.remove>@lang('Save Changes')</span>
+                        <span wire:loading>@lang('Saving...')</span>
+                    </x-button>
+                </div>
+            </div>
+        </x-slot>
+    </x-dialog-modal>
+    <x-dialog-modal wire:model="isCreateModalOpen" maxWidth="lg">
+        <x-slot name="title">
+            <div class="px-2 pt-2 flex items-start justify-between">
+                <div class="flex gap-4">
+                    <div
+                        class="h-12 w-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                        <i class="ri-user-settings-line text-2xl text-indigo-600"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 tracking-tight"> @lang('Create Agent') </h2>
+                        <p class="text-sm text-slate-500 mt-1">@lang('Manage Agent details, contact info, and visibility.')</p>
+                    </div>
+                </div>
+                <button wire:click="$set('isCreateModalOpen', false)"
+                    class="text-slate-400 hover:text-slate-600 transition">
+                    <i class="ri-close-line text-2xl"></i>
+                </button>
+            </div>
+        </x-slot>
+
+        <x-slot name="content">
+            <div class="space-y-6 px-2">
+                <div>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Agent')
+                        @lang('Full Name')</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i
+                                class="ri-user-settings-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                        </div>
+                        <input type="text" wire:model="name"
+                            class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200 placeholder-slate-400"
+                            placeholder="e.g. Vendex Mega Agent">
+                    </div>
+                    <x-input-error for="name" class="mt-1" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Contact
+                            @lang('Email')</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i
+                                    class="ri-mail-send-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                            </div>
+                            <input type="email" wire:model="email"
+                                class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
+                                placeholder="agent@agent.com">
+                        </div>
+                        <x-input-error for="email" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <label
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Whatsapp')</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i
+                                    class="ri-whatsapp-line text-slate-400 group-focus-within:text-green-500 transition-colors"></i>
+                            </div>
+                            <input type="text" wire:model="phone"
+                                class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
+                                placeholder="+213 555...">
+                        </div>
+                        <x-input-error for="phone" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <label
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Password')</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i
+                                    class="ri-lock-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                            </div>
+                            <input type="password" wire:model="password"
+                                class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
+                                placeholder="••••••••">
+                        </div>
+                        <x-input-error for="password" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <label
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Confirm Password')</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i
+                                    class="ri-lock-line text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                            </div>
+                            <input type="password" wire:model="password_confirmation"
+                                class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
+                                placeholder="••••••••">
+                        </div>
+                        <x-input-error for="password_confirmation" class="mt-1" />
+                    </div>
+                </div>
+            </div>
+        </x-slot>
+
+        <x-slot name="footer">
+            <div class="border-t border-slate-100 pt-4 w-full flex justify-between items-center">
+
+                <button type="button"
+                    class="text-xs font-medium text-red-500 hover:text-red-700 hover:underline transition">
+                </button>
+
+                <div class="flex items-center gap-3">
+                    <x-secondary-button wire:click="$set('isCreateModalOpen', false)" wire:loading.attr="disabled"
+                        class="!rounded-lg border-slate-200">
+                        @lang('Cancel')
+                    </x-secondary-button>
+
+                    <x-button wire:click="createAgent" wire:loading.attr="disabled"
+                        class="bg-slate-900 hover:bg-slate-800 text-white !rounded-lg px-6 shadow-lg shadow-slate-200">
+                        <span wire:loading.remove>@lang('Create Agent')</span>
+                        <span wire:loading>@lang('Saving...')</span>
                     </x-button>
                 </div>
             </div>

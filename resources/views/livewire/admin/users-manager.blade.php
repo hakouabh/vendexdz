@@ -67,6 +67,14 @@
               </div>
               @livewire('admin.users.manager-manager')
               @elseif ($currentTab === 'agents')
+              <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 rounded-r">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <p class="text-sm text-yellow-700">@lang('Agents have limited access.')</p>
+                  <button wire:click="$dispatch('createAgentClick')" class="inline-flex items-center justify-center px-3 py-2 rounded-md bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition">
+                    @lang('Create Agent')
+                  </button>
+                </div>
+              </div>
               @livewire('admin.users.agent-manager')
               @elseif ($currentTab === 'pending')
               @livewire('admin.users.pending-manager')

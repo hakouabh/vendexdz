@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Store;
+use App\Models\Role;
 use Livewire\WithPagination;
 
 class StoreManager extends Component
@@ -19,7 +20,7 @@ class StoreManager extends Component
     public $email;
     public $phone;
     public $is_active = false;
-    public $role;
+    public $role = Role::STORE;
     public $search = ''; 
 
     public function openEditModal($id)
@@ -31,7 +32,6 @@ class StoreManager extends Component
         $this->email = $store->email;
         $this->phone = $store->phone; 
         $this->is_active = $store->is_active;
-        $this->role = $store->roles->first()?->rid;
         $this->isEditModalOpen = true;
         
     }
@@ -62,7 +62,7 @@ class StoreManager extends Component
     public function render()
     {
         $stores = User::whereHas('roles', function ($q) {
-        $q->where('roles.rid', 5); 
+        $q->where('roles.rid', $this->role); 
         })
         ->where(function($query) {
             $query->where('name', 'like', '%' . $this->search . '%')
@@ -70,7 +70,8 @@ class StoreManager extends Component
         })
         ->paginate(10);
         $stores->withQueryString();
-        return view('livewire.admin.users.store-manager',['stores'=>$stores]);
+        $roles = Role::all();
+        return view('livewire.admin.users.store-manager',['stores'=>$stores, 'roles'=>$roles]);
     }
 
     public function deleteStore($id)

@@ -11,9 +11,9 @@
                     <i
                         class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500"></i>
                     <input type="text" wire:model.live="search" placeholder="@lang('Search Manager...')"
-                    autocomplete="off"
-                    readonly
-                    onfocus="this.removeAttribute('readonly')"
+                        autocomplete="off"
+                        readonly
+                        onfocus="this.removeAttribute('readonly')"
                         class="w-full pl-10 pr-12 py-2 bg-gray-50 border border-transparent focus:bg-white focus:border-indigo-200 focus:ring-2 focus:ring-indigo-50 rounded-lg outline-none text-sm transition text-slate-700 placeholder-gray-400">
                     <div
                         class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 border border-gray-200 px-1.5 py-0.5 rounded bg-white">
@@ -102,8 +102,8 @@
                         <i class="ri-user-settings-line text-2xl text-indigo-600"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-slate-900 tracking-tight">{{ __('Update Manager') }}</h2>
-                        <p class="text-sm text-slate-500 mt-1">Manage Manager details, contact info, and visibility.</p>
+                        <h2 class="text-xl font-bold text-slate-900 tracking-tight">@lang('Update Manager')</h2>
+                        <p class="text-sm text-slate-500 mt-1">@lang('Manage Manager details, contact info, and visibility.')</p>
                     </div>
                 </div>
                 <button wire:click="$set('isEditModalOpen', false)"
@@ -116,8 +116,7 @@
         <x-slot name="content">
             <div class="space-y-6 px-2">
                 <div>
-                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Manager
-                        Information</label>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Manager') @lang('Full Name')</label>
                     <div class="relative group">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <i
@@ -132,7 +131,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">
-                            Assign Role
+                            @lang('Assign Role')
                         </label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -141,11 +140,10 @@
                             </div>
                             <select wire:model="role"
                                 class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200 appearance-none cursor-pointer">
-                                <option value="" disabled>Select Role</option>
-                                <option value="1">pending</option>
-                                <option value="3">Manager</option>
-                                <option value="4">Agent</option>
-                                <option value="5">Store</option>
+                                <option value="" disabled>@lang('Select Role')</option>
+                                @foreach($roles as $r)
+                                    <option value="{{ $r->rid }}">{{ __($r->name) }}</option>
+                                @endforeach
                             </select>
                             <div
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
@@ -156,8 +154,7 @@
                     </div>
                     <div>
                         <label
-                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Contact
-                            Email</label>
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Contact Email')</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                                 <i
@@ -172,7 +169,7 @@
 
                     <div>
                         <label
-                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Whatsapp</label>
+                            class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Whatsapp')</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                                 <i
@@ -187,8 +184,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">Manager
-                        Status</label>
+                    <label class="text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5 block">@lang('Manager Status')</label>
 
                     <label
                         class="relative flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 group
@@ -197,7 +193,7 @@
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-sm font-bold {{ $is_active ? 'text-indigo-700' : 'text-slate-700' }}">
-                                    {{ $is_active ? 'Active Manager' : 'Inactive Manager' }}
+                                    {{ $is_active ? __('Active Manager') : __('Inactive Manager') }}
                                 </span>
                                 @if($is_active)
                                 <span
@@ -208,7 +204,7 @@
                                 @endif
                             </div>
                             <p class="text-xs {{ $is_active ? 'text-indigo-600/80' : 'text-slate-500' }}">
-                                {{ $is_active ? 'This Manager is currently visible to all users and accepting orders.' : 'This Manager is hidden from the public and cannot accept orders.' }}
+                                {{ $is_active ? __('This Manager is currently visible to all users and accepting orders.') : __('This Manager is hidden from the public and cannot accept orders.') }}
                             </p>
                         </div>
 
@@ -228,20 +224,21 @@
             <div class="border-t border-slate-100 pt-4 w-full flex justify-between items-center">
 
                 <button type="button"
+                    wire:click="deleteManager" wire:loading.attr="disabled"
                     class="text-xs font-medium text-red-500 hover:text-red-700 hover:underline transition">
-                    
+                    @lang('Delete Manager')
                 </button>
 
                 <div class="flex items-center gap-3">
                     <x-secondary-button wire:click="$set('isEditModalOpen', false)" wire:loading.attr="disabled"
                         class="!rounded-lg border-slate-200">
-                        Cancel
+                        @lang('Cancel')
                     </x-secondary-button>
 
                     <x-button wire:click="updateManager" wire:loading.attr="disabled"
                         class="bg-slate-900 hover:bg-slate-800 text-white !rounded-lg px-6 shadow-lg shadow-slate-200">
-                        <span wire:loading.remove>Save Changes</span>
-                        <span wire:loading>Saving...</span>
+                        <span wire:loading.remove>@lang('Save Changes')</span>
+                        <span wire:loading>@lang('Saving...')</span>
                     </x-button>
                 </div>
             </div>

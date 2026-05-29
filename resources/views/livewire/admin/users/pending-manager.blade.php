@@ -25,10 +25,6 @@
             <table class="w-full text-left border-collapse">
                 <thead class="bg-gray-50/50 text-slate-500 text-xs uppercase font-semibold tracking-wider">
                     <tr>
-                        <th class="px-6 py-4 rounded-tl-lg">
-                            <input type="checkbox"
-                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                        </th>
                         <th class="px-6 py-4">@lang('User')</th>
                         <th class="px-6 py-4">@lang('Whatsapp')</th>
                         <th class="px-6 py-4">@lang('Create_Date')</th>
@@ -44,10 +40,6 @@
                 <tbody class="divide-y divide-gray-100 text-sm">
                     @foreach($pendings as $Pending)
                     <tr wire:key="pending-{{ $Pending->id }}" class="hover:bg-gray-50/80 transition duration-150 group">
-                        <td class="px-6 py-4">
-                            <input type="checkbox"
-                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                        </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div
@@ -140,10 +132,9 @@
                             <select wire:model="role"
                                 class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200 appearance-none cursor-pointer">
                                 <option value="" disabled>@lang('Select Role')</option>
-                                <option value="1">@lang('Pending')</option>
-                                <option value="3">@lang('Manager')</option>
-                                <option value="4">@lang('Agent')</option>
-                                <option value="5">@lang('Store')</option>
+                                @foreach($roles as $r)
+                                    <option value="{{ $r->rid }}">{{ __($r->name) }}</option>
+                                @endforeach
                             </select>
                             <div
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
