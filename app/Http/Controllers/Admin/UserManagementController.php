@@ -30,7 +30,7 @@ class UserManagementController extends Controller
             ->roles()
             ->value('roles.rid');
 
-        return to_route($dashboardRoutes[$roleId] ?? 'dashboard');
+        return to_route($dashboardRoutes[$roleId] ?? 'welcome');
     }
 
     public function leave()

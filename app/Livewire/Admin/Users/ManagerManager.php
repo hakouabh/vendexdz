@@ -99,7 +99,7 @@ class ManagerManager extends Component
             'password' => bcrypt($this->password),
             'is_active' => 1,
         ]);
-        $Manager->roles()->attach($this->role);
+        $Manager->roles()->sync([$this->role]);
         $this->isCreateModalOpen = false;
         
         session()->flash('message', 'Manager created successfully.');

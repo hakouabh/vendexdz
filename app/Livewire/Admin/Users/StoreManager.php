@@ -76,8 +76,10 @@ class StoreManager extends Component
 
     public function deleteStore($id)
     {
-        $Store = User::find($id);
-        $Store->delete();
+        $user = User::find($id);
+        $store = Store::where('created_by', $id)->first(); 
+        $store->delete();
+        $user->delete();
         $this->isEditModalOpen = false;
     }
 }

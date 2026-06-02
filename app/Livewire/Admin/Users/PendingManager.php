@@ -76,8 +76,12 @@ class PendingManager extends Component
 
     public function deletePending($id)
     {
-        $Pending = User::find($id);
-        $Pending->delete();
+        $user = User::find($id);
+        $store = Store::where('created_by', $id)->first();
+        if($store) {
+            $store->delete();
+        }
+        $user->delete();
         $this->isEditModalOpen = false;
     }
 }

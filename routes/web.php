@@ -22,7 +22,7 @@ use App\Http\Controllers\Store\BillsController as StoreBillController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 // Route::get('/sync', [SyncController::class, 'handle'])
 //     ->withoutMiddleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\VerifyCsrfToken::class]);
 

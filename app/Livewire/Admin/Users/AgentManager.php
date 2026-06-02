@@ -96,7 +96,7 @@ class AgentManager extends Component
             'password' => bcrypt($this->password),
             'is_active' => 1,
         ]);
-        $Agent->roles()->attach($this->role);
+        $Agent->roles()->sync([$this->role]);
         $this->isCreateModalOpen = false;
         
         session()->flash('message', 'Agent created successfully.');
