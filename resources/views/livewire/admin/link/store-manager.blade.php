@@ -124,8 +124,22 @@
                         @if($selectedStore)
                             @foreach($selectedStore->agents as $agent)
                             <tr class="hover:bg-gray-50/80 transition">
-                                <td class="px-5 py-3 font-medium text-slate-700">{{$agent->name}}</td>
-                                <!-- <td class="px-5 py-3 text-right text-green-600 font-bold">{{$agent->name}}</td> -->
+                                <td class="px-5 py-3 font-medium text-slate-700"> 
+                                    @php
+                                        $userStore = $agent->userStores()->where('store_id', $selectedStore->id)->first();
+                                        $is_active = $userStore->is_active ?? false;
+                                    @endphp 
+                                    <label
+                                        class="{{ $is_active ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-200 bg-white hover:border-slate-300' }}">                                        
+                                        {{$agent->name}}
+                                        <div class="relative ml-4">
+                                            <input type="checkbox"  class="sr-only peer" wire:model="is_active" wire:change="setUserStoreStatus({{ $userStore->id }})" {{ $is_active ? 'checked' : '' }}>
+                                            <div
+                                                class="w-12 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 shadow-inner">
+                                            </div>
+                                        </div>
+                                    </label>
+                                </td>
                                 <td class="px-6 py-4 text-right">
                                     <button wire:click="removeLink({{$agent->id}})" class="text-slate-400 hover:text-indigo-600 transition"><i
                                             class="ri-delete-bin-line text-lg"></i></button>

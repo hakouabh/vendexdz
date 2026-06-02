@@ -102,6 +102,11 @@ class User extends Authenticatable
         return $this->hasOne(UserStore::class, 'user_id', 'id');
     }
 
+    public function userStores()
+    {
+        return $this->hasMany(UserStore::class, 'user_id', 'id');
+    }
+
     public function stores()
     {
         return $this->belongsToMany(

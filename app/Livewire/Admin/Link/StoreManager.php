@@ -38,6 +38,14 @@ class StoreManager extends Component
         ->where('user_id', $user_id)
         ->delete();
     }
+
+    public function setUserStoreStatus($userStoreId){
+        $userStore = UserStore::find($userStoreId);
+        if($userStore){
+            $userStore->is_active = !$userStore->is_active;
+            $userStore->save();
+        }
+    }
     public function addManager(){
         if(!$this->selectedManagerId){
             return;
