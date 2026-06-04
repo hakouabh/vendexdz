@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\firstStepStatu;
 use App\Models\User;
+use App\Models\Role;
 use App\Services\ShippingSwitcher;
 use Illuminate\Validation\Rule;     
 use App\Livewire\V2\Order\Traits\OrderTrait;
@@ -74,6 +75,10 @@ class Inconfermation extends Component
             $query->whereHas('items', function ($q) {
                 $q->where('product_id', $this->productfilter['id']);
             });
+        })
+        ->when(auth()->user()->hasRole(Role::AGENT), function ($query) {
+            $query->where('aid', auth()->id())
+                ->orWhereNull('aid');
         })
         ->when($this->start_date, fn($q) => $q->whereDate('created_at', '>=', $this->start_date))
         ->when($this->end_date, fn($q) => $q->whereDate('created_at', '<=', $this->end_date))

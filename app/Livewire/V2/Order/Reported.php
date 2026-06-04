@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\firstStepStatu;
 use App\Models\willaya;
 use App\Models\User;
+use App\Models\Role;
 use App\Services\TerritoryServices\ZRTerritoryService;
 use App\Services\ShippingSwitcher;
 use Illuminate\Support\Facades\Log; 
@@ -74,6 +75,9 @@ class Reported extends Component
                         ->orwhere('phone_number_1', 'like', '%' . $this->search . '%');
                 });
             }); 
+        })
+        ->when(auth()->user()->hasRole(Role::AGENT), function ($query) {
+            $query->where('aid', auth()->id());
         })
 
         // 4. Date Range (Optional)

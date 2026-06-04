@@ -9,6 +9,7 @@ use App\Models\OrderItems;
 use App\Models\OrderNots;
 use App\Models\order_Comments;
 use App\Models\Product;
+use App\Models\Role;
 use App\Models\ProductVariant;
 use App\Models\SecondStepStatu;
 use App\Models\willaya;
@@ -67,6 +68,9 @@ class Indelivery extends Component
             $query->whereHas('items', function ($q) {
                 $q->where('product_id',$this->productfilter['id']);
             });
+        })
+        ->when(auth()->user()->hasRole(Role::AGENT), function ($query) {
+            $query->where('aid', auth()->id());
         })
         // 4. Date Range (Optional)
         ->when($this->start_date, fn($q) => $q->whereDate('created_at', '>=', $this->start_date))
