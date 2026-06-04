@@ -113,7 +113,7 @@ class OrderRepository extends BaseRepository
 
             OrderLog::create([
                 'oid'       => $order->oid,
-                'aid'       => $user->hasRole(4) ? $user->id : $assignedUserId,
+                'aid'       => $user->hasRole(4) ? $user->id : $assignedUserId ?? auth()->id(),
                 'statu_old' => 1,
                 'statu_new' => 1,
                 'text'      => trans('Order created'),
