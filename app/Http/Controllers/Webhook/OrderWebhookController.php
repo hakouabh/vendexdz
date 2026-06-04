@@ -954,21 +954,21 @@ protected function formatAyorItems($orderLines)
     protected function createOrderFromNormalizedData($data, $platform, $user)
     {
         $validator = Validator::make($data, [
-            'client_name' => 'required|string|min:3',
-            'phone1' => 'required|string|min:10',
-            'wilaya' => 'required',
-            'city' => 'required|string',
-            'address' => 'required|string',
-            'items' => 'required|array|min:1',
-            'items.*.sku' => 'required|string',
-            'items.*.quantity' => 'required|integer|min:1',
+            'client_name'       => 'required|string|min:3',
+            'phone1'            => 'required|string|min:10',
+            'wilaya'            => 'required',
+            'city'              => 'required|string',
+            'address'           => 'required|string',
+            'items'             => 'required|array|min:1',
+            'items.*.sku'       => 'required|string',
+            'items.*.quantity'  => 'required|integer|min:1',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
@@ -976,134 +976,147 @@ protected function formatAyorItems($orderLines)
 
         try {
             $variant = ProductVariant::where('sku', $data['items'][0]['sku'])->firstOrFail();
-            // Create or update client
+
             $client = Client::updateOrCreate(
                 ['phone_number_1' => $data['phone1']],
-                [  
-                    'full_name' => $data['client_name'],
+                [
+                    'full_name'      => $data['client_name'],
                     'phone_number_2' => $data['phone2'] ?? '',
-                    'email' => $data['email'] ?? '',
-                    'wilaya' => $data['wilaya'],
-                    'town' => $data['city'],
-                    'address' => $data['address'],
+                    'email'          => $data['email'] ?? '',
+                    'wilaya'         => $data['wilaya'],
+                    'town'           => $data['city'],
+                    'address'        => $data['address'],
                 ]
             );
 
-            // Get app_id from first item
-            
             $app_id = 0;
+            $deliveryPrice = 0;
 
             if ($variant) {
                 $fee = fees::where('product_id', $variant->product_id)
                     ->where('wid', $data['wilaya'])
                     ->first();
-                
+
                 if ($fee) {
                     $app_id = $fee->app_id;
+                    $deliveryPrice = $data['delivery_type'] == 1
+                        ? $fee->c_s_p
+                        : ($fee->c_d_p ?? 0);
                 }
             }
 
-            // Generate unique order ID
-            $orderId = $this->generateOrderId();
+            $storeId = $user->userStore->store_id;
 
-            // Create order
+            $assignedUserId = null;
+
+            $activeConfirmatrices = UserStore::where('is_active', true)
+                ->where('store_id', $storeId)
+                ->orderBy('id')
+                ->pluck('user_id');
+
+            if ($activeConfirmatrices->count() === 1) {
+                $assignedUserId = $activeConfirmatrices->first();
+            } elseif ($activeConfirmatrices->count() > 1) {
+                $lastOrder = Order::where('sid', $storeId)
+                    ->whereIn('aid', $activeConfirmatrices)
+                    ->latest()
+                    ->first();
+
+                if (!$lastOrder?->aid) {
+                    $assignedUserId = $activeConfirmatrices->first();
+                } else {
+                    $lastIndex = $activeConfirmatrices->search($lastOrder->aid);
+                    $nextIndex = ($lastIndex + 1) % $activeConfirmatrices->count();
+                    $assignedUserId = $activeConfirmatrices[$nextIndex];
+                }
+            }
+
             $order = Order::create([
-                'oid' => $orderId,
-                'cid' => $client->id,
-                'sid' => $user->userStore->store_id,
+                'oid'    => $this->generateOrderId(),
+                'cid'    => $client->id,
+                'sid'    => $storeId,
                 'app_id' => $app_id,
-                'from' => $platform
-           ]);
+                'aid'    => $assignedUserId,
+                'from'   => $platform,
+            ]);
 
-            // Calculate totals in local currency
             $exchangeRate = $this->getExchangeRate($data['currency'] ?? 'USD');
             $subtotal = ($data['subtotal'] ?? 0) * $exchangeRate;
-            $deliveryPrice = 0;
+            $discount = ($data['discount'] ?? 0) * $exchangeRate;
 
-            // Get delivery price
-            if ($variant && $data['wilaya']) {
-                $fee = fees::where('product_id', $variant->product_id)
-                    ->where('wid', $data['wilaya'])
-                    ->first();
-                
-                if ($fee) {
-                    $deliveryPrice = $data['delivery_type'] == 1 ? 
-                        $fee->c_s_p : ($fee->c_d_p ?? 0);
+            $order->details()->create([
+                'oid'               => $order->oid,
+                'price'             => $subtotal,
+                'total'             => $subtotal + $deliveryPrice - $discount,
+                'delivery_price'    => $deliveryPrice,
+                'commenter'         => $data['comment'] ?? '',
+                'stopdesk'          => $data['delivery_type'] ?? 1,
+                'discount'          => $discount,
+                'original_currency' => $data['currency'] ?? 'USD',
+                'original_total'    => $data['total'] ?? 0,
+            ]);
+
+            $calculatedPrice = 0;
+            foreach ($data['items'] as $item) {
+                $itemVariant = ProductVariant::where('sku', $item['sku'])->first();
+                if ($itemVariant) {
+                    OrderItems::create([
+                        'oid'        => $order->oid,
+                        'sku'        => $item['sku'],
+                        'product_id' => $itemVariant->product_id,
+                        'vid'        => $itemVariant->id,
+                        'quantity'   => $item['quantity'],
+                        'price'      => $itemVariant->product->price ?? 0,
+                    ]);
+                    $calculatedPrice += ($itemVariant->product->price ?? 0) * $item['quantity'];
                 }
             }
 
-            $total = $subtotal + $deliveryPrice - (($data['discount'] ?? 0) * $exchangeRate);
-
-            // Create order details
-            $order->details()->create([
-                'oid' => $order->oid,
-                'price' => $subtotal,
-                'total' => $total,
-                'delivery_price' => $deliveryPrice,
-                'commenter' => $data['comment'] ?? '',
-                'stopdesk' => $data['delivery_type'] ?? 1,
-                'discount' => ($data['discount'] ?? 0) * $exchangeRate,
-                'original_currency' => $data['currency'] ?? 'USD',
-                'original_total' => $data['total'] ?? 0,
-            ]);
-
-            // Create order items
-            foreach ($data['items'] as $item) {
-                $variant = ProductVariant::where('sku', $item['sku'])->first();
-                if($variant)
-                OrderItems::create([
-                    'oid' => $order->oid,
-                    'sku' => $item['sku'],
-                    'product_id' => $variant->product_id,
-                    'vid' => $variant?->id ?? 0,
-                    'quantity' => $item['quantity'],
-                    'price' => $variant?->product->price ?? 0,
-                ]);
-            }
-
-            // Create initial confirmation status
-            $order->Inconfirmation()->create([
-                'fsid' => 1,
-                'aid' => $user->id,
-            ]);
-            $calculatedPrice = 0;
-            $calculatedPrice = $order->items->sum(function ($item) {
-                $price = $item->variant ? $item->variant->product->price : 0;
-                return $price * $item['quantity'];
-            });
-            
             $order->details()->update([
                 'price' => $calculatedPrice,
-                'total' => $calculatedPrice,
-            ]); 
+                'total' => $calculatedPrice + $deliveryPrice - $discount,
+            ]);
+
+            $order->Inconfirmation()->create([
+                'fsid' => 1,
+                'aid'  => $user->id,
+            ]);
+
+            \App\Models\OrderLog::create([
+                'oid'       => $order->oid,
+                'aid'       => $user->id,
+                'statu_old' => 1,
+                'statu_new' => 1,
+                'text'      => trans('Order created'),
+            ]);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Order created successfully',
-                'data' => [
-                    'order_id' => $order->oid,
-                    'ref' => 'ORD-' . $order->oid,
-                    'total' => $total,
-                    'currency' => 'DZD',
-                    'original_total' => $data['total'] ?? 0,
+                'data'    => [
+                    'order_id'          => $order->oid,
+                    'ref'               => 'ORD-' . $order->oid,
+                    'total'             => $calculatedPrice + $deliveryPrice - $discount,
+                    'currency'          => 'DZD',
+                    'original_total'    => $data['total'] ?? 0,
                     'original_currency' => $data['currency'] ?? 'USD',
-                    'status' => 'pending',
-                    'created_at' => $order->created_at->toISOString(),
-                    'platform' => $platform
+                    'status'            => 'pending',
+                    'created_at'        => $order->created_at->toISOString(),
+                    'platform'          => $platform,
                 ]
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             Log::build([
                 'driver' => 'single',
-                'path' => storage_path("logs/{$platform}.log"),
+                'path'   => storage_path("logs/{$platform}.log"),
             ])->error("Order creation failed from {$platform}", [
                 'error' => $e->getMessage(),
-                'data' => $data
+                'data'  => $data,
             ]);
 
             return response()->json([

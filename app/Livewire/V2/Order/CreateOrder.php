@@ -19,6 +19,7 @@ use App\Services\TerritoryServices\AndersonTerritoryService;
 use App\Services\TerritoryServices\NoestTerritoryService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\OrderRepository;
 
 class CreateOrder extends Component
 {
@@ -339,87 +340,46 @@ class CreateOrder extends Component
     public function createOrder()
     {
         $this->validate();
-    
-        \DB::beginTransaction();
 
         try {
-        
-            $client = Client::updateOrCreate(
-                ['phone_number_1' => $this->phone1],
-                [
-                    'full_name' => $this->client_name,
-                    'phone_number_2' => $this->phone2,
-                    'wilaya' => $this->wilaya,
-                    'town' => $this->city,
-                    'address' => $this->address,
-                ]
-            );
-            
-        
             $firstItemSku = $this->items[0]['product_id'] ?? null;
             $app_id = 0;
-            
+
             if ($firstItemSku) {
                 $fee = fees::where('product_id', $firstItemSku)
                     ->where('wid', $this->wilaya)
                     ->first();
-                
                 if ($fee) {
                     $app_id = $fee->app_id;
                 }
             }
-        
-            $order = Order::create([
-                'oid' => time() . mt_rand(1000, 9999),
-                'cid' => $client->id,
-                'sid' => $this->store_id, 
-                'app_id' => $app_id,
-                'aid' => auth()->id(),
-                'type' => $this->type
-            ]);
-            
-            $details = $order->details()->create([
-                'oid' => $order->oid,
-                'price' => $this->total,
-                'total' => $this->total,
-                'discount' => $this->discount,
+
+            $input = [
+                'phone1'         => $this->phone1,
+                'client_name'    => $this->client_name,
+                'phone2'         => $this->phone2,
+                'wilaya'         => $this->wilaya,
+                'city'           => $this->city,
+                'address'        => $this->address,
+                'store_id'       => $this->store_id,
+                'app_id'         => $app_id,
+                'type'           => $this->type,
+                'total'          => $this->total,
+                'discount'       => $this->discount,
                 'delivery_price' => $this->delivery_price,
-                'commenter' => $this->comment,
-                'stopdesk' => $this->delivery_type,
-            ]);
-            \App\Models\OrderLog::create([
-                'oid'       => $order->oid,
-                'aid'       => auth()->id(),
-                'statu_old' => 1,
-                'statu_new' => 1,
-                'text'      => trans('Order created'),
-            ]);
-    
-            foreach ($this->items as $item) {
-                OrderItems::create([
-                    'oid' => $order->oid,
-                    'product_id' => $item['product_id'],
-                    'vid' => $item['vid'],
-                    'quantity' => $item['quantity'],
-                ]);
-            }
-        
-            $Inconfirmationd = $order->Inconfirmation()->create([
-                'fsid' => 1,
-                'aid' => Auth::id(),
-            ]);
-        
-            \DB::commit();
-            
+                'comment'        => $this->comment,
+                'delivery_type'  => $this->delivery_type,
+                'items'          => $this->items,
+            ];
+
+            $order = app(OrderRepository::class)->store($input);
+
             $this->createdOrder = $order;
             $this->showSuccessModal = true;
             $this->dispatch('showSuccessToast', 'Order created successfully!');
-        
-        } catch (\Exception $e) {
-    
-            \DB::rollBack();
 
-            Log::error('Order creation failed and rolled back: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Order creation failed: ' . $e->getMessage());
             $this->dispatch('showErrorToast', 'Failed to create order. All changes reverted.');
         }
     }

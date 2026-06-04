@@ -7,4 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class UserStore extends Model
 {
     protected $fillable = ['user_id', 'store_id', 'is_active'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'store_id');
+    }
 }
