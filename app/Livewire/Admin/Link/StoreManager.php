@@ -15,10 +15,15 @@ class StoreManager extends Component
     public $store_id = null;
     public $selectedAgentId = '';
     public $selectedManagerId = '';
+    public $orderLimits = [];
     public Store $selectedStore;
 
     public function SelectStore($id){
         $this->selectedStore = Store::find($id);
+        foreach($this->selectedStore->agents as $agent){
+            $userStore = $agent->userStores()->where('store_id', $id)->first();
+            $this->orderLimits[$userStore->id] = $userStore->order_limit ?? 0;
+        }
         $this->store_id = $id;
     }
 
@@ -46,6 +51,14 @@ class StoreManager extends Component
             $userStore->save();
         }
     }
+
+    public function updatedOrderLimits($value, $key){
+        \Log::info([$key => $value]);
+        UserStore::where('id', $key)->update([
+            'order_limit' => $value,
+        ]);
+    }
+
     public function addManager(){
         if(!$this->selectedManagerId){
             return;

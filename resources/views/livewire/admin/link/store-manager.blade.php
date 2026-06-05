@@ -1,7 +1,7 @@
 <div class="p-6 bg-slate-50/50 min-h-screen">
 
     <div class="flex flex-col lg:flex-row gap-6 items-start">
-        <div class="w-full lg:w-2/3">
+        <div class="w-full lg:w-1/2">
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                     <div>
@@ -61,7 +61,72 @@
             </div>
         </div>
 
-        <div class="w-full lg:w-1/3 flex flex-col gap-6">
+        <div class="w-full lg:w-1/2 flex flex-col gap-6">
+            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden w-full">
+                <div class="p-5 border-b border-gray-100 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900">@lang('Agents')</h2>
+                    </div>
+                    <i class="ri-team-line text-amber-500"></i>
+                </div>
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-50/50 text-slate-500 text-[10px] uppercase font-bold tracking-wider">
+                        <tr>
+                            <th class="px-5 py-2">@lang('Name')</th>
+                            <th class="px-5 py-2 text-right">@lang('Order Limit')</th>
+                            <th class="px-5 py-2 text-right">@lang('Actions')</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-sm">
+                        @if($selectedStore)
+                            @foreach($selectedStore->agents as $agent)
+                            <tr class="hover:bg-gray-50/80 transition">
+                                <td class="px-5 py-3 font-medium text-slate-700"> 
+                                    @php
+                                        $userStore = $agent->userStores()->where('store_id', $selectedStore->id)->first();
+                                        $is_active = $userStore->is_active ?? false;
+                                    @endphp 
+                                    <label
+                                        class="{{ $is_active ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-200 bg-white hover:border-slate-300' }}">                                        
+                                        {{$agent->name}}
+                                        <div class="relative ml-4">
+                                            <input type="checkbox"  class="sr-only peer" wire:model="is_active" wire:change="setUserStoreStatus({{ $userStore->id }})" {{ $is_active ? 'checked' : '' }}>
+                                            <div
+                                                class="w-12 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 shadow-inner">
+                                            </div>
+                                        </div>
+                                    </label>
+                                </td>
+                                <td class="px-5 py-3 font-medium text-slate-700"> 
+                                    <div class="bg-indigo-50 px-2 py-2 rounded-2xl border border-indigo-100 text-center">
+                                        <input type="number"
+                                        wire:model.lazy="orderLimits.{{ $userStore->id }}"
+                                        class="w-16 bg-transparent border-none text-center font-black text-indigo-600 p-0 focus:ring-0">
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button wire:click="removeLink({{$agent->id}})" class="text-slate-400 hover:text-indigo-600 transition"><i
+                                            class="ri-delete-bin-line text-lg"></i></button>
+                                </td>
+                            </tr>
+                            @endforeach
+                            <tr class="hover:bg-gray-50/80 transition">
+                                <td class="px-5 py-3">
+                                    <select wire:model="selectedAgentId" class="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="" disabled>@lang('Add Agent')</option>
+                                        @foreach($availableAgents as $agent)
+                                            <option value="{{$agent->id}}">{{$agent->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button wire:click="addAgent" class="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition">@lang('Add')</button>
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
             <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden w-full">
                 <div class="p-5 border-b border-gray-100 flex justify-between items-center">
                     <div>
@@ -99,64 +164,6 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <button wire:click="addManager" class="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition">Add</button>
-                                </td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden w-full">
-                <div class="p-5 border-b border-gray-100 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-base font-bold text-slate-900">@lang('Agents')</h2>
-                    </div>
-                    <i class="ri-team-line text-amber-500"></i>
-                </div>
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-50/50 text-slate-500 text-[10px] uppercase font-bold tracking-wider">
-                        <tr>
-                            <th class="px-5 py-2">@lang('Name')</th>
-                            <!-- <th class="px-5 py-2 text-right">Number Orders</th> -->
-                            <th class="px-5 py-2 text-right">@lang('Actions')</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 text-sm">
-                        @if($selectedStore)
-                            @foreach($selectedStore->agents as $agent)
-                            <tr class="hover:bg-gray-50/80 transition">
-                                <td class="px-5 py-3 font-medium text-slate-700"> 
-                                    @php
-                                        $userStore = $agent->userStores()->where('store_id', $selectedStore->id)->first();
-                                        $is_active = $userStore->is_active ?? false;
-                                    @endphp 
-                                    <label
-                                        class="{{ $is_active ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-200 bg-white hover:border-slate-300' }}">                                        
-                                        {{$agent->name}}
-                                        <div class="relative ml-4">
-                                            <input type="checkbox"  class="sr-only peer" wire:model="is_active" wire:change="setUserStoreStatus({{ $userStore->id }})" {{ $is_active ? 'checked' : '' }}>
-                                            <div
-                                                class="w-12 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 shadow-inner">
-                                            </div>
-                                        </div>
-                                    </label>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button wire:click="removeLink({{$agent->id}})" class="text-slate-400 hover:text-indigo-600 transition"><i
-                                            class="ri-delete-bin-line text-lg"></i></button>
-                                </td>
-                            </tr>
-                            @endforeach
-                            <tr class="hover:bg-gray-50/80 transition">
-                                <td class="px-5 py-3">
-                                    <select wire:model="selectedAgentId" class="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="" disabled>@lang('Add Agent')</option>
-                                        @foreach($availableAgents as $agent)
-                                            <option value="{{$agent->id}}">{{$agent->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button wire:click="addAgent" class="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition">@lang('Add')</button>
                                 </td>
                             </tr>
                         @endif
