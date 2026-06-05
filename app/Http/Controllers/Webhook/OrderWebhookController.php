@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\OrderLog;
 use App\Models\OrderItems;
 use App\Models\Client;
+use App\Models\UserStore;
+use App\Models\Role;
 use App\Models\ProductVariant;
 use App\Models\fees;
 use App\Models\Inconfirmation;
@@ -1012,24 +1014,43 @@ protected function formatAyorItems($orderLines)
             $activeConfirmatrices = UserStore::where('is_active', true)
                 ->where('store_id', $storeId)
                 ->orderBy('id')
-                ->pluck('user_id');
+                ->whereHas('user.roles', function ($query) {
+                    $query->where('roles.rid', Role::AGENT);
+                })
+                ->get();
 
-            if ($activeConfirmatrices->count() === 1) {
-                $assignedUserId = $activeConfirmatrices->first();
-            } elseif ($activeConfirmatrices->count() > 1) {
+            $availableAgents = $activeConfirmatrices->filter(function ($userStore) use ($storeId) {
+                if (!$userStore->order_limit) return true;
+
+                $todayCount = Order::where('sid', $storeId)
+                    ->where('aid', $userStore->user_id)
+                    ->whereDate('created_at', today())
+                    ->count();
+
+                return $todayCount < $userStore->order_limit;
+            });
+
+            $agentIds = $availableAgents->pluck('user_id');
+
+            if ($agentIds->count() === 1) {
+                $assignedUserId = $agentIds->first();
+            } elseif ($agentIds->count() > 1) {
                 $lastOrder = Order::where('sid', $storeId)
-                    ->whereIn('aid', $activeConfirmatrices)
+                    ->whereIn('aid', $agentIds)
                     ->latest()
                     ->first();
 
                 if (!$lastOrder?->aid) {
-                    $assignedUserId = $activeConfirmatrices->first();
+                    $assignedUserId = $agentIds->first();
                 } else {
-                    $lastIndex = $activeConfirmatrices->search($lastOrder->aid);
-                    $nextIndex = ($lastIndex + 1) % $activeConfirmatrices->count();
-                    $assignedUserId = $activeConfirmatrices[$nextIndex];
+                    $lastIndex = $agentIds->search($lastOrder->aid);
+                    $nextIndex = $lastIndex !== false
+                        ? ($lastIndex + 1) % $agentIds->count()
+                        : 0;
+                    $assignedUserId = $agentIds->values()[$nextIndex];
                 }
             }
+            // $agentIds->count() === 0 → all at limit → $assignedUserId stays null
 
             $order = Order::create([
                 'oid'    => $this->generateOrderId(),

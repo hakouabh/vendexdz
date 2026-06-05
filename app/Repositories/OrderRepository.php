@@ -72,22 +72,39 @@ class OrderRepository extends BaseRepository
                     ->whereHas('user.roles', function ($query) {
                         $query->where('roles.rid', Role::AGENT);
                     })
-                    ->pluck('user_id');
+                    ->get();
 
-                if ($activeConfirmatrices->count() === 1) {
-                    $assignedUserId = $activeConfirmatrices->first();
-                } elseif ($activeConfirmatrices->count() > 1) {
+                $availableAgents = $activeConfirmatrices->filter(function ($userStore) use ($input) {
+                    if (!$userStore->order_limit) return true;
+
+                    $todayCount = Order::where('sid', $input['store_id'])
+                        ->where('aid', $userStore->user_id)
+                        ->whereDate('created_at', today())
+                        ->count();
+
+                    return $todayCount < $userStore->order_limit;
+                });
+
+                $agentIds = $availableAgents->pluck('user_id');
+
+                if ($agentIds->count() === 1) {
+                    $assignedUserId = $agentIds->first();
+                } elseif ($agentIds->count() > 1) {
                     $lastOrder = Order::where('sid', $input['store_id'])
-                        ->whereIn('aid', $activeConfirmatrices)
+                        ->whereIn('aid', $agentIds)
                         ->latest()
                         ->first();
 
                     if (!$lastOrder?->aid) {
-                        $assignedUserId = $activeConfirmatrices->first();
+                        $assignedUserId = $agentIds->first();
                     } else {
-                        $lastIndex = $activeConfirmatrices->search($lastOrder->aid);
-                        $nextIndex = ($lastIndex + 1) % $activeConfirmatrices->count();
-                        $assignedUserId = $activeConfirmatrices[$nextIndex];
+                        $lastIndex = $agentIds->search($lastOrder->aid);
+
+                        $nextIndex = $lastIndex !== false
+                            ? ($lastIndex + 1) % $agentIds->count()
+                            : 0;
+
+                        $assignedUserId = $agentIds->values()[$nextIndex];
                     }
                 }
             }
