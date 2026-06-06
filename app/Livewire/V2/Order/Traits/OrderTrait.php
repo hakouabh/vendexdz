@@ -9,6 +9,8 @@ use App\Models\fees;
 use App\Models\Order;
 use App\Models\OrderLog;
 use App\Models\Store;
+use App\Models\User;
+use App\Models\Role;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\OrderNots;
@@ -27,6 +29,7 @@ trait OrderTrait
     public $selectedWilayaId = null;
     public $expandedOrderId = null;
     public $stores;
+    public $agents;
     public $store_id;
     public $showErrorModal = false;
     public $error_messages;
@@ -43,6 +46,9 @@ trait OrderTrait
 
         if ($user->hasRole(2)) {
             $query = Store::query(); // all stores
+            $this->agents = User::whereHas('roles', function($q) {
+                $q->where('roles.rid', Role::AGENT);
+            })->get();
         }
         $this->stores = $query->latest()->get();
         $this->store_id = $this->stores->first()->id ?? null;
@@ -50,6 +56,10 @@ trait OrderTrait
 
     public function Storefilter($store){
         $this->storefilter = $store;
+    }
+
+    public function Agentfilter($agent){
+        $this->agentfilter = $agent;
     }
 
     public function Productfilter($product){

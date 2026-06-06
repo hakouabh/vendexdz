@@ -84,7 +84,7 @@ class AgentManager extends Component
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string',
+            'phone' => 'required|string',
             'password' => 'required|confirmed|min:8',
             'role' => 'required|exists:roles,rid'
         ]);

@@ -37,6 +37,7 @@ class Pending extends Component
     public $scheduleTime;
     public $selectedStatu = null;
     public $storefilter;
+    public $agentfilter;
     public $productfilter;
     public $statufilter;
     public $start_date=null;
@@ -80,6 +81,9 @@ class Pending extends Component
         // 2. Store Filter (Directly on the 'orders' table)
         ->when($this->storefilter, function ($query) {
             $query->where('sid', $this->storefilter['id']);
+        })
+        ->when($this->agentfilter, function ($query) {
+            $query->where('aid', $this->agentfilter['id']);
         })
 
         // 3. Product SKU Filter (Table: order_items)

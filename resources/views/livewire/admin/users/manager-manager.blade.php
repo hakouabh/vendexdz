@@ -176,6 +176,7 @@
                                     class="ri-whatsapp-line text-slate-400 group-focus-within:text-green-500 transition-colors"></i>
                             </div>
                             <input type="text" wire:model="phone"
+                                required
                                 class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
                                 placeholder="+213 555...">
                         </div>
@@ -306,6 +307,7 @@
                                     class="ri-whatsapp-line text-slate-400 group-focus-within:text-green-500 transition-colors"></i>
                             </div>
                             <input type="text" wire:model="phone"
+                            required
                                 class="pl-10 w-full rounded-lg border-slate-200 bg-slate-50/50 text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"
                                 placeholder="+213 555...">
                         </div>

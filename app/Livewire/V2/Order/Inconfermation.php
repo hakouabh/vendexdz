@@ -26,6 +26,7 @@ class Inconfermation extends Component
     public $scheduleTime;
     public $selectedStatu = null;
     public $storefilter;
+    public $agentfilter;
     public $productfilter;
     public $statufilter;
     public $start_date=null;
@@ -61,6 +62,9 @@ class Inconfermation extends Component
         })
         ->when($this->storefilter, function ($query) {
             $query->where('sid', $this->storefilter['id']);
+        })
+        ->when($this->agentfilter, function ($query) {
+            $query->where('aid', $this->agentfilter['id']);
         })
         ->when($this->search, function ($query) {
             $query->where(function($q) {
@@ -108,6 +112,9 @@ class Inconfermation extends Component
         })
         ->when($this->storefilter, function ($query) {
             $query->where('sid', $this->storefilter['id']);
+        })
+        ->when($this->agentfilter, function ($query) {
+            $query->where('aid', $this->agentfilter['id']);
         })
         ->when($this->storefilter == null, function ($query) {
             $query->whereIn('sid', $this->stores->pluck('id'));
