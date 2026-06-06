@@ -10,6 +10,6 @@ class PriceManagementController extends Controller
     public function index()
     {
       
-        return view('admin.fees.index');
+        return view('manager.fees.index');
     }
 }
