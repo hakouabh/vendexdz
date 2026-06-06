@@ -348,5 +348,9 @@
     "User access is temporarily revoked.": "L'accès de l'utilisateur est temporairement révoqué.",
     "Active Account": "Compte actif",
     "Suspended Account": "Compte suspendu",
-    "Blocked": "Bloqué"
+    "Blocked": "Bloqué",
+    "Sign in as": "Se connecter en tant que",
+    "Login as": "Se connecter en tant que",
+    "Impersonate": "Se Connecter",
+    "Leave Impersonation": "Quitter le compte"
 }

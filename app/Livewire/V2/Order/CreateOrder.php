@@ -96,7 +96,7 @@ class CreateOrder extends Component
             $query = Store::where('created_by', '!=', $user->id); // all stores
         }
         $this->stores = $query->latest()->get();
-        $this->store_id = request()->is('admin/create-order') ? null : $this->stores->first()->id;
+        $this->store_id = request()->is('admin/create-order') ? null : $this->stores->first()?->id;
         $this->initializeOrder();
         $this->loadAvailableProducts();
     }

@@ -99,66 +99,67 @@
         <!-- LEFT FILTERS -->
         <div class="flex flex-wrap gap-2 w-full lg:w-3/5">
 
+            @if($context =='admin')
+                <x-dropdown align="left" width="48">
+                    <x-slot name="trigger">
+                        <button type="button"
+                            class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-500 bg-white hover:text-gray-700 transition">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            {{ $storefilter['name'] ?? __('Filter Store') }}
+                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+                    </x-slot>
+                    <x-slot name="content">
+                        <div class="block px-4 py-2 text-xs text-gray-400 uppercase">
+                            {{ __('Stores') }}
+                        </div>
+                        <x-dropdown-link wire:click="Storefilter(null)">
+                            @lang('All')
+                        </x-dropdown-link>
+                        @foreach($stores as $store)
+                        <x-dropdown-link wire:click="Storefilter({{$store}})">
+                            {{$store->name}}
+                        </x-dropdown-link>
+                        @endforeach
+                    </x-slot>
+                </x-dropdown>
+            @endif
             @if($context =='admin' || $context == 'manager')
-            <x-dropdown align="left" width="48">
-                <x-slot name="trigger">
-                    <button type="button"
-                        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-500 bg-white hover:text-gray-700 transition">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                        </svg>
-                        {{ $storefilter['name'] ?? __('Filter Store') }}
-                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                </x-slot>
-                <x-slot name="content">
-                    <div class="block px-4 py-2 text-xs text-gray-400 uppercase">
-                        {{ __('Stores') }}
-                    </div>
-                    <x-dropdown-link wire:click="Storefilter(null)">
-                        @lang('All')
-                    </x-dropdown-link>
-                    @foreach($stores as $store)
-                    <x-dropdown-link wire:click="Storefilter({{$store}})">
-                        {{$store->name}}
-                    </x-dropdown-link>
-                    @endforeach
-                </x-slot>
-            </x-dropdown>
-            <!-- Filter Agent  -->
-            <x-dropdown align="left" width="48">
-                <x-slot name="trigger">
-                    <button type="button"
-                        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-500 bg-white hover:text-gray-700 transition">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                        </svg>
-                        {{ $agentfilter['name'] ?? __('Filter Agent') }}
-                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                </x-slot>
-                <x-slot name="content">
-                    <div class="block px-4 py-2 text-xs text-gray-400 uppercase">
-                        {{ __('Agents') }}
-                    </div>
-                    <x-dropdown-link wire:click="Agentfilter(null)">
-                        @lang('All')
-                    </x-dropdown-link>
-                    @foreach($agents as $agent)
-                    <x-dropdown-link wire:click="Agentfilter({{$agent}})">
-                        {{$agent->name}}
-                    </x-dropdown-link>
-                    @endforeach
-                </x-slot>
-            </x-dropdown>
+                <x-dropdown align="left" width="48">
+                    <x-slot name="trigger">
+                        <button type="button"
+                            class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-500 bg-white hover:text-gray-700 transition">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            {{ $agentfilter['name'] ?? __('Filter Agent') }}
+                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+                    </x-slot>
+                    <x-slot name="content">
+                        <div class="block px-4 py-2 text-xs text-gray-400 uppercase">
+                            {{ __('Agents') }}
+                        </div>
+                        <x-dropdown-link wire:click="Agentfilter(null)">
+                            @lang('All')
+                        </x-dropdown-link>
+                        @foreach($agents as $agent)
+                        <x-dropdown-link wire:click="Agentfilter({{$agent}})">
+                            {{$agent->name}}
+                        </x-dropdown-link>
+                        @endforeach
+                    </x-slot>
+                </x-dropdown>
             @endif
             <x-dropdown align="left" width="48">
                 <x-slot name="trigger">

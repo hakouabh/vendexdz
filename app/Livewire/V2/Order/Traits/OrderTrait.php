@@ -46,6 +46,8 @@ trait OrderTrait
 
         if ($user->hasRole(2)) {
             $query = Store::query(); // all stores
+        }
+        if($user->hasRole(3) || $user->hasRole(2)){
             $this->agents = User::whereHas('roles', function($q) {
                 $q->where('roles.rid', Role::AGENT);
             })->get();

@@ -2,11 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Admin\UserManagementController as AdminUserController;
-use App\Http\Controllers\Admin\LinkManagementController as ManagerLinkController;
-use App\Http\Controllers\Admin\StatuManagementController  as ManagerStatuController;
-use App\Http\Controllers\Admin\PriceManagementController  as ManagerFeesController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Manager\UserController as ManagerUserController;
+use App\Http\Controllers\Admin\LinkManagementController as AdminLinkController;
+use App\Http\Controllers\Manager\LinkManagementController as ManagerLinkController;
+use App\Http\Controllers\Admin\StatuManagementController  as AdminStatuController;
+use App\Http\Controllers\Manager\StatuManagementController  as ManagerStatuController;
+use App\Http\Controllers\Admin\PriceManagementController  as AdminFeesController;
+use App\Http\Controllers\Manager\PriceManagementController  as ManagerFeesController;
 use App\Http\Controllers\Admin\OrderManagementController as AdminOrderController;
+use App\Http\Controllers\Manager\OrderManagementController as ManagerOrderController;
 
 use App\Http\Controllers\Agent\OrderManagementController as AgentOrderController;
 use App\Http\Controllers\Agent\ChatController;
@@ -49,12 +54,24 @@ Route::middleware([
         })->name('admin-dashboard');
         Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
         Route::get('/impersonate/{user}', [AdminUserController::class, 'impersonate'])->name('impersonate');
-        Route::get('/admin/link', [ManagerLinkController::class, 'index'])->name('admin.link');
-        Route::get('/admin/status', [ManagerStatuController::class, 'index'])->name('admin.status');
-        Route::get('/admin/fees', [ManagerFeesController::class, 'index'])->name('admin.fees');
+        Route::get('/admin/link', [AdminLinkController::class, 'index'])->name('admin.link');
+        Route::get('/admin/status', [AdminStatuController::class, 'index'])->name('admin.status');
+        Route::get('/admin/fees', [AdminFeesController::class, 'index'])->name('admin.fees');
         Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
         Route::get('/admin/create-order', [AdminOrderController::class, 'create'])->name('admin.create-order');
         Route::get('/admin/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->name('log-viewer');
+    });
+    Route::middleware(['auth', 'role:3'])->group(function () {
+        Route::get('/manager/dashboard', function () {
+            return view('manager.manager-dashboard');
+        })->name('manager-dashboard');
+        Route::get('/manager/users', [ManagerUserController::class, 'index'])->name('manager.users');
+        Route::get('/manager/impersonate/{user}', [ManagerUserController::class, 'impersonate'])->name('manager.impersonate');
+        Route::get('/manager/link', [ManagerLinkController::class, 'index'])->name('manager.link');
+        Route::get('/manager/status', [ManagerStatuController::class, 'index'])->name('manager.status');
+        Route::get('/manager/fees', [ManagerFeesController::class, 'index'])->name('manager.fees');
+        Route::get('/manager/orders', [ManagerOrderController::class, 'index'])->name('manager.orders');
+        Route::get('/manager/create-order', [ManagerOrderController::class, 'create'])->name('manager.create-order');
     });
     Route::middleware(['auth', 'role:4'])->group(function () {
         Route::get('/agent/dashboard', function () {

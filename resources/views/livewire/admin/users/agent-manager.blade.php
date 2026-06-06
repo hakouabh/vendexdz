@@ -33,7 +33,6 @@
                         <th class="px-6 py-4">@lang('Update_Date')</th>
                         <th class="px-6 py-4">@lang('Sign in as')</th>
                         <th class="px-6 py-4">@lang('Status')</th>
-
                         <th class="px-6 py-4 text-right">@lang('Actions')</th>
 
                     </tr>

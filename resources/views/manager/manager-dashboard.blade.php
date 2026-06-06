@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.managerapp')
 
-@section('title', 'Agent Workspace - Vendex')
+@section('title', 'Manager Workspace - Vendex')
 
 @section('content')
     <div class="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
