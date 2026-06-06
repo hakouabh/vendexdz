@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Livewire\Manager\Users;
+
+use Livewire\Component;
+use App\Models\User;
+use App\Models\Order;
+use App\Models\Store;
+use App\Models\Role;
+use Livewire\WithPagination;
+
+class StoreManager extends Component
+{
+    use WithPagination;
+    protected $pageName = 'inPage';
+    public $isEditModalOpen = false;
+    public $editingStoreId = null;
+    
+    public $name;
+    public $email;
+    public $phone;
+    public $is_active = false;
+    public $role = Role::STORE;
+    public $search = ''; 
+
+    public function openEditModal($id)
+    {
+        $store = User::find($id);
+        
+        $this->editingStoreId = $id;
+        $this->name = $store->name;
+        $this->email = $store->email;
+        $this->phone = $store->phone; 
+        $this->is_active = $store->is_active;
+        $this->isEditModalOpen = true;
+        
+    }
+
+    public function updateStore()
+    {
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'nullable|string',
+            'is_active' => 'boolean',
+            'role' => 'required|exists:roles,rid'
+        ]);
+        
+        $store = User::find($this->editingStoreId);
+        
+        $store->update([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'is_active' => $this->is_active,
+        ]);
+        $store->roles()->sync([$this->role]);
+        $this->isEditModalOpen = false;
+    
+    }
+
+    public function render()
+    {
+        $user = auth()->user();
+        $userStores = $user->userStores->pluck('store_id')->toArray();
+        $stores = User::whereHas('roles', function ($q) {
+            $q->where('roles.rid', $this->role); 
+        })
+        ->whereHas('userStore', function ($q) use ($userStores) {
+            $q->whereIn('store_id', $userStores);
+        })
+        ->where(function($query) {
+            $query->where('name', 'like', '%' . $this->search . '%')
+            ->orWhere('email', 'like', '%' . $this->search . '%');
+        })
+        ->paginate(10);
+        $stores->withQueryString();
+        $roles = Role::all();
+        return view('livewire.admin.users.store-manager',['stores'=>$stores, 'roles'=>$roles]);
+    }
+
+    public function deleteStore($id)
+    {
+        $user = User::find($id);
+        $store = Store::where('created_by', $id)->first(); 
+        $store->delete();
+        $user->delete();
+        $this->isEditModalOpen = false;
+    }
+}

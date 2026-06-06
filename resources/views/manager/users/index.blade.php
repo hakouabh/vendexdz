@@ -4,5 +4,5 @@
 
 @section('content')
 
-    @livewire('admin.users-manager')
+    @livewire('manager.users-manager')
 @endsection
